@@ -4,13 +4,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "json-server --watch db.json --port 3001",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.11.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.8.2",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.10",

@@ -1,0 +1,67 @@
+{
+  "meals": [
+    {
+      "id": 1,
+      "nombre": "desayuno",
+      "alimentos": [
+        {
+          "nombre": "avena",
+          "kcal_100g": 389,
+          "gramos": 50
+        },
+        {
+          "nombre": "leche desnatada",
+          "kcal_100g": 35,
+          "gramos": 200
+        },
+        {
+          "nombre": "plátano",
+          "kcal_100g": 89,
+          "gramos": 100
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "almuerzo",
+      "alimentos": [
+        {
+          "nombre": "pechuga de pollo",
+          "kcal_100g": 165,
+          "gramos": 200
+        },
+        {
+          "nombre": "arroz integral cocido",
+          "kcal_100g": 111,
+          "gramos": 150
+        },
+        {
+          "nombre": "brócoli",
+          "kcal_100g": 34,
+          "gramos": 100
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "cena",
+      "alimentos": [
+        {
+          "nombre": "salmón",
+          "kcal_100g": 208,
+          "gramos": 150
+        },
+        {
+          "nombre": "aguacate",
+          "kcal_100g": 160,
+          "gramos": 70
+        },
+        {
+          "nombre": "ensalada mixta",
+          "kcal_100g": 25,
+          "gramos": 120
+        }
+      ]
+    }
+  ]
+}

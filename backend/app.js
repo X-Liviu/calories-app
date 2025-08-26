@@ -1,12 +1,20 @@
 const express = require("express");
-const { PORT } = require("./utils/config");
+const cors = require("cors");
 const app = express();
+const { dbConnection } = require("./utils/db");
 
+const healthRouter = require("./controllers/health");
+const loginRouter = require("./controllers/login");
+const usersRouter = require("./controllers/users");
+const middleware = require("./utils/middleware");
+
+app.use(cors());
 app.use(express.json());
-app.get("/health", (req, res) => {
-  res.send("ok");
-});
+dbConnection();
+//No sé de momento si voy a usar luego un servidor proxy inverso, para transformar el /api/... en /...
+app.use(middleware.requestLogger);
+app.use("/api/health", healthRouter);
+app.use("/api/login", loginRouter);
+app.use("/api/users", usersRouter);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+module.exports = app;

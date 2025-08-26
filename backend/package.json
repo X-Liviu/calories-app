@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "start:test": "NODE_ENV=test node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,11 +13,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.18.0"
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.10"
   }
 }
