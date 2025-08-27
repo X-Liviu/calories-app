@@ -1,0 +1,2 @@
+GET http://localhost:7000/api/aliments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjI4ODQ5MSwiZXhwIjoxNzU3NDk4MDkxfQ.RlLqBWBsGfrqlHFw8liQc4-J1qyekRpgjLEt1t-0KGc

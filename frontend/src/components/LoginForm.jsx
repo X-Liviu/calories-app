@@ -1,9 +1,10 @@
 import { useState } from "react";
-import useLogin from "../hooks/useLogin";
+import useAuth from "../hooks/useAuth";
+import Toggable from "./Toggable";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useLogin();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,7 +14,7 @@ const LoginForm = () => {
     setPassword("");
   };
   return (
-    <>
+    <Toggable buttonLabel="Log In">
       <form onSubmit={handleSubmit}>
         <input
           className="input"
@@ -31,7 +32,7 @@ const LoginForm = () => {
         <br />
         <button>Log In</button>
       </form>
-    </>
+    </Toggable>
   );
 };
 

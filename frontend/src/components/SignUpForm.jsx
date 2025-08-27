@@ -1,16 +1,17 @@
 import { useState } from "react";
-import useSignup from "../hooks/useSignup";
+import useAuth from "../hooks/useAuth";
+import Toggable from "./Toggable";
 const SignUpForm = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeated, setPasswordRepeated] = useState("");
-  const { signup } = useSignup();
+  const { signup } = useAuth();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password === passwordRepeated) {
-      signup({});
+      signup({ name, username, email, password });
 
       setName("");
       setEmail("");
@@ -21,7 +22,7 @@ const SignUpForm = () => {
     }
   };
   return (
-    <>
+    <Toggable buttonLabel="Sign Up">
       <form onSubmit={handleSubmit}>
         <input
           className="input"
@@ -56,7 +57,7 @@ const SignUpForm = () => {
         <br />
         <button>Sign Up</button>
       </form>
-    </>
+    </Toggable>
   );
 };
 

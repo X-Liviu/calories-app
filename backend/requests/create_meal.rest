@@ -1,0 +1,8 @@
+POST http://localhost:7000/api/meals
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjI5MjExNiwiZXhwIjoxNzU3NTAxNzE2fQ.LxUlPVZeKYvVvEoAuEmtAri6Q3MqP-Uf2Nta3RYw1N4
+Content-Type: application/json
+
+{
+  "name": "Wednesday",
+  "weekId": "68aee42585a579ab4ba4a124"
+}
