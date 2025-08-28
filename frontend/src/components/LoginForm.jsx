@@ -13,6 +13,7 @@ const LoginForm = () => {
     setEmail("");
     setPassword("");
   };
+  //Para repasar lo aprendido en fullstackopen (Toggable).
   return (
     <Toggable buttonLabel="Log In">
       <form onSubmit={handleSubmit}>
@@ -26,6 +27,7 @@ const LoginForm = () => {
           className="input"
           placeholder="Password"
           value={password}
+          type="password"
           onChange={({ target }) => setPassword(target.value)}
         />
         <br />

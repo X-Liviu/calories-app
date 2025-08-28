@@ -4,13 +4,21 @@ const Menu = () => {
   const user = useSelector((state) => state.user);
   return (
     <>
-      <Link to={"/"}>Home</Link>
+      <Link style={{ paddingRight: 5 }} to="/">
+        Home
+      </Link>
       {user ? (
-        <Link to={"/logout"}>Logout</Link>
+        <>
+          <Link to="/weeks">Search</Link>
+        </>
       ) : (
         <>
-          <Link to={"/login"}>Login</Link>
-          <Link to={"/signup"}>Sign Up</Link>
+          <Link style={{ paddingRight: 5 }} to={"/login"}>
+            Login
+          </Link>
+          <Link style={{ paddingRight: 5 }} to={"/signup"}>
+            Sign Up
+          </Link>
         </>
       )}
     </>

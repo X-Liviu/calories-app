@@ -1,36 +1,23 @@
 import { useDispatch } from "react-redux";
-import { saveGlobalUser, eraseGlobalUser } from "../reducers/userReducer.js";
-import loginService from "../services/login.js";
-import signupService from "../services/signup.js";
+import {
+  saveGlobalUser,
+  signupUser,
+  eraseGlobalUser,
+} from "../reducers/userReducer.js";
 
 const useAuth = () => {
   const dispatch = useDispatch();
 
   const signup = async (userInfo) => {
-    try {
-      await signupService.signup(userInfo);
-
-      const { email, password } = userInfo;
-      const credentials = { email, password };
-      await login(credentials);
-    } catch (error) {
-      console.error("Error signing up:", error);
-    }
+    await dispatch(signupUser(userInfo)); //Pone vscode que no es necesario el await¿?¿?
   };
-  const login = async (credentials) => {
-    try {
-      const user = await loginService.login(credentials);
-      dispatch(saveGlobalUser(user)); //Usar Thunk para guardar usuario global
 
-      //useNavigate("/search") Tiene sentido que se haga el navigate desde aquí??
-      return user;
-    } catch (error) {
-      console.error("Error during login:", error);
-    }
+  const login = async (credentials) => {
+    await dispatch(saveGlobalUser(credentials)); //Pone vscode que no es necesario el await¿?¿?
   };
 
   const logout = () => {
-    dispatch(eraseGlobalUser()); //Usar Thunk para borrar usuario global
+    dispatch(eraseGlobalUser());
   };
 
   return { signup, login, logout };

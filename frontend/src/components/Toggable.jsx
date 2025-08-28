@@ -9,7 +9,7 @@ const Toggable = forwardRef(({ children, buttonLabel }, ref) => {
     setVisible(!visible);
   };
 
-  useImperativeHandle(ref, () => toggleVisibility);
+  useImperativeHandle(ref, () => toggleVisibility); //Simplemente para repasar lo aprendido en fullstackopen, aunque no lo use.
 
   return (
     <div>

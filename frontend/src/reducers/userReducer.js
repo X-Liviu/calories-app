@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import loginService from "../services/login";
+import signupService from "../services/signup";
 
 const userSlice = createSlice({
   name: "user",
@@ -20,30 +22,41 @@ export const initializeUser = () => {
     const loggedUserJSON = window.localStorage.getItem("token");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      //blogService.setToken(user.token);
       dispatch(setUser(user));
     }
   };
 };
 
-export const saveGlobalUser = (user) => {
-  return (dispatch) => {
+export const saveGlobalUser = (credentials) => {
+  return async (dispatch) => {
     try {
+      const user = await loginService.login(credentials);
       window.localStorage.setItem("token", JSON.stringify(user));
-      //blogService.setToken(user.token);
       dispatch(setUser(user));
-      //return user; No hace falta de momento, igual en el futuro lo necesito. Lo dejo comentado.
     } catch (error) {
-      console.error(error);
+      console.error("Error during login:", error);
+    }
+  };
+};
+
+export const signupUser = (userInfo) => {
+  return async (dispatch) => {
+    try {
+      await signupService.signup(userInfo);
+
+      const { email, password } = userInfo;
+      await dispatch(saveGlobalUser({ email, password }));
+    } catch (error) {
+      console.error("Error during signup:", error);
     }
   };
 };
 
 export const eraseGlobalUser = () => {
   return (dispatch) => {
-    //blogService.setToken(null);
     window.localStorage.removeItem("token");
     dispatch(clearUser());
   };
 };
+
 export default userSlice.reducer;
