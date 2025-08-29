@@ -5,9 +5,10 @@ import WeekList from "./WeekList";
 import WeekForm from "./WeekForm";
 
 const WeekSearch = () => {
-  const { get, create } = useWeeks();
+  const { get, create, del } = useWeeks();
   const [search, setSearch] = useState("");
   const weeks = useSelector((state) => state.weeks);
+  console.log(weeks);
   return (
     <>
       <form>
@@ -21,7 +22,7 @@ const WeekSearch = () => {
         Reintentar
       </button>
 
-      <WeekList weeks={weeks} filter={search} />
+      <WeekList weeks={weeks} filter={search} del={del} />
       <WeekForm create={create} />
     </>
   );

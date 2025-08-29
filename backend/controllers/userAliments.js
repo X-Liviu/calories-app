@@ -1,11 +1,11 @@
 const router = require("express").Router();
 const { tokenExtractor } = require("../utils/middleware");
-const Meal = require("../models/Meal");
+const UserAliment = require("../models/UserAliment");
 
 router.get("/", tokenExtractor, async (req, res, next) => {
   try {
-    const meals = await Meal.find({});
-    res.json(meals);
+    const aliments = await UserAliment.find({ user: req.userId });
+    res.json(aliments);
   } catch (err) {
     next(err);
   }
@@ -13,14 +13,14 @@ router.get("/", tokenExtractor, async (req, res, next) => {
 
 router.post("/", tokenExtractor, async (req, res, next) => {
   try {
-    const { name, dayId } = req.body;
-    const meal = new Meal({
+    const { name, nutritionFacts } = req.body;
+    const aliment = new UserAliment({
       user: req.userId, //Viene del tokenExtractor
       name,
-      day: dayId,
+      nutrition_facts: nutritionFacts,
     });
-    await meal.save();
-    res.status(201).json(meal);
+    await aliment.save();
+    res.status(201).json(aliment);
   } catch (err) {
     next(err);
   }

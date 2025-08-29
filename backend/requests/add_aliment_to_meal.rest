@@ -1,0 +1,5 @@
+POST http://localhost:7000/api/weeks/68aee42585a579ab4ba4a124/68b15ed88e4d10754d47a08e/68b18a574e1364a3d82ee46d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjQ2Njc5NCwiZXhwIjoxNzU3Njc2Mzk0fQ.rKZcbDVxMcNafOTzW1nHo4duPTOrA43FOUa-hGeiYf0
+Content-Type: application/json
+
+{"name": "Banana"}

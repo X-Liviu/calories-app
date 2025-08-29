@@ -1,0 +1,7 @@
+DELETE  http://localhost:7000/api/weeks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjQ2MjM0MCwiZXhwIjoxNzU3NjcxOTQwfQ.n7EJr0OhFoSVeJc4gquWvb-dci1J8lFDaRxwecZ7T04
+Content-Type: application/json
+
+{
+  "weekNumber": 41
+}

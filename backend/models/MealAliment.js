@@ -1,36 +1,36 @@
 const mongoose = require("mongoose");
 
-const mealSchema = new mongoose.Schema({
+const mealAlimentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  name: {
+  name_snapshot: {
     type: String,
     required: true,
   },
-  day: {
+  meal: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Day",
+    ref: "Meal",
     required: true,
   },
-  aliments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MealAliment",
-    },
-  ],
+  /*from_catalog: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserAliment",
+    required: true,
+  },*/
 });
 
-mealSchema.set("toJSON", {
+mealAlimentSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
   },
 });
-mealSchema.index({ user: 1, day: 1, name: 1 }, { unique: true });
 
-const Meal = mongoose.model("Meal", mealSchema);
-module.exports = Meal;
+mealAlimentSchema.index({ user: 1, meal: 1, name: 1 }, { unique: true });
+
+const MealAliment = mongoose.model("MealAliment", mealAlimentSchema);
+module.exports = MealAliment;

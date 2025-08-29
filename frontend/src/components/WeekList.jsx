@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import WeekItemList from "./WeekItemList";
-const WeekList = ({ weeks, filter }) => {
+const WeekList = ({ weeks, filter, del }) => {
   //Cambiar number_week por numberWeek
   const navigate = useNavigate();
   let filteredWeek;
@@ -14,13 +14,12 @@ const WeekList = ({ weeks, filter }) => {
           weeks.map((w) => (
             <tr key={w.id}>
               <td>
-                <button
-                  onClick={() =>
-                    navigate(`/weeks/${w.id}`, { state: { week: w } })
-                  }
-                >
+                <button onClick={() => navigate(`/weeks/${w.id}`)}>
                   <WeekItemList week={w} />
                 </button>
+              </td>
+              <td>
+                <button onClick={() => del({ id: w.id })}>Remove</button>
               </td>
             </tr>
           ))
@@ -35,6 +34,11 @@ const WeekList = ({ weeks, filter }) => {
                 }
               >
                 <WeekItemList week={filteredWeek} />
+              </button>
+            </td>
+            <td>
+              <button onClick={() => del({ id: filteredWeek.id })}>
+                Remove
               </button>
             </td>
           </tr>

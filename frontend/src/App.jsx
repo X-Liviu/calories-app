@@ -7,9 +7,12 @@ import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
+import MyAlimentForm from "./components/MyAlimentForm";
 import WeekSearch from "./components/WeekSearch";
 import Logout from "./components/Logout";
-
+import WeekItem from "./components/WeekItem";
+import DayItem from "./components/DayItem";
+import MealItem from "./components/MealItem";
 const App = () => {
   useInitializeAuth();
   return (
@@ -23,7 +26,11 @@ const App = () => {
           <Route path="/signup" element={<SignUpForm />} />
         </Route>
         <Route element={<PrivateRoute />}>
+          <Route path="/my-aliments" element={<MyAlimentForm />} />
           <Route path="/weeks" element={<WeekSearch />} />
+          <Route path="/weeks/:weekId/" element={<WeekItem />} />
+          <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />
+          <Route path="/weeks/:weekId/:dayId/:mealId" element={<MealItem />} />
         </Route>
       </Routes>
     </>

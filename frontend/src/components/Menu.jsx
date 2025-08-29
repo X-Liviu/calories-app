@@ -9,7 +9,12 @@ const Menu = () => {
       </Link>
       {user ? (
         <>
-          <Link to="/weeks">Search</Link>
+          <Link style={{ paddingRight: 5 }} to="/weeks">
+            Search
+          </Link>
+          <Link style={{ paddingRight: 5 }} to="/my-aliments">
+            New_Aliment
+          </Link>
         </>
       ) : (
         <>

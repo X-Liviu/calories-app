@@ -1,19 +1,20 @@
 import { useState } from "react";
 const WeekForm = ({ create }) => {
-  const [weekNumber, setWeekNumber] = useState("");
+  const [numberWeek, setNumberWeek] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
-    create({ number_week: Number(weekNumber) });
-    setWeekNumber("");
+    create({ numberWeek: Number(numberWeek) });
+    setNumberWeek("");
   };
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <input
-          onChange={({ target }) => setWeekNumber(target.value)}
+          className="input"
+          onChange={({ target }) => setNumberWeek(target.value)}
           placeholder="Number of the week"
-          value={weekNumber}
+          value={numberWeek}
         />
         <button>Create</button>
       </form>

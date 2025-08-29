@@ -1,8 +1,5 @@
-POST http://localhost:7000/api/meals
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjI5MjExNiwiZXhwIjoxNzU3NTAxNzE2fQ.LxUlPVZeKYvVvEoAuEmtAri6Q3MqP-Uf2Nta3RYw1N4
+POST http://localhost:7000/api/weeks/68aee42585a579ab4ba4a124/68b15ed88e4d10754d47a08e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjQ2NTY5OCwiZXhwIjoxNzU3Njc1Mjk4fQ.8uH7l3nNGUvoTtsA4YmJ6wx6hkVN61mhfSTig8RF3uA
 Content-Type: application/json
 
-{
-  "name": "Wednesday",
-  "weekId": "68aee42585a579ab4ba4a124"
-}
+{"name": "Dinner"}

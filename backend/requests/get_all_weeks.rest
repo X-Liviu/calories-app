@@ -1,0 +1,2 @@
+GET http://localhost:7000/api/weeks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjQ1NTQyMywiZXhwIjoxNzU3NjY1MDIzfQ.ew8c_xL5e8LuUGPw7y9vXEkiu1IdVqSluvFPlLQHZaE
