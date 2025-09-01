@@ -10,7 +10,7 @@ const DayList = ({ days, weekId }) => {
             <tr key={day.id}>
               <td>
                 <button onClick={() => navigate(`/weeks/${weekId}/${day.id}`)}>
-                  <DayItemList />
+                  <DayItemList day={day} />
                 </button>
               </td>
               <td>

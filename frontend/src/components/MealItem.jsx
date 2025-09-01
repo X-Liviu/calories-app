@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import AlimentList from "./AlimentList";
 const MealItem = () => {
   const { weekId, dayId, mealId } = useParams();
 
@@ -9,7 +10,6 @@ const MealItem = () => {
       ?.days.find((d) => d.id === dayId)
       ?.meals.find((m) => m.id === mealId),
   );
-  console.log(meal);
 
   return (
     <>

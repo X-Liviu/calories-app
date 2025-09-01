@@ -1,8 +1,11 @@
 import { useState } from "react";
-const DayForm = () => {
+import useDays from "../hooks/useDays";
+const DayForm = ({ weekId }) => {
   const [nameDay, setNameDay] = useState("");
+  const { create } = useDays();
   const handleSubmit = (e) => {
     e.preventDefault();
+    create({ name: nameDay, weekId }); //Crear día en semana específica. Pasar el weekId es clave.
     setNameDay("");
   };
 

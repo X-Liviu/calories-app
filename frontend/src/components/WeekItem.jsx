@@ -13,7 +13,7 @@ const WeekItem = () => {
     <>
       <h1>Week {week.number_week}</h1>
       <DayList weekId={week.id} days={week.days} />
-      <DayForm />
+      <DayForm weekId={weekId} />
     </>
   );
 };

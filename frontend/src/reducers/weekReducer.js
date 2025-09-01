@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import weekService from "../services/weeks";
+import dayService from "../services/days";
 
 const weekSlice = createSlice({
   name: "weeks",
@@ -14,10 +15,15 @@ const weekSlice = createSlice({
     popWeek(state, action) {
       return state.filter((w) => w.id !== action.payload.id);
     },
+    updateWeek(state, action) {
+      return state.map((w) =>
+        w.id === action.payload.id ? action.payload : w,
+      );
+    },
   },
 });
 
-export const { setWeeks, appendWeek, popWeek } = weekSlice.actions;
+export const { setWeeks, appendWeek, popWeek, updateWeek } = weekSlice.actions;
 export const saveGlobalWeeks = () => {
   return async (dispatch) => {
     try {
@@ -45,6 +51,29 @@ export const removeWeek = (week) => {
     try {
       await weekService.del(week);
       dispatch(popWeek(week));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const addDayInWeek = (day) => {
+  return async (dispatch) => {
+    try {
+      const updatedWeek = await dayService.create(day);
+      dispatch(updateWeek(updatedWeek)); // Nuevo action
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+//TODO
+export const removeDayInWeek = (day) => {
+  return async (dispatch) => {
+    try {
+      const updatedWeek = await dayService.del(day);
+      dispatch(updateWeek(updatedWeek)); // Nuevo action
     } catch (error) {
       console.error(error);
     }

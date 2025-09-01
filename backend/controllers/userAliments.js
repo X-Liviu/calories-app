@@ -13,11 +13,11 @@ router.get("/", tokenExtractor, async (req, res, next) => {
 
 router.post("/", tokenExtractor, async (req, res, next) => {
   try {
-    const { name, nutritionFacts } = req.body;
+    const { name, nutrition_facts } = req.body;
     const aliment = new UserAliment({
       user: req.userId, //Viene del tokenExtractor
       name,
-      nutrition_facts: nutritionFacts,
+      nutrition_facts,
     });
     await aliment.save();
     res.status(201).json(aliment);

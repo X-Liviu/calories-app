@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import loginService from "../services/login";
 import signupService from "../services/signup";
 import weekService from "../services/weeks";
+import myAlimentService from "../services/myAliments";
+import dayService from "../services/days";
 
 const userSlice = createSlice({
   name: "user",
@@ -24,7 +26,10 @@ export const initializeUser = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       dispatch(setUser(user));
-      weekService.setToken(user.token); //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+      //De momento lo dejo así, luego voy a usar un API Client o algo parecido
+      weekService.setToken(user.token);
+      myAlimentService.setToken(user.token);
+      dayService.setToken(user.token);
     }
   };
 };
@@ -35,7 +40,10 @@ export const saveGlobalUser = (credentials) => {
       const user = await loginService.login(credentials);
       window.localStorage.setItem("token", JSON.stringify(user));
       dispatch(setUser(user));
-      weekService.setToken(user.token); //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+      //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+      weekService.setToken(user.token);
+      myAlimentService.setToken(user.token);
+      dayService.setToken(user.token);
     } catch (error) {
       console.error("Error during login:", error);
     }
@@ -59,7 +67,10 @@ export const eraseGlobalUser = () => {
   return (dispatch) => {
     window.localStorage.removeItem("token");
     dispatch(clearUser());
-    weekService.setToken(null); //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+    //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+    weekService.setToken(null);
+    myAlimentService.setToken(null);
+    dayService.setToken(null);
   };
 };
 

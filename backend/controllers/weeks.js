@@ -55,14 +55,14 @@ router.delete("/:id", tokenExtractor, async (req, res, next) => {
 //POST new Day in Week.
 router.post("/:weekId", tokenExtractor, async (req, res, next) => {
   try {
-    const weekId = req.params.weekId;
+    const { weekId } = req.params;
     const { name } = req.body;
 
     const week = await Week.findById(weekId);
     if (!week) return res.status(404).json({ error: "Week not found" });
 
     const day = new Day({
-      user: req.userId, //Viene del tokenExtractor
+      user: req.userId,
       name,
       week: weekId,
     });
@@ -71,7 +71,16 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
     week.days.push(day._id);
     await week.save();
 
-    res.status(201).json(day);
+    // AQUÍ VIENE LA CLAVE: devolvemos la semana actualizada y populada
+    const updatedWeek = await Week.findById(weekId).populate({
+      path: "days",
+      populate: {
+        path: "meals",
+        populate: { path: "aliments" },
+      },
+    });
+
+    res.status(201).json(updatedWeek);
   } catch (err) {
     next(err);
   }
