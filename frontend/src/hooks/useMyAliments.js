@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   saveMyAliments,
@@ -12,9 +11,6 @@ const useMyAliments = () => {
     await dispatch(saveMyAliments());
   };
 
-  useEffect(() => {
-    get();
-  }, []); //eslint-disable-line
   const create = async (myAliment) => {
     await dispatch(addMyAliment(myAliment));
   };

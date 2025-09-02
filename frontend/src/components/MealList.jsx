@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import MealItemList from "./MealItemList";
+import useMeals from "../hooks/useMeals";
 const MealList = ({ meals, weekId, dayId }) => {
   const navigate = useNavigate();
+  const { del } = useMeals();
   return (
     <table>
       <tbody>
@@ -14,11 +16,21 @@ const MealList = ({ meals, weekId, dayId }) => {
                     navigate(`/weeks/${weekId}/${dayId}/${meal.id}`)
                   }
                 >
-                  <MealItemList />
+                  <MealItemList meal={meal} />
                 </button>
               </td>
               <td>
-                <button>Remove</button>
+                <button
+                  onClick={() =>
+                    del({
+                      weekId,
+                      dayId,
+                      mealId: meal.id,
+                    })
+                  }
+                >
+                  Remove
+                </button>
               </td>
             </tr>
           );

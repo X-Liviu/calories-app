@@ -1,6 +1,8 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import useInitializeAuth from "./hooks/useInitializeAuth";
+import useMyAliments from "./hooks/useMyAliments";
+
 import Menu from "./components/Menu";
 import Home from "./components/Home";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
@@ -13,8 +15,14 @@ import Logout from "./components/Logout";
 import WeekItem from "./components/WeekItem";
 import DayItem from "./components/DayItem";
 import MealItem from "./components/MealItem";
+
 const App = () => {
-  useInitializeAuth();
+  const { isInitialized } = useInitializeAuth();
+  const myAlimentsHook = useMyAliments();
+
+  if (isInitialized) {
+    myAlimentsHook.get();
+  }
   return (
     <>
       <Menu />

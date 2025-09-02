@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { addDayInWeek /*removeDayInWeek*/ } from "../reducers/weekReducer";
+import { addDayInWeek, removeDayInWeek } from "../reducers/weekReducer";
 
 const useDays = () => {
   const dispatch = useDispatch();
@@ -7,13 +7,13 @@ const useDays = () => {
     await dispatch(addDayInWeek(day));
   };
 
-  /*const del = async (day) => {
+  const del = async (day) => {
     await dispatch(removeDayInWeek(day));
-  };*/
+  };
 
   return {
     create,
-    /*del,*/
+    del,
   };
 };
 

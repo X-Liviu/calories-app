@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import weekService from "../services/weeks";
 import dayService from "../services/days";
+import mealService from "../services/meals";
+import alimentService from "../services/aliments";
 
 const weekSlice = createSlice({
   name: "weeks",
@@ -61,19 +63,120 @@ export const addDayInWeek = (day) => {
   return async (dispatch) => {
     try {
       const updatedWeek = await dayService.create(day);
-      dispatch(updateWeek(updatedWeek)); // Nuevo action
+      dispatch(updateWeek(updatedWeek));
     } catch (error) {
       console.error(error);
     }
   };
 };
 
-//TODO
 export const removeDayInWeek = (day) => {
+  return async (dispatch, getState) => {
+    try {
+      await dayService.del(day);
+
+      //Tengo que actualizar la semana aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
+      const { weeks } = getState();
+      const week = weeks.find((w) => w.id === day.weekId);
+      if (!week) return;
+
+      const updatedWeek = {
+        ...week,
+        days: week.days.filter((d) => d.id !== day.dayId),
+      };
+
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const addMealInDay = (meal) => {
   return async (dispatch) => {
     try {
-      const updatedWeek = await dayService.del(day);
-      dispatch(updateWeek(updatedWeek)); // Nuevo action
+      const updatedWeek = await mealService.create(meal);
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const removeMealInDay = (meal) => {
+  return async (dispatch, getState) => {
+    try {
+      await mealService.del(meal);
+
+      //Tengo que actualizar la semana aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
+      const { weeks } = getState();
+      const week = weeks.find((w) => w.id === meal.weekId);
+      if (!week) return;
+
+      const day = week.days.find((d) => d.id === meal.dayId);
+      if (!day) return;
+
+      const updatedDay = {
+        ...day,
+        meals: day.meals.filter((m) => m.id !== meal.mealId),
+      };
+
+      const updatedWeek = {
+        ...week,
+        days: week.days.map((d) => (d.id === meal.dayId ? updatedDay : d)),
+      };
+
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const addAlimentInMeal = (aliment) => {
+  return async (dispatch) => {
+    try {
+      const updatedWeek = await alimentService.create(aliment);
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const removeAlimentInMeal = (aliment) => {
+  return async (dispatch, getState) => {
+    try {
+      await alimentService.del(aliment);
+
+      //Tengo que actualizar la semana aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
+      const { weeks } = getState();
+      const week = weeks.find((w) => w.id === aliment.weekId);
+      if (!week) return;
+
+      const day = week.days.find((d) => d.id === aliment.dayId);
+      if (!day) return;
+
+      const meal = day.meals.find((m) => m.id === aliment.mealId);
+      if (!meal) return;
+
+      const updatedMeal = {
+        ...meal,
+        aliments: meal.aliments.filter((a) => a.id !== aliment.alimentId),
+      };
+      const updatedDay = {
+        ...day,
+        meals: day.meals.map((m) =>
+          m.id === aliment.mealId ? updatedMeal : m,
+        ),
+      };
+
+      const updatedWeek = {
+        ...week,
+        days: week.days.map((d) => (d.id === aliment.dayId ? updatedDay : d)),
+      };
+
+      dispatch(updateWeek(updatedWeek));
     } catch (error) {
       console.error(error);
     }

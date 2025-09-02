@@ -71,7 +71,7 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
     week.days.push(day._id);
     await week.save();
 
-    // AQUÍ VIENE LA CLAVE: devolvemos la semana actualizada y populada
+    // AQUÍ VIENE LA CLAVE: devolvemos la semana actualizada y populada, pero de momento no es mi opción favorita de solución. De todos modos, me tendría que haber decantado por una BD Relacional.
     const updatedWeek = await Week.findById(weekId).populate({
       path: "days",
       populate: {
@@ -81,6 +81,32 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
     });
 
     res.status(201).json(updatedWeek);
+  } catch (err) {
+    next(err);
+  }
+});
+
+//DELETE Day in Week.
+router.delete("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
+  try {
+    const { weekId, dayId } = req.params;
+    const week = await Week.findById(weekId);
+    if (!week) res.status(404).end();
+    //Falta comprobar si de verdad hace falta borrar el día (si existe)
+    await Day.findOneAndDelete({ user: req.userId, week: weekId, _id: dayId });
+
+    week.days = week.days.filter((d) => d.toString() !== dayId);
+    await week.save();
+
+    /*Respuesta de ChatGPT lo más recomendado, pero que yo no conozco:
+    await Promise.all([
+      Week.updateOne(
+        { _id: weekId, user: req.userId },
+        { $pull: { days: dayId } }
+      ),
+      Day.deleteOne({ _id: dayId, user: req.userId, week: weekId })
+    ]); */
+    res.status(204).end();
   } catch (err) {
     next(err);
   }
@@ -110,11 +136,47 @@ router.post("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
     day.meals.push(meal._id);
     await day.save();
 
-    res.status(201).json(meal);
+    const updatedWeek = await Week.findById(weekId).populate({
+      path: "days",
+      populate: {
+        path: "meals",
+        populate: { path: "aliments" },
+      },
+    });
+
+    res.status(201).json(updatedWeek);
   } catch (err) {
     next(err);
   }
 });
+
+//DELETE Meal in Day.
+router.delete(
+  "/:weekId/:dayId/:mealId",
+  tokenExtractor,
+  async (req, res, next) => {
+    try {
+      const { weekId, dayId, mealId } = req.params;
+      const week = await Week.findById(weekId);
+      if (!week) res.status(404).json({ error: "Week not found" });
+
+      const day = await Day.findById(dayId);
+      if (!day) res.status(404).json({ error: "Day not found" });
+      //Falta comprobar si de verdad hace falta borrar la meal (si existe)
+      await Meal.findOneAndDelete({
+        user: req.userId,
+        day: dayId,
+        _id: mealId,
+      });
+
+      day.meals = day.meals.filter((m) => m.toString() !== mealId);
+      await day.save();
+      res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  } //eslint-disable-line
+);
 
 //POST new MealAliment in Meal.
 router.post(

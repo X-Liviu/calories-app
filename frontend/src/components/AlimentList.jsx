@@ -16,7 +16,7 @@ const AlimentList = ({ aliments, weekId, dayId, mealId }) => {
                     )
                   }
                 >
-                  <AlimentItemList />
+                  <AlimentItemList aliment={aliment} />
                 </button>
               </td>
               <td>

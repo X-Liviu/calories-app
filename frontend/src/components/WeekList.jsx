@@ -26,13 +26,7 @@ const WeekList = ({ weeks, filter, del }) => {
         ) : filteredWeek ? (
           <tr key={filteredWeek.id}>
             <td>
-              <button
-                onClick={() =>
-                  navigate(`/weeks/${filteredWeek.id}`, {
-                    state: { week: filteredWeek },
-                  })
-                }
-              >
+              <button onClick={() => navigate(`/weeks/${filteredWeek.id}`)}>
                 <WeekItemList week={filteredWeek} />
               </button>
             </td>

@@ -1,9 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import loginService from "../services/login";
 import signupService from "../services/signup";
+
 import weekService from "../services/weeks";
 import myAlimentService from "../services/myAliments";
 import dayService from "../services/days";
+import mealService from "../services/meals";
+import alimentService from "../services/aliments";
 
 const userSlice = createSlice({
   name: "user",
@@ -30,6 +34,8 @@ export const initializeUser = () => {
       weekService.setToken(user.token);
       myAlimentService.setToken(user.token);
       dayService.setToken(user.token);
+      mealService.setToken(user.token);
+      alimentService.setToken(user.token);
     }
   };
 };
@@ -44,6 +50,8 @@ export const saveGlobalUser = (credentials) => {
       weekService.setToken(user.token);
       myAlimentService.setToken(user.token);
       dayService.setToken(user.token);
+      mealService.setToken(user.token);
+      alimentService.setToken(user.token);
     } catch (error) {
       console.error("Error during login:", error);
     }
@@ -71,6 +79,8 @@ export const eraseGlobalUser = () => {
     weekService.setToken(null);
     myAlimentService.setToken(null);
     dayService.setToken(null);
+    mealService.setToken(null);
+    alimentService.setToken(null);
   };
 };
 

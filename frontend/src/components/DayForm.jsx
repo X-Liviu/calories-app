@@ -17,7 +17,7 @@ const DayForm = ({ weekId }) => {
           placeholder="Name of the day"
           value={nameDay}
         />
-        <button>Create</button>
+        <button>Create Day</button>
       </form>
     </>
   );

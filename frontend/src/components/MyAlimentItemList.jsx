@@ -1,33 +1,36 @@
-const MyAlimentItemList = ({ myAliment }) => {
-  console.log(myAliment);
+const MyAlimentItemList = ({ myAliment, isOdd }) => {
   return (
-    <tr>
-      <td>{myAliment.name}</td>
-      <td>
-        <strong>{myAliment.nutrition_facts.kcal_100g}</strong>
+    <tr
+      style={{
+        backgroundColor: isOdd ? "rgba(197, 181, 57, 1)" : "#ffbf00ff",
+        borderBottom: "1px solid #e0e0e0",
+      }}
+    >
+      <td style={{ padding: "8px 12px" }}>{myAliment.name}</td>
+      <td style={{ padding: "8px 12px", fontWeight: "bold" }}>
+        {myAliment.nutrition_facts.kcal_100g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.fat_g}</strong>
+      <td style={{ padding: "8px 12px" }}>{myAliment.nutrition_facts.fat_g}</td>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.saturated_fat_g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.saturated_fat_g}</strong>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.carbs_g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.carbs_g}</strong>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.sugar_g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.sugar_g}</strong>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.fiber_g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.fiber_g}</strong>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.protein_g}
       </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.protein_g}</strong>
-      </td>
-      <td>
-        <strong>{myAliment.nutrition_facts.salt_g}</strong>
+      <td style={{ padding: "8px 12px" }}>
+        {myAliment.nutrition_facts.salt_g}
       </td>
     </tr>
   );
 };
+
 export default MyAlimentItemList;

@@ -12,7 +12,7 @@ const create = async (object) => {
     headers: { Authorization: token },
   };
   const response = await axios.post(
-    `${baseURL}/${object.weekId}`,
+    `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}`,
     object,
     config,
   );
@@ -24,7 +24,7 @@ const del = async (object) => {
     headers: { Authorization: token },
   };
   const response = await axios.delete(
-    `${baseURL}/${object.weekId}/${object.dayId}`,
+    `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.alimentId}`,
     config,
   );
   return response.data;
