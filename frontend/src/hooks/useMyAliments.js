@@ -1,4 +1,5 @@
-import { useDispatch } from "react-redux";
+// useMyAliments.js
+import { useDispatch, useSelector } from "react-redux";
 import {
   saveMyAliments,
   addMyAliment,
@@ -7,23 +8,23 @@ import {
 
 const useMyAliments = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+
   const get = async () => {
-    await dispatch(saveMyAliments());
+    if (user?.token) {
+      await dispatch(saveMyAliments());
+    }
   };
 
   const create = async (myAliment) => {
-    await dispatch(addMyAliment(myAliment));
+    if (user?.token) await dispatch(addMyAliment(myAliment));
   };
 
   const del = async (myAliment) => {
-    await dispatch(removeMyAliment(myAliment));
+    if (user?.token) await dispatch(removeMyAliment(myAliment));
   };
 
-  return {
-    get,
-    create,
-    del,
-  };
+  return { get, create, del };
 };
 
 export default useMyAliments;

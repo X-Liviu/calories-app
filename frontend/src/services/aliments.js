@@ -24,7 +24,7 @@ const del = async (object) => {
     headers: { Authorization: token },
   };
   const response = await axios.delete(
-    `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.alimentId}`,
+    `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.mealAlimentId}`,
     config,
   );
   return response.data;

@@ -3,12 +3,12 @@ import { addAlimentInMeal, removeAlimentInMeal } from "../reducers/weekReducer";
 
 const useAliments = () => {
   const dispatch = useDispatch();
-  const create = async (day) => {
-    await dispatch(addAlimentInMeal(day));
+  const create = async (aliment) => {
+    await dispatch(addAlimentInMeal(aliment));
   };
 
-  const del = async (day) => {
-    await dispatch(removeAlimentInMeal(day));
+  const del = async (aliment) => {
+    await dispatch(removeAlimentInMeal(aliment));
   };
 
   return {

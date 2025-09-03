@@ -17,12 +17,9 @@ import DayItem from "./components/DayItem";
 import MealItem from "./components/MealItem";
 
 const App = () => {
-  const { isInitialized } = useInitializeAuth();
-  const myAlimentsHook = useMyAliments();
+  useInitializeAuth();
+  useMyAliments().get();
 
-  if (isInitialized) {
-    myAlimentsHook.get();
-  }
   return (
     <>
       <Menu />

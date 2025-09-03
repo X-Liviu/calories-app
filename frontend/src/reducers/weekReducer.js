@@ -108,7 +108,7 @@ export const removeMealInDay = (meal) => {
     try {
       await mealService.del(meal);
 
-      //Tengo que actualizar la semana aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
+      //Tengo que actualizar el día aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
       const { weeks } = getState();
       const week = weeks.find((w) => w.id === meal.weekId);
       if (!week) return;
@@ -149,7 +149,7 @@ export const removeAlimentInMeal = (aliment) => {
     try {
       await alimentService.del(aliment);
 
-      //Tengo que actualizar la semana aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
+      //Tengo que actualizar la comida aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
       const { weeks } = getState();
       const week = weeks.find((w) => w.id === aliment.weekId);
       if (!week) return;
@@ -162,7 +162,7 @@ export const removeAlimentInMeal = (aliment) => {
 
       const updatedMeal = {
         ...meal,
-        aliments: meal.aliments.filter((a) => a.id !== aliment.alimentId),
+        aliments: meal.aliments.filter((a) => a.id !== aliment.mealAlimentId),
       };
       const updatedDay = {
         ...day,

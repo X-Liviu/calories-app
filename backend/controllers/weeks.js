@@ -28,11 +28,13 @@ router.get("/", tokenExtractor, async (req, res, next) => {
 router.post("/", tokenExtractor, async (req, res, next) => {
   try {
     const { numberWeek } = req.body;
+
     const week = new Week({
       user: req.userId, //Viene del tokenExtractor
       number_week: numberWeek,
     });
     await week.save();
+
     res.status(201).json(week);
   } catch (err) {
     next(err);
@@ -46,6 +48,7 @@ router.delete("/:id", tokenExtractor, async (req, res, next) => {
       user: req.userId,
       _id: req.params.id,
     });
+
     res.status(204).end();
   } catch (err) {
     next(err);
@@ -66,10 +69,7 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
       name,
       week: weekId,
     });
-    await day.save();
-
-    week.days.push(day._id);
-    await week.save();
+    await day.save(); // El hook se encargará de agregarlo a Week.days
 
     // AQUÍ VIENE LA CLAVE: devolvemos la semana actualizada y populada, pero de momento no es mi opción favorita de solución. De todos modos, me tendría que haber decantado por una BD Relacional.
     const updatedWeek = await Week.findById(weekId).populate({
@@ -90,22 +90,17 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
 router.delete("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
   try {
     const { weekId, dayId } = req.params;
+
     const week = await Week.findById(weekId);
     if (!week) res.status(404).end();
-    //Falta comprobar si de verdad hace falta borrar el día (si existe)
-    await Day.findOneAndDelete({ user: req.userId, week: weekId, _id: dayId });
 
-    week.days = week.days.filter((d) => d.toString() !== dayId);
-    await week.save();
-
-    /*Respuesta de ChatGPT lo más recomendado, pero que yo no conozco:
-    await Promise.all([
-      Week.updateOne(
-        { _id: weekId, user: req.userId },
-        { $pull: { days: dayId } }
-      ),
-      Day.deleteOne({ _id: dayId, user: req.userId, week: weekId })
-    ]); */
+    const deletedDay = await Day.findOneAndDelete({
+      user: req.userId,
+      week: weekId,
+      _id: dayId,
+    });
+    if (!deletedDay) return res.status(404).json({ error: "Day not found" });
+    // El hook en Day se encargará de borrar comidas, alimentos y quitar la referencia de la semana
     res.status(204).end();
   } catch (err) {
     next(err);
@@ -118,9 +113,7 @@ router.post("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
     const { weekId, dayId } = req.params;
     const { name } = req.body;
 
-    const week = await Week.findById(weekId).populate({
-      path: "days",
-    });
+    const week = await Week.findById(weekId).populate({ path: "days" });
     if (!week) return res.status(404).json({ error: "Week not found" });
 
     const day = week.days.find((d) => d.id === dayId);
@@ -131,10 +124,7 @@ router.post("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
       name,
       day: dayId,
     });
-    await meal.save();
-
-    day.meals.push(meal._id);
-    await day.save();
+    await meal.save(); // El hook se encargará de agregarlo a Day.meals
 
     const updatedWeek = await Week.findById(weekId).populate({
       path: "days",
@@ -162,15 +152,15 @@ router.delete(
 
       const day = await Day.findById(dayId);
       if (!day) res.status(404).json({ error: "Day not found" });
-      //Falta comprobar si de verdad hace falta borrar la meal (si existe)
-      await Meal.findOneAndDelete({
+
+      const deletedMeal = await Meal.findOneAndDelete({
         user: req.userId,
         day: dayId,
         _id: mealId,
       });
-
-      day.meals = day.meals.filter((m) => m.toString() !== mealId);
-      await day.save();
+      if (!deletedMeal)
+        return res.status(404).json({ error: "Meal not found" });
+      // El hook en Meal se encargará de borrar alimentos y quitar la referencia del día
       res.status(204).end();
     } catch (err) {
       next(err);
@@ -185,13 +175,11 @@ router.post(
   async (req, res, next) => {
     try {
       const { weekId, dayId, mealId } = req.params;
-      const { name } = req.body;
+      const { name, grams } = req.body;
 
       const week = await Week.findById(weekId).populate({
         path: "days",
-        populate: {
-          path: "meals",
-        },
+        populate: { path: "meals" },
       });
       if (!week)
         return res.status(404).json({ error: "Week or day not found" });
@@ -201,19 +189,55 @@ router.post(
 
       const meal = day.meals.find((m) => m.id === mealId);
       if (!meal) return res.status(404).json({ error: "Meal not found" });
-      console.log(meal);
 
       const aliment = new MealAliment({
         user: req.userId, //Viene del tokenExtractor
         name_snapshot: name,
+        grams: grams,
         meal: mealId,
       });
-      await aliment.save();
+      await aliment.save(); // El hook se encargará de agregarlo a Meal.aliments
 
-      meal.aliments.push(aliment._id);
-      await meal.save();
+      const updatedWeek = await Week.findById(weekId).populate({
+        path: "days",
+        populate: {
+          path: "meals",
+          populate: { path: "aliments" },
+        },
+      });
 
-      res.status(201).json(aliment);
+      res.status(201).json(updatedWeek);
+    } catch (err) {
+      next(err);
+    }
+  } //eslint-disable-line
+);
+
+//DELETE MealAliment in Meal.
+router.delete(
+  "/:weekId/:dayId/:mealId/:mealAlimentId",
+  tokenExtractor,
+  async (req, res, next) => {
+    try {
+      const { weekId, dayId, mealId, mealAlimentId } = req.params;
+      const week = await Week.findById(weekId);
+      if (!week) res.status(404).json({ error: "Week not found" });
+
+      const day = await Day.findById(dayId);
+      if (!day) res.status(404).json({ error: "Day not found" });
+
+      const meal = await Meal.findById(mealId);
+      if (!meal) res.status(404).json({ error: "Meal not found" });
+
+      const deletedMealAliment = await MealAliment.findOneAndDelete({
+        user: req.userId,
+        meal: mealId,
+        _id: mealAlimentId,
+      });
+      if (!deletedMealAliment)
+        return res.status(404).json({ error: "Aliment not found" });
+
+      res.status(204).end();
     } catch (err) {
       next(err);
     }

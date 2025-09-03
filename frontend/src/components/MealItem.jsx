@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AlimentList from "./AlimentList";
-import AlimentForm from "./AlimentForm";
 import AlimentCatalogSelector from "./AlimentCatalogSelector";
 const MealItem = () => {
   const { weekId, dayId, mealId } = useParams();
@@ -21,7 +20,6 @@ const MealItem = () => {
         dayId={dayId}
         mealId={mealId}
       />
-      <AlimentForm weekId={weekId} dayId={dayId} mealId={mealId} />
       <AlimentCatalogSelector weekId={weekId} dayId={dayId} mealId={mealId} />
     </>
   );
