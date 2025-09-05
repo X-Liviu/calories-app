@@ -19,6 +19,11 @@ const mealAlimentSchema = new mongoose.Schema({
     ref: "Meal",
     required: true,
   },
+  user_aliment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserAliment",
+    required: true,
+  },
 });
 
 mealAlimentSchema.set("toJSON", {

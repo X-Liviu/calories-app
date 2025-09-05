@@ -1,36 +1,21 @@
 import useAliments from "../hooks/useAliments";
 import AlimentItemList from "./AlimentItemList";
+//PROP-DRILLING
 const AlimentList = ({ aliments, weekId, dayId, mealId }) => {
-  const { del } = useAliments();
+  const { del } = useAliments(); //Tiene más sentido hacerlo así creo yo, ya que llamas una vez al custom hook y le pasas la función a cada componente individual.
   return (
     <table>
       <tbody>
         {aliments.map((aliment) => {
           return (
             <tr key={aliment.id}>
-              <td>
-                <AlimentItemList aliment={aliment} />
-              </td>
-              <td>
-                <button>ℹ️</button>
-              </td>
-              <td>
-                <button>✏️</button>
-              </td>
-              <td>
-                <button
-                  onClick={() =>
-                    del({
-                      weekId,
-                      dayId,
-                      mealId,
-                      mealAlimentId: aliment.id,
-                    })
-                  }
-                >
-                  ❌
-                </button>
-              </td>
+              <AlimentItemList
+                aliment={aliment}
+                del={del}
+                weekId={weekId}
+                dayId={dayId}
+                mealId={mealId}
+              />
             </tr>
           );
         })}

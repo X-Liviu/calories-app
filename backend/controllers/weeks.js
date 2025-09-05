@@ -14,6 +14,9 @@ router.get("/", tokenExtractor, async (req, res, next) => {
         path: "meals",
         populate: {
           path: "aliments",
+          populate: {
+            path: "user_aliment",
+          },
         },
       },
     });
@@ -76,7 +79,12 @@ router.post("/:weekId", tokenExtractor, async (req, res, next) => {
       path: "days",
       populate: {
         path: "meals",
-        populate: { path: "aliments" },
+        populate: {
+          path: "aliments",
+          populate: {
+            path: "user_aliment",
+          },
+        },
       },
     });
 
@@ -130,7 +138,12 @@ router.post("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
       path: "days",
       populate: {
         path: "meals",
-        populate: { path: "aliments" },
+        populate: {
+          path: "aliments",
+          populate: {
+            path: "user_aliment",
+          },
+        },
       },
     });
 
@@ -175,7 +188,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { weekId, dayId, mealId } = req.params;
-      const { name, grams } = req.body;
+      const { name, grams, userAliment } = req.body;
 
       const week = await Week.findById(weekId).populate({
         path: "days",
@@ -195,6 +208,7 @@ router.post(
         name_snapshot: name,
         grams: grams,
         meal: mealId,
+        user_aliment: userAliment,
       });
       await aliment.save(); // El hook se encargará de agregarlo a Meal.aliments
 
@@ -202,7 +216,12 @@ router.post(
         path: "days",
         populate: {
           path: "meals",
-          populate: { path: "aliments" },
+          populate: {
+            path: "aliments",
+            populate: {
+              path: "user_aliment",
+            },
+          },
         },
       });
 

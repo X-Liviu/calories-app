@@ -13,21 +13,27 @@ const AlimentCatalogSelector = ({ weekId, dayId, mealId }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectElement = e.target.previousSibling; // el select justo antes del form
-    const selectedValue = selectElement.value;
+    const selectedObject = selectElement.selectedObject;
+
     create({
-      name: selectedValue,
+      name: selectedObject.name,
       grams: Number(grams),
       weekId,
       dayId,
       mealId,
+      userAliment: selectedObject.id,
     });
   };
 
   return (
     <>
-      <select>
+      <select
+        onChange={(e) => {
+          e.target.selectedObject = myAliments[e.target.selectedIndex];
+        }}
+      >
         {myAliments.map((a) => (
-          <option key={a.name} value={a.name}>
+          <option key={a.id} value={a.name}>
             {a.name}
           </option>
         ))}
