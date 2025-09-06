@@ -144,6 +144,17 @@ export const addAlimentInMeal = (aliment) => {
   };
 };
 
+export const changeAlimentInMeal = (aliment) => {
+  return async (dispatch) => {
+    try {
+      const updatedWeek = await alimentService.update(aliment);
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
 export const removeAlimentInMeal = (aliment) => {
   return async (dispatch, getState) => {
     try {

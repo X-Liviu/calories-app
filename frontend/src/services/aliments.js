@@ -19,6 +19,19 @@ const create = async (object) => {
   return response.data;
 };
 
+const update = async (object) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  console.log(object);
+  const response = await axios.put(
+    `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.mealAlimentId}`,
+    object,
+    config,
+  );
+  return response.data;
+};
+
 const del = async (object) => {
   const config = {
     headers: { Authorization: token },
@@ -33,5 +46,6 @@ const del = async (object) => {
 export default {
   setToken,
   create,
+  update,
   del,
 };

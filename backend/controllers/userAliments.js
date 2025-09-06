@@ -4,7 +4,7 @@ const UserAliment = require("../models/UserAliment");
 
 router.get("/", tokenExtractor, async (req, res, next) => {
   try {
-    const aliments = await UserAliment.find({ user: req.userId });
+    const aliments = await UserAliment.find({ user: req.userId }, "-user");
     res.json(aliments);
   } catch (err) {
     next(err);

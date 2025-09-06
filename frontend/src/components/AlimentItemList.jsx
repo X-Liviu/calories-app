@@ -1,17 +1,33 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Toggable from "./Toggable";
 
-const AlimentItemList = ({ aliment, del, weekId, dayId, mealId }) => {
+const AlimentItemList = ({ aliment, del, update, weekId, dayId, mealId }) => {
   //Cambiar name_snapshot por name
   const [visible, setVisible] = useState(false);
-  const calculate100g = (grams) => {
-    return (grams * aliment.user_aliment.nutrition_facts.kcal_100g) / 100;
+  const [editGrams, setEditGrams] = useState("");
+  const togglableRef = useRef();
+  const calculate100g = (nutritionFactGrams) => {
+    return (nutritionFactGrams * aliment.grams) / 100;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    update({
+      weekId,
+      dayId,
+      mealId,
+      mealAlimentId: aliment.id,
+      grams: Number(editGrams),
+    });
+    setEditGrams("");
+    togglableRef.current.toggleVisibility();
   };
   return (
     <>
       <td>
         <h2>
           {aliment.name_snapshot} ({aliment.grams}g):{" "}
-          {calculate100g(aliment.grams)} kcal
+          {calculate100g(aliment.user_aliment.nutrition_facts.kcal_100g)} kcal
         </h2>
         {visible ? (
           <table>
@@ -75,7 +91,15 @@ const AlimentItemList = ({ aliment, del, weekId, dayId, mealId }) => {
         <button onClick={() => setVisible(!visible)}>ℹ️</button>
       </td>
       <td>
-        <button>✏️</button>
+        <Toggable ref={togglableRef} buttonLabel="✏️">
+          <form onSubmit={handleSubmit}>
+            <input
+              onChange={({ target }) => setEditGrams(target.value)}
+              value={editGrams}
+            />
+            <button>Change Grams</button>
+          </form>
+        </Toggable>
       </td>
       <td>
         <button
