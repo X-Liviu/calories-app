@@ -1,17 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import WeekItemList from "./WeekItemList";
-const WeekList = ({ weeks, filter, del }) => {
-  //Cambiar number_week por numberWeek
+import { useSelector } from "react-redux";
+import {
+  selectWeeks,
+  selectWeekByNumber,
+} from "../redux/selectors/weekSelectors";
+
+//Cambiar number_week por numberWeek
+const WeekList = ({ filter, del }) => {
   const navigate = useNavigate();
-  let filteredWeek;
-  if (filter !== "")
-    filteredWeek = weeks.find((w) => w.number_week === Number(filter));
+  const filteredWeeks = useSelector((state) =>
+    filter !== ""
+      ? selectWeekByNumber(state, Number(filter))
+      : selectWeeks(state),
+  );
 
   return (
     <table>
       <tbody>
-        {filter === "" ? (
-          weeks.map((w) => (
+        {filteredWeeks.length > 0 ? (
+          filteredWeeks.map((w) => (
             <tr key={w.id}>
               <td>
                 <button onClick={() => navigate(`/weeks/${w.id}`)}>
@@ -19,25 +27,20 @@ const WeekList = ({ weeks, filter, del }) => {
                 </button>
               </td>
               <td>
-                <button onClick={() => del({ id: w.id })}>Remove</button>
+                <button onClick={() => del({ id: w.id })}>❌</button>
               </td>
             </tr>
           ))
-        ) : filteredWeek ? (
-          <tr key={filteredWeek.id}>
+        ) : (
+          <tr>
             <td>
-              <button onClick={() => navigate(`/weeks/${filteredWeek.id}`)}>
-                <WeekItemList week={filteredWeek} />
-              </button>
-            </td>
-            <td>
-              <button onClick={() => del({ id: filteredWeek.id })}>
-                Remove
-              </button>
+              <h2>
+                {filter !== ""
+                  ? `No se encontró la semana ${filter}`
+                  : "No hay semanas disponibles"}
+              </h2>
             </td>
           </tr>
-        ) : (
-          <h2>No se encontró la semana {filter}</h2>
         )}
       </tbody>
     </table>

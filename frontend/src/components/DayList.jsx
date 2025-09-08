@@ -26,7 +26,7 @@ const DayList = ({ days, weekId }) => {
                       Además, se intenta siempre que los services no conozcan nada de la API, por eso que en el delete de weekService, lo defines como .id, así para hacer object.id en la URL de la request y que no sepa nada. Aquí pues no se puede, porque si no se volvería demasiado complejo y difícil de entender. Igual después hago cambios para poder manejar / esconder al service estos datos. */
                   }
                 >
-                  Remove
+                  ❌
                 </button>
               </td>
             </tr>

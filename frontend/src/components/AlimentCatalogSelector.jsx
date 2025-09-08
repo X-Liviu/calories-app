@@ -14,7 +14,7 @@ const AlimentCatalogSelector = ({ weekId, dayId, mealId }) => {
     e.preventDefault();
     const selectElement = e.target.previousSibling; // el select justo antes del form
     const selectedObject = selectElement.selectedObject;
-
+    console.log(selectedObject);
     create({
       name: selectedObject.name,
       grams: Number(grams),

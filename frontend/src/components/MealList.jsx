@@ -29,7 +29,7 @@ const MealList = ({ meals, weekId, dayId }) => {
                     })
                   }
                 >
-                  Remove
+                  ❌
                 </button>
               </td>
             </tr>
