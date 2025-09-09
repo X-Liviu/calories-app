@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
+
 import useDays from "../hooks/useDays";
 import DayItemList from "./DayItemList";
+
 const DayList = ({ days, weekId }) => {
   const navigate = useNavigate();
   const { del } = useDays();
+
   return (
     <table>
       <tbody>

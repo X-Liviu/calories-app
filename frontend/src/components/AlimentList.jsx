@@ -2,7 +2,8 @@ import useAliments from "../hooks/useAliments";
 import AlimentItemList from "./AlimentItemList";
 //PROP-DRILLING
 const AlimentList = ({ aliments, weekId, dayId, mealId }) => {
-  const { del, update } = useAliments(); //Tiene más sentido hacerlo así creo yo, ya que llamas una vez al custom hook y le pasas la función a cada componente individual. Ahora es el único componente List que lo hace de esta manera.
+  const { del, update } = useAliments(); //Tiene más sentido hacerlo así creo yo, ya que llamas una vez al custom hook y le pasas la función a cada componente individual. Este componente y WeekList lo hacen de esta manera.
+
   return (
     <table>
       <tbody>

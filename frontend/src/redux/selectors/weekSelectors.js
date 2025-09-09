@@ -2,6 +2,9 @@ import { createSelector } from "reselect";
 
 export const selectWeeks = (state) => state.weeks;
 
+export const selectWeek = (state, weekId) =>
+  state.weeks.find((w) => w.id === weekId);
+
 export const selectWeekByNumber = createSelector(
   [selectWeeks, (state, filterNumber) => filterNumber],
   (weeks, filterNumber) => {
@@ -13,27 +16,24 @@ export const selectWeekByNumber = createSelector(
 );
 
 export const selectWeekCalories = createSelector(
-  [selectWeeks, (state, weekId) => weekId],
-  (weeks, weekId) => {
-    const week = weeks.find((w) => w.id === weekId);
-    if (!week) return 0;
-    return week.days.reduce(
-      (sumDays, day) =>
+  [(state, days) => days],
+  (days) => {
+    if (!days || days.length === 0) return 0;
+
+    return days.reduce((sumDays, day) => {
+      return (
         sumDays +
-        day.meals.reduce(
-          (sumMeals, meal) =>
+        day.meals.reduce((sumMeals, meal) => {
+          return (
             sumMeals +
-            meal.aliments.reduce(
-              (sumAliments, aliment) =>
-                sumAliments +
-                (aliment.grams *
-                  aliment.user_aliment.nutrition_facts.kcal_100g) /
-                  100,
-              0,
-            ),
-          0,
-        ),
-      0,
-    );
+            meal.aliments.reduce((sumAliments, aliment) => {
+              const kcal =
+                aliment?.user_aliment?.nutrition_facts?.kcal_100g ?? 0;
+              return sumAliments + (aliment.grams * kcal) / 100;
+            }, 0)
+          );
+        }, 0)
+      );
+    }, 0);
   },
 );

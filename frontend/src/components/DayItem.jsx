@@ -1,14 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { selectDay } from "../redux/selectors/daySelectors";
+
 import MealList from "./MealList";
 import MealForm from "./MealForm";
+
 const DayItem = () => {
   const { weekId, dayId } = useParams();
 
-  const day = useSelector((state) =>
-    state.weeks.find((w) => w.id === weekId)?.days.find((d) => d.id === dayId),
-  );
-  console.log(day);
+  const day = useSelector((state) => selectDay(state, weekId, dayId));
 
   return (
     <>

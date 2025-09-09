@@ -7,7 +7,9 @@ const AlimentItemList = ({ aliment, del, update, weekId, dayId, mealId }) => {
   const [editGrams, setEditGrams] = useState("");
   const togglableRef = useRef();
   const calculate100g = (nutritionFactGrams) => {
-    return (nutritionFactGrams * aliment.grams) / 100;
+    //De momento me sirve, igual lo cambio en un futuro
+    const result = (nutritionFactGrams * aliment.grams) / 100;
+    return Math.round(result * 10) / 10;
   };
 
   const handleSubmit = (e) => {

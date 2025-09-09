@@ -4,7 +4,7 @@ import { selectWeekCalories } from "../redux/selectors/weekSelectors";
 const WeekItemList = ({ week }) => {
   //Cambiar number_week por numberWeek
   const totalCalories = useSelector((state) =>
-    selectWeekCalories(state, week.id),
+    selectWeekCalories(state, week.days),
   );
   return (
     <>

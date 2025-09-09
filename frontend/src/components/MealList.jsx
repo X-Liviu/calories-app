@@ -4,6 +4,7 @@ import useMeals from "../hooks/useMeals";
 const MealList = ({ meals, weekId, dayId }) => {
   const navigate = useNavigate();
   const { del } = useMeals();
+
   return (
     <table>
       <tbody>
