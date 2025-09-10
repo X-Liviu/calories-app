@@ -15,6 +15,8 @@ const WeekList = ({ filter, del }) => {
       : selectWeeks(state),
   );
 
+  console.log(filteredWeeks);
+
   return (
     <table>
       <tbody>

@@ -13,7 +13,6 @@ const WeekItem = () => {
   const week = useSelector((state) => selectWeek(state, weekId));
 
   if (!week) return <h1>Loading...</h1>;
-  console.log(week);
   //Cambiar number_week por numberWeek
   return (
     <>

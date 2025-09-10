@@ -1,10 +1,18 @@
 import { useDispatch } from "react-redux";
-import { addMealInDay, removeMealInDay } from "../reducers/weekReducer";
+import {
+  addMealInDay,
+  changeMealInDay,
+  removeMealInDay,
+} from "../reducers/weekReducer";
 
 const useMeals = () => {
   const dispatch = useDispatch();
-  const create = async (day) => {
-    await dispatch(addMealInDay(day));
+  const create = async (meal) => {
+    await dispatch(addMealInDay(meal));
+  };
+
+  const update = async (meal) => {
+    await dispatch(changeMealInDay(meal));
   };
 
   const del = async (day) => {
@@ -13,6 +21,7 @@ const useMeals = () => {
 
   return {
     create,
+    update,
     del,
   };
 };

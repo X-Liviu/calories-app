@@ -168,6 +168,61 @@ router.post("/:weekId/:dayId", tokenExtractor, async (req, res, next) => {
   }
 });
 
+//PUT Meal. Change cheat.
+router.put(
+  "/:weekId/:dayId/:mealId",
+  tokenExtractor,
+  async (req, res, next) => {
+    try {
+      const { weekId, dayId, mealId } = req.params;
+      const { cheat } = req.body;
+
+      const week = await Week.findById(weekId, "-user").populate({
+        path: "days",
+        select: "-user",
+        populate: {
+          path: "meals",
+          select: "-user",
+        },
+      });
+      if (!week)
+        return res.status(404).json({ error: "Week or day not found" });
+
+      const day = week.days.find((d) => d.id === dayId);
+      if (!day) return res.status(404).json({ error: "Day not found" });
+
+      const meal = day.meals.find((m) => m.id === mealId);
+      if (!meal) return res.status(404).json({ error: "Meal not found" });
+
+      await Meal.updateOne(
+        { _id: mealId, user: req.userId },
+        { cheat: cheat } //eslint-disable-line
+      );
+
+      const updatedWeek = await Week.findById(weekId, "-user").populate({
+        path: "days",
+        select: "-user",
+        populate: {
+          path: "meals",
+          select: "-user",
+          populate: {
+            path: "aliments",
+            select: "-user",
+            populate: {
+              path: "user_aliment",
+              select: "-user",
+            },
+          },
+        },
+      });
+
+      res.json(updatedWeek);
+    } catch (err) {
+      next(err);
+    }
+  } //eslint-disable-line
+);
+
 //DELETE Meal in Day.
 router.delete(
   "/:weekId/:dayId/:mealId",
@@ -322,7 +377,6 @@ router.put(
     try {
       const { weekId, dayId, mealId, mealAlimentId } = req.params;
       const { grams } = req.body;
-      console.log(req.body);
 
       const week = await Week.findById(weekId, "-user").populate({
         path: "days",

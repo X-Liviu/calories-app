@@ -3,15 +3,16 @@ import { Routes, Route } from "react-router-dom";
 import useInitializeAuth from "./hooks/useInitializeAuth";
 import useMyAliments from "./hooks/useMyAliments";
 
+import StackIndicator from "./components/StackIndicator";
 import Menu from "./components/Menu";
+import Logout from "./components/Logout";
 import Home from "./components/Home";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
-import MyAlimentForm from "./components/MyAlimentForm";
+import MyAlimentForm from "./components/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
 import WeekSearch from "./components/WeekSearch";
-import Logout from "./components/Logout";
 import WeekItem from "./components/WeekItem";
 import DayItem from "./components/DayItem";
 import MealItem from "./components/MealItem";
@@ -19,9 +20,9 @@ import MealItem from "./components/MealItem";
 const App = () => {
   useInitializeAuth();
   useMyAliments().get();
-
   return (
     <>
+      <StackIndicator />
       <Menu />
       <Logout />
       <Routes>

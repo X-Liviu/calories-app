@@ -11,7 +11,7 @@ export const selectMealCalories = createSelector(
   (aliments) => {
     if (!aliments || aliments.length === 0) return 0;
 
-    return aliments.reduce(
+    const result = aliments.reduce(
       (sum, aliment) =>
         sum +
         (aliment.grams *
@@ -19,5 +19,6 @@ export const selectMealCalories = createSelector(
           100,
       0,
     );
+    return Math.round(result * 100) / 100;
   },
 );

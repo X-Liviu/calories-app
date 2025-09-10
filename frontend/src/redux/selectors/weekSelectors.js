@@ -20,20 +20,21 @@ export const selectWeekCalories = createSelector(
   (days) => {
     if (!days || days.length === 0) return 0;
 
-    return days.reduce((sumDays, day) => {
-      return (
+    const result = days.reduce(
+      (sumDays, day) =>
         sumDays +
-        day.meals.reduce((sumMeals, meal) => {
-          return (
+        day.meals.reduce(
+          (sumMeals, meal) =>
             sumMeals +
             meal.aliments.reduce((sumAliments, aliment) => {
               const kcal =
                 aliment?.user_aliment?.nutrition_facts?.kcal_100g ?? 0;
               return sumAliments + (aliment.grams * kcal) / 100;
-            }, 0)
-          );
-        }, 0)
-      );
-    }, 0);
+            }, 0),
+          0,
+        ),
+      0,
+    );
+    return Math.round(result * 100) / 100;
   },
 );

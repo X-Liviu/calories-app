@@ -1,4 +1,6 @@
+import useMyAliments from "../hooks/useMyAliments";
 const MyAlimentItemList = ({ myAliment, isOdd }) => {
+  const { del } = useMyAliments();
   return (
     <tr
       style={{
@@ -28,6 +30,15 @@ const MyAlimentItemList = ({ myAliment, isOdd }) => {
       </td>
       <td style={{ padding: "8px 12px" }}>
         {myAliment.nutrition_facts.salt_g}
+      </td>
+      <td style={{ padding: "8px 12px" }}>
+        <button
+          onClick={() => {
+            del({ id: myAliment.id });
+          }}
+        >
+          ❌
+        </button>
       </td>
     </tr>
   );

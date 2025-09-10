@@ -1,23 +1,53 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import AlimentList from "./AlimentList";
-import AlimentCatalogSelector from "./AlimentCatalogSelector";
+import useMeals from "../hooks/useMeals";
+
 import { selectMeal } from "../redux/selectors/mealSelectors";
+
+import AlimentList from "./AlimentList";
+import AlimentCatalogSelectorForm from "./AlimentCatalogSelectorForm";
+
 const MealItem = () => {
   const { weekId, dayId, mealId } = useParams();
-
   const meal = useSelector((state) => selectMeal(state, weekId, dayId, mealId));
+  const { update } = useMeals();
+  const [checked, setChecked] = useState(meal.cheat);
 
+  console.log(checked);
   return (
     <>
-      <h1>{meal.name}</h1>
+      <h1>
+        {meal.name}{" "}
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={async ({ target }) => {
+            const newValue = target.checked;
+
+            await update({ weekId, dayId, mealId, cheat: newValue });
+            setChecked(newValue);
+          }}
+        />
+      </h1>
+
       <AlimentList
         aliments={meal.aliments}
         weekId={weekId}
         dayId={dayId}
         mealId={mealId}
       />
-      <AlimentCatalogSelector weekId={weekId} dayId={dayId} mealId={mealId} />
+      <AlimentCatalogSelectorForm
+        weekId={weekId}
+        dayId={dayId}
+        mealId={mealId}
+      />
+      <h2>
+        {
+          checked &&
+            "This is marked as a Cheat Meal. Enjoy! 🍔" /*Esto es otra forma de renderizado condicional. */
+        }
+      </h2>
     </>
   );
 };

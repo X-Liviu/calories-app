@@ -8,7 +8,7 @@ export const selectDayCalories = createSelector(
   (meals) => {
     if (!meals || meals.length === 0) return 0;
 
-    return meals.reduce(
+    const result = meals.reduce(
       (sumMeals, meal) =>
         sumMeals +
         meal.aliments.reduce(
@@ -21,5 +21,7 @@ export const selectDayCalories = createSelector(
         ),
       0,
     );
+
+    return Math.round(result * 100) / 100;
   },
 );

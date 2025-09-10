@@ -1,9 +1,12 @@
 import { useSelector } from "react-redux";
+import { selectMyAliments } from "../redux/selectors/myAlimentSelectors";
+
 import MyAlimentItemList from "./MyAlimentItemList";
 
 const MyAlimentList = () => {
   //Cuando se renderiza el MyAlimentForm, se hace un get a /api/my-aliments, por eso ya se puede hacer directamente el useSelector.
-  const myAliments = useSelector((state) => state.myAliments);
+  const myAliments = useSelector((state) => selectMyAliments(state));
+
   //Styling prematuro, sólo para ver un poco mejor el preview de la tabla.
   return (
     <table
@@ -31,6 +34,9 @@ const MyAlimentList = () => {
           <th style={{ padding: "8px 12px" }}>Fiber g</th>
           <th style={{ padding: "8px 12px" }}>Protein g</th>
           <th style={{ padding: "8px 12px" }}>Salt g</th>
+          <th style={{ padding: "8px 12px", fontWeight: "1000" }}>
+            REMOVE BUTTON
+          </th>
         </tr>
       </thead>
       <tbody>

@@ -45,12 +45,14 @@ const SignUpForm = () => {
         <input
           className="input"
           placeholder="Password"
+          type="password"
           value={password}
           onChange={({ target }) => setPassword(target.value)}
         />
         <input
           className="input"
           placeholder="Repeat Password"
+          type="password"
           value={passwordRepeated}
           onChange={({ target }) => setPasswordRepeated(target.value)}
         />

@@ -103,6 +103,17 @@ export const addMealInDay = (meal) => {
   };
 };
 
+export const changeMealInDay = (meal) => {
+  return async (dispatch) => {
+    try {
+      const updatedWeek = await mealService.update(meal);
+      dispatch(updateWeek(updatedWeek));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
 export const removeMealInDay = (meal) => {
   return async (dispatch, getState) => {
     try {

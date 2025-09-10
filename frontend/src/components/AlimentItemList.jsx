@@ -1,15 +1,16 @@
 import { useState, useRef } from "react";
+import useAliments from "../hooks/useAliments";
 import Toggable from "./Toggable";
-
-const AlimentItemList = ({ aliment, del, update, weekId, dayId, mealId }) => {
+const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
   //Cambiar name_snapshot por name
   const [visible, setVisible] = useState(false);
   const [editGrams, setEditGrams] = useState("");
+  const { del, update } = useAliments();
   const togglableRef = useRef();
   const calculate100g = (nutritionFactGrams) => {
     //De momento me sirve, igual lo cambio en un futuro
     const result = (nutritionFactGrams * aliment.grams) / 100;
-    return Math.round(result * 10) / 10;
+    return Math.round(result * 100) / 100;
   };
 
   const handleSubmit = (e) => {

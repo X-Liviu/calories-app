@@ -2,19 +2,25 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import useAliments from "../hooks/useAliments";
 import useMyAliments from "../hooks/useMyAliments";
-const AlimentCatalogSelector = ({ weekId, dayId, mealId }) => {
+const AlimentCatalogSelectorForm = ({ weekId, dayId, mealId }) => {
   let myAliments = useSelector((state) => state.myAliments);
   if (!myAliments) useMyAliments.get();
   myAliments = useSelector((state) => state.myAliments);
-
   const [grams, setGrams] = useState("");
   const { create } = useAliments();
+
+  if (myAliments.length === 0)
+    return (
+      <div>
+        <p>No aliments in your catalog.</p>
+      </div>
+    );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectElement = e.target.previousSibling; // el select justo antes del form
-    const selectedObject = selectElement.selectedObject;
-    console.log(selectedObject);
+    const selectedObject = myAliments[selectElement.selectedIndex];
+
     create({
       name: selectedObject.name,
       grams: Number(grams),
@@ -27,17 +33,14 @@ const AlimentCatalogSelector = ({ weekId, dayId, mealId }) => {
 
   return (
     <>
-      <select
-        onChange={(e) => {
-          e.target.selectedObject = myAliments[e.target.selectedIndex];
-        }}
-      >
+      <select>
         {myAliments.map((a) => (
           <option key={a.id} value={a.name}>
             {a.name}
           </option>
         ))}
       </select>
+
       <form onSubmit={handleSubmit}>
         <input
           value={grams}
@@ -50,4 +53,4 @@ const AlimentCatalogSelector = ({ weekId, dayId, mealId }) => {
   );
 };
 
-export default AlimentCatalogSelector;
+export default AlimentCatalogSelectorForm;

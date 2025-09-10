@@ -13,7 +13,7 @@ const Menu = () => {
             Search
           </Link>
           <Link style={{ paddingRight: 5 }} to="/my-aliments">
-            New_Aliment
+            Catalog
           </Link>
         </>
       ) : (

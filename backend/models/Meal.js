@@ -11,6 +11,11 @@ const mealSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  cheat: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   day: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Day",
