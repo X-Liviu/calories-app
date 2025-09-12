@@ -14,6 +14,9 @@ const mealAlimentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  custom_kcal: {
+    type: Number,
+  },
   meal: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Meal",
@@ -22,7 +25,6 @@ const mealAlimentSchema = new mongoose.Schema({
   user_aliment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserAliment",
-    required: true,
   },
 });
 

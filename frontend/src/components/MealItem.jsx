@@ -6,15 +6,15 @@ import useMeals from "../hooks/useMeals";
 import { selectMeal } from "../redux/selectors/mealSelectors";
 
 import AlimentList from "./AlimentList";
+import AlimentForm from "./AlimentForm";
 import AlimentCatalogSelectorForm from "./AlimentCatalogSelectorForm";
 
 const MealItem = () => {
   const { weekId, dayId, mealId } = useParams();
   const meal = useSelector((state) => selectMeal(state, weekId, dayId, mealId));
   const { update } = useMeals();
-  const [checked, setChecked] = useState(meal.cheat);
+  const [checked, setChecked] = useState(meal.cheat); //state para guardar el checked
 
-  console.log(checked);
   return (
     <>
       <h1>
@@ -37,7 +37,16 @@ const MealItem = () => {
         dayId={dayId}
         mealId={mealId}
       />
+      <br />
+
+      <AlimentForm weekId={weekId} dayId={dayId} mealId={mealId} />
+      <br />
+      <br />
+      <br />
+      <br />
+
       <AlimentCatalogSelectorForm
+        aliments={meal.aliments}
         weekId={weekId}
         dayId={dayId}
         mealId={mealId}

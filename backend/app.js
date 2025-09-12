@@ -8,19 +8,25 @@ const loginRouter = require("./controllers/login");
 const usersRouter = require("./controllers/users");
 const weeksRouter = require("./controllers/weeks");
 const userAlimentsRouter = require("./controllers/userAliments");
-const middleware = require("./utils/middleware");
+
+const {
+  requestLogger,
+  tokenExtractor,
+  errorHandler,
+  unknownEndpoint,
+} = require("./utils/middleware");
 
 app.use(cors());
 app.use(express.json());
 dbConnection();
 //No sé de momento si voy a usar luego un servidor proxy inverso, para transformar el /api/... en /...
-app.use(middleware.requestLogger);
+app.use(requestLogger);
 app.use("/api/health", healthRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/users", usersRouter);
-app.use("/api/weeks", weeksRouter);
-app.use("/api/my-aliments", userAlimentsRouter);
-app.use(middleware.errorHandler);
-app.use(middleware.unknownEndpoint);
+app.use("/api/weeks", tokenExtractor, weeksRouter);
+app.use("/api/my-aliments", tokenExtractor, userAlimentsRouter);
+app.use(errorHandler);
+app.use(unknownEndpoint);
 
 module.exports = app;

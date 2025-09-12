@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import useInitializeAuth from "./hooks/useInitializeAuth";
 import useMyAliments from "./hooks/useMyAliments";
 
-import StackIndicator from "./components/StackIndicator";
+import Breadcrumb from "./components/Breadcrumb";
 import Menu from "./components/Menu";
 import Logout from "./components/Logout";
 import Home from "./components/Home";
@@ -22,7 +22,7 @@ const App = () => {
   useMyAliments().get();
   return (
     <>
-      <StackIndicator />
+      <Breadcrumb />
       <Menu />
       <Logout />
       <Routes>

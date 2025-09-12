@@ -2,24 +2,46 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import useAliments from "../hooks/useAliments";
 import useMyAliments from "../hooks/useMyAliments";
-const AlimentCatalogSelectorForm = ({ weekId, dayId, mealId }) => {
+
+const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
   let myAliments = useSelector((state) => state.myAliments);
   if (!myAliments) useMyAliments.get();
   myAliments = useSelector((state) => state.myAliments);
+
   const [grams, setGrams] = useState("");
   const { create } = useAliments();
 
-  if (myAliments.length === 0)
+  //Filtros para el select
+  const availableAliments = myAliments.filter(
+    (myAl) => !aliments.some((a) => a.name_snapshot === myAl.name),
+  );
+
+  //Si no tengo alimentos al catálogo añadidos.
+  if (myAliments.length === 0) {
     return (
       <div>
         <p>No aliments in your catalog.</p>
       </div>
     );
+  }
+
+  //Si no tengo alimentos que pueda añadir.
+  if (availableAliments.length === 0) {
+    return (
+      <div>
+        <p>
+          No more aliments from catalog can be added.
+          <br />
+          You can add one to the catalog or add one with the form above.
+        </p>
+      </div>
+    );
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectElement = e.target.previousSibling; // el select justo antes del form
-    const selectedObject = myAliments[selectElement.selectedIndex];
+    const selectedObject = availableAliments[selectElement.selectedIndex]; // usar lista filtrada
 
     create({
       name: selectedObject.name,
@@ -34,7 +56,7 @@ const AlimentCatalogSelectorForm = ({ weekId, dayId, mealId }) => {
   return (
     <>
       <select>
-        {myAliments.map((a) => (
+        {availableAliments.map((a) => (
           <option key={a.id} value={a.name}>
             {a.name}
           </option>
@@ -47,7 +69,7 @@ const AlimentCatalogSelectorForm = ({ weekId, dayId, mealId }) => {
           placeholder="Grams of the aliment eaten"
           onChange={({ target }) => setGrams(target.value)}
         />
-        <button type="submit">Add Aliment</button>
+        <button type="submit">Add Aliment From Catalog</button>
       </form>
     </>
   );

@@ -38,8 +38,8 @@ const WeekList = ({ filter, del }) => {
             <td>
               <h2>
                 {filter !== ""
-                  ? `No se encontró la semana ${filter}`
-                  : "No hay semanas disponibles"}
+                  ? `No se encontró la semana ${filter}.`
+                  : "No hay semanas disponibles."}
               </h2>
             </td>
           </tr>

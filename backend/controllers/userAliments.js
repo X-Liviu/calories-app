@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const { tokenExtractor } = require("../utils/middleware");
+
 const UserAliment = require("../models/UserAliment");
 const User = require("../models/User");
 
-router.get("/", tokenExtractor, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const aliments = await UserAliment.find({ user: req.userId }, "-user");
     res.json(aliments);
@@ -12,7 +12,7 @@ router.get("/", tokenExtractor, async (req, res, next) => {
   }
 });
 
-router.post("/", tokenExtractor, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     const { name, nutrition_facts } = req.body;
     const aliment = new UserAliment({
@@ -27,7 +27,7 @@ router.post("/", tokenExtractor, async (req, res, next) => {
   }
 });
 
-router.delete("/:userAlimentId", tokenExtractor, async (req, res, next) => {
+router.delete("/:userAlimentId", async (req, res, next) => {
   try {
     const { userAlimentId } = req.params;
     //const { userId } = req.userId; No sé por qué me dice que es undefined si lo hago de esta manera

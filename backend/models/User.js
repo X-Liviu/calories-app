@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  passwordHash: {
+  password_hash: {
     type: String,
     required: true,
   },
@@ -27,7 +27,7 @@ userSchema.set("toJSON", {
     delete returnedObject._id;
     delete returnedObject.__v;
     // el passwordHash no debe mostrarse
-    delete returnedObject.passwordHash;
+    delete returnedObject.password_hash;
   },
 });
 

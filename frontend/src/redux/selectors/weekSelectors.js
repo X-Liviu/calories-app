@@ -27,9 +27,16 @@ export const selectWeekCalories = createSelector(
           (sumMeals, meal) =>
             sumMeals +
             meal.aliments.reduce((sumAliments, aliment) => {
-              const kcal =
-                aliment?.user_aliment?.nutrition_facts?.kcal_100g ?? 0;
-              return sumAliments + (aliment.grams * kcal) / 100;
+              if (aliment.custom_kcal && !aliment.user_aliment) {
+                return sumAliments + aliment.custom_kcal;
+              } else if (!aliment.custom_kcal && aliment.user_aliment) {
+                return (
+                  sumAliments +
+                  (aliment.grams *
+                    (aliment?.user_aliment?.nutrition_facts?.kcal_100g ?? 0)) /
+                    100
+                );
+              }
             }, 0),
           0,
         ),

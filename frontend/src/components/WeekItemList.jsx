@@ -11,6 +11,7 @@ const WeekItemList = ({ week }) => {
       <h2>
         Week {week.number_week} <strong>({totalCalories} kcal)</strong>
       </h2>
+      <p>(semana en concreto: ejemplo -- 25/08/25 - 31/08/25)</p>
     </>
   );
 };

@@ -14,6 +14,7 @@ const SignUpForm = () => {
       signup({ name, username, email, password });
 
       setName("");
+      setUsername("");
       setEmail("");
       setPassword("");
       setPasswordRepeated("");
