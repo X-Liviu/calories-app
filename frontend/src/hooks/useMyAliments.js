@@ -4,6 +4,7 @@ import {
   saveMyAliments,
   addMyAliment,
   removeMyAliment,
+  changeMyAliment,
 } from "../reducers/myAlimentReducer";
 
 const useMyAliments = () => {
@@ -20,11 +21,14 @@ const useMyAliments = () => {
     if (user?.token) await dispatch(addMyAliment(myAliment));
   };
 
+  const update = async (myAliment) => {
+    if (user?.token) await dispatch(changeMyAliment(myAliment));
+  };
   const del = async (myAliment) => {
     if (user?.token) await dispatch(removeMyAliment(myAliment));
   };
 
-  return { get, create, del };
+  return { get, create, update, del };
 };
 
 export default useMyAliments;

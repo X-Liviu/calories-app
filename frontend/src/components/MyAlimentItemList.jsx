@@ -1,6 +1,39 @@
+import { useState } from "react";
 import useMyAliments from "../hooks/useMyAliments";
+
 const MyAlimentItemList = ({ myAliment, isOdd }) => {
-  const { del } = useMyAliments();
+  const { del, update } = useMyAliments();
+  const [editableValues, setEditableValues] = useState({
+    ...myAliment.nutrition_facts,
+  });
+  const [activeInput, setActiveInput] = useState(null); //para quitar cursor del input en el que hemos hecho el submit. Se hace con la propiedad readOnly de input, dependiendo del valor de activeInput.
+
+  const handleSubmit = async (e, key) => {
+    e.preventDefault();
+    await update({ [key]: Number(editableValues[key]), id: myAliment.id });
+
+    // Desmarcar el input activo
+    setActiveInput(null);
+  };
+
+  const handleChange = (key, value) => {
+    const valueToNumber = Number(value);
+    !isNaN(valueToNumber) &&
+      setEditableValues({
+        ...editableValues,
+        [key]: valueToNumber,
+      });
+  };
+
+  const handleBlur = (key) => {
+    setEditableValues({
+      ...editableValues,
+      [key]: myAliment.nutrition_facts[key],
+    });
+  };
+
+  const nutritionKeys = Object.keys(myAliment.nutrition_facts);
+
   return (
     <tr
       style={{
@@ -9,36 +42,27 @@ const MyAlimentItemList = ({ myAliment, isOdd }) => {
       }}
     >
       <td style={{ padding: "8px 12px" }}>{myAliment.name}</td>
-      <td style={{ padding: "8px 12px", fontWeight: "bold" }}>
-        {myAliment.nutrition_facts.kcal_100g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>{myAliment.nutrition_facts.fat_g}</td>
+
+      {nutritionKeys.map((key) => (
+        <td key={key} style={{ padding: "8px 12px" }}>
+          <form onSubmit={(e) => handleSubmit(e, key)}>
+            <input
+              className="invisible-input"
+              value={editableValues[key]}
+              onChange={(e) => handleChange(key, e.target.value)}
+              onFocus={() => setActiveInput(key)}
+              onBlur={() => {
+                handleBlur(key);
+                setActiveInput(null);
+              }}
+              readOnly={activeInput !== key} // solo editable si es el input activo
+            />
+          </form>
+        </td>
+      ))}
+
       <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.saturated_fat_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.carbs_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.sugar_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.fiber_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.protein_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        {myAliment.nutrition_facts.salt_g}
-      </td>
-      <td style={{ padding: "8px 12px" }}>
-        <button
-          onClick={() => {
-            del({ id: myAliment.id });
-          }}
-        >
-          ❌
-        </button>
+        <button onClick={() => del({ id: myAliment.id })}>❌</button>
       </td>
     </tr>
   );

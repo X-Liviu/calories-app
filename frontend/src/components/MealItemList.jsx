@@ -8,7 +8,7 @@ const MealItemList = ({ meal }) => {
   return (
     <h2>
       {meal.name}
-      <strong> ({totalCalories}) kcal</strong>
+      <strong> ({totalCalories} kcal)</strong>
     </h2>
   );
 };

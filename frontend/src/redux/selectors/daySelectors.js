@@ -18,10 +18,10 @@ export const selectDayCalories = createSelector(
             return (
               sumAliments +
               (aliment.grams *
-                (aliment?.user_aliment?.nutrition_facts?.kcal_100g ?? 0)) /
+                (aliment.user_aliment?.nutrition_facts?.kcal_100g ?? 0)) /
                 100
             );
-          }
+          } else return sumAliments + 0;
         }, 0),
       0,
     );

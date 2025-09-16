@@ -48,3 +48,15 @@
   border-color: #ccc;
   font-family: inherit;
 }
+
+.invisible-input {
+  background: transparent;
+  border: none;  
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  width: 40px;
+  height: 16px;
+  font-size: 12px;
+}

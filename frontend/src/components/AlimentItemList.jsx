@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import useAliments from "../hooks/useAliments";
 import Toggable from "./Toggable";
+
+//TODO arreglar si añado del catálogo, borro el alimento del catálogo, y vuelvo aquí.
 const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
   //Cambiar name_snapshot por name
   const [visible, setVisible] = useState(false);
@@ -9,7 +11,7 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
   const togglableRef = useRef();
   const calculate100g = (nutritionFactGrams) => {
     //De momento me sirve, igual lo cambio en un futuro
-    if (nutritionFactGrams === undefined) return 0;
+    if (nutritionFactGrams === undefined) return "?";
 
     const result = (nutritionFactGrams * aliment.grams) / 100;
     return Math.round(result * 100) / 100;
@@ -31,8 +33,9 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
     <>
       <td>
         <h2>
-          {!aliment.user_aliment && "⚠️"} {aliment.name_snapshot} (
-          {aliment.grams}g):{" "}
+          {!aliment.user_aliment && aliment.custom_kcal && "⚠️"}{" "}
+          {!aliment.user_aliment && !aliment.custom_kcal && "❗"}{" "}
+          {aliment.name_snapshot} ({aliment.grams}g):{" "}
           {!aliment.custom_kcal
             ? calculate100g(aliment.user_aliment?.nutrition_facts.kcal_100g)
             : aliment.custom_kcal}{" "}
@@ -103,15 +106,17 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
         )}
       </td>
       <td>
-        <Toggable ref={togglableRef} buttonLabel="✏️">
-          <form onSubmit={handleSubmit}>
-            <input
-              onChange={({ target }) => setEditGrams(target.value)}
-              value={editGrams}
-            />
-            <button>Change Grams</button>
-          </form>
-        </Toggable>
+        {aliment.user_aliment && (
+          <Toggable ref={togglableRef} buttonLabel="✏️">
+            <form onSubmit={handleSubmit}>
+              <input
+                onChange={({ target }) => setEditGrams(target.value)}
+                value={editGrams}
+              />
+              <button>Change Grams</button>
+            </form>
+          </Toggable>
+        )}
       </td>
       <td>
         <button

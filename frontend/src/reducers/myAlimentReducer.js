@@ -12,12 +12,19 @@ const myAlimentSlice = createSlice({
       return state.concat(action.payload); //se puede hacer con un push si se quiere debido a la librería Immer de Toolkit
     },
     popMyAliment(state, action) {
-      return state.filter((u) => u.id !== action.payload.id);
+      return state.filter((a) => a.id !== action.payload.id);
+    },
+    updateMyAliment(state, action) {
+      const newState = state.map((a) =>
+        a.id === action.payload.id ? action.payload : a,
+      );
+      console.log(newState);
+      return newState;
     },
   },
 });
 
-export const { setMyAliments, appendMyAliment, popMyAliment } =
+export const { setMyAliments, appendMyAliment, popMyAliment, updateMyAliment } =
   myAlimentSlice.actions;
 export const saveMyAliments = () => {
   return async (dispatch) => {
@@ -35,6 +42,19 @@ export const addMyAliment = (myAliment) => {
     try {
       const newMyAliment = await myAlimentService.create(myAliment);
       dispatch(appendMyAliment(newMyAliment));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+export const changeMyAliment = (myAliment) => {
+  return async (dispatch, getState) => {
+    try {
+      const updatedAliment = await myAlimentService.update(myAliment);
+      console.log(getState());
+      console.log(updatedAliment);
+      dispatch(updateMyAliment(updatedAliment));
     } catch (error) {
       console.error(error);
     }

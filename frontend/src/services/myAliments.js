@@ -1,5 +1,5 @@
 import axios from "axios";
-//No olvidar cambiar la baseURL despues
+//No olvidar cambiar la baseURL después
 const baseURL = "http://localhost:7000/api/my-aliments";
 let token;
 
@@ -23,6 +23,15 @@ const create = async (object) => {
   return response.data;
 };
 
+const update = async (object) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  const { id, ...rest } = object;
+  const response = await axios.put(`${baseURL}/${id}`, rest, config);
+  return response.data;
+};
+
 const del = async (object) => {
   const config = {
     headers: { Authorization: token },
@@ -35,5 +44,6 @@ export default {
   setToken,
   getAll,
   create,
+  update,
   del,
 };

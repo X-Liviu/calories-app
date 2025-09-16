@@ -30,6 +30,7 @@ export default defineConfig([
       "prettier/prettier": "error",
       "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
       "comma-dangle": "off",
+      "require-await": "error",
     },
   },
 
