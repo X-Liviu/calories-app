@@ -7,3 +7,4 @@ build/
 coverage/
 cypress/screenshots
 .dockerignore
+prototypes/

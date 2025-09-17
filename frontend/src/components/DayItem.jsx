@@ -10,6 +10,8 @@ const DayItem = () => {
 
   const day = useSelector((state) => selectDay(state, weekId, dayId));
 
+  if (!day) return <h1>Loading...</h1>;
+
   return (
     <>
       <h1>{day.name}</h1>

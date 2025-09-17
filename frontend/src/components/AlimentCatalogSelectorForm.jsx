@@ -16,7 +16,6 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
     (myAl) => !aliments.some((a) => a.name_snapshot === myAl.name),
   );
 
-  //Si no tengo alimentos al catálogo añadidos.
   if (myAliments.length === 0) {
     return (
       <div>
@@ -25,7 +24,6 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
     );
   }
 
-  //Si no tengo alimentos que pueda añadir.
   if (availableAliments.length === 0) {
     return (
       <div>

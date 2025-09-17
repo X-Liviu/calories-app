@@ -16,9 +16,9 @@ const WeekItem = () => {
   //Cambiar number_week por numberWeek
   return (
     <>
-      <h1>Week {week.number_week}</h1>
-      <DayList weekId={week.id} days={week.days} />
-      <DayForm weekId={week.id} />
+      <h1>Week {week?.number_week}</h1>
+      <DayList weekId={week?.id} days={week?.days} />
+      <DayForm weekId={week?.id} />
     </>
   );
 };
