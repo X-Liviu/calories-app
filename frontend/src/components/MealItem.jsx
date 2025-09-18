@@ -24,17 +24,17 @@ const MealItem = () => {
   //Actualizamos los alimentos que vamos a pasar acorde con los posibles cambios que puedan haber sucecido en myAliments. Hay que hacer esto ya que si uso las flechas del navegador para navegar, no se vuelven a montar los componentes, por eso que no se actualiza por sí solo.
 
   //Esto funciona de la misma manera que en AlimentCatalogSelectorForm.
-  const alimentsWithFallback = meal.aliments.map((aliment) => {
+  const alimentsAvailable = meal.aliments.map((aliment) => {
     const existsInCatalog = myAliments.some(
-      (a) => a.id === aliment.user_aliment?.id,
+      (a) => a.id === aliment.userAliment?.id,
     );
-    return existsInCatalog ? aliment : { ...aliment, user_aliment: null }; // marca como no disponible
+    return existsInCatalog ? aliment : { ...aliment, userAliment: null }; // marca como no disponible
   });
 
   return (
     <>
       <h1>
-        {meal.name}{" "}
+        {meal?.name}{" "}
         <input
           type="checkbox"
           checked={checked}
@@ -47,7 +47,7 @@ const MealItem = () => {
       </h1>
 
       <AlimentList
-        aliments={alimentsWithFallback} // <-- usamos la lista “actualizada”
+        aliments={alimentsAvailable}
         weekId={weekId}
         dayId={dayId}
         mealId={mealId}
@@ -59,7 +59,7 @@ const MealItem = () => {
       <br />
 
       <AlimentCatalogSelectorForm
-        aliments={alimentsWithFallback} // <-- también aquí
+        aliments={alimentsAvailable}
         weekId={weekId}
         dayId={dayId}
         mealId={mealId}

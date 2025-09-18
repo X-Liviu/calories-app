@@ -2,6 +2,17 @@ const router = require("express").Router();
 
 const UserAliment = require("../models/UserAliment");
 
+const camelToSnake = {
+  kcal100G: "kcal_100g",
+  fatG: "fat_g",
+  saturatedFatG: "saturated_fat_g",
+  carbsG: "carbs_g",
+  sugarG: "sugar_g",
+  fiberG: "fiber_g",
+  proteinG: "protein_g",
+  saltG: "salt_g",
+};
+
 router.get("/", async (req, res, next) => {
   try {
     const aliments = await UserAliment.find({ user: req.userId }, "-user");
@@ -13,14 +24,22 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { name, nutrition_facts } = req.body;
+    const { name, nutritionFacts } = req.body;
+
+    const nutrition_facts = {};
+    for (const key in nutritionFacts) {
+      if (camelToSnake[key]) {
+        nutrition_facts[camelToSnake[key]] = nutritionFacts[key];
+      }
+    }
+
     const aliment = new UserAliment({
       user: req.userId, //Viene del tokenExtractor
       name,
       nutrition_facts,
     });
     await aliment.save();
-    res.status(201).json(aliment, "id name nutrition_facts");
+    res.status(201).json(aliment);
   } catch (err) {
     next(err);
   }
@@ -32,21 +51,17 @@ router.put(
   async (req, res, next) => {
     try {
       const { userAlimentId } = req.params;
-      const keys = Object.keys(req.body);
-      const keysToCheck = [
-        "kcal_100g",
-        "fat_g",
-        "saturated_fat_g",
-        "carbs_g",
-        "fiber_g",
-        "protein_g",
-        "salt_g",
-      ];
-      const foundKey = keys.find((k) => keysToCheck.includes(k));
+      const clientKey = Object.keys(req.body).find((k) =>
+        /*eslint-disable-line */ Object.keys(camelToSnake).includes(k)
+      );
+
+      if (!clientKey) return res.status(400).json({ error: "Invalid field" });
+
+      const snakeKey = camelToSnake[clientKey];
 
       const updatedUserAliment = await UserAliment.findByIdAndUpdate(
         userAlimentId,
-        { [`nutrition_facts.${foundKey}`]: req.body[foundKey] }, //ESTO MUY IMPORTANTE COMO CONOCIMIENTO DE ES6
+        { [`nutrition_facts.${snakeKey}`]: req.body[clientKey] }, //ESTO MUY IMPORTANTE COMO CONOCIMIENTO DE ES6
         { new: true } //eslint-disable-line
       );
       updatedUserAliment.nutrition_facts = {

@@ -25,8 +25,24 @@ const userAlimentSchema = new mongoose.Schema({
 userAlimentSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
+
+    if (returnedObject.nutrition_facts) {
+      const nf = returnedObject.nutrition_facts;
+      returnedObject.nutritionFacts = {
+        kcal100G: nf.kcal_100g,
+        fatG: nf.fat_g,
+        saturatedFatG: nf.saturated_fat_g,
+        carbsG: nf.carbs_g,
+        sugarG: nf.sugar_g,
+        fiberG: nf.fiber_g,
+        proteinG: nf.protein_g,
+        saltG: nf.salt_g,
+      };
+    }
+
     delete returnedObject._id;
     delete returnedObject.__v;
+    delete returnedObject.nutrition_facts;
   },
 });
 

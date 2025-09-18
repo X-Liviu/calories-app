@@ -31,8 +31,15 @@ const mealAlimentSchema = new mongoose.Schema({
 mealAlimentSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
+    returnedObject.nameSnapshot = returnedObject.name_snapshot;
+    returnedObject.customKcal = returnedObject.custom_kcal;
+    returnedObject.userAliment = returnedObject.user_aliment;
+
     delete returnedObject._id;
     delete returnedObject.__v;
+    delete returnedObject.name_snapshot;
+    delete returnedObject.custom_kcal;
+    delete returnedObject.user_aliment;
   },
 });
 

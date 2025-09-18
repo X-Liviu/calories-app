@@ -13,7 +13,7 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
   //Filtros para el select
   const availableAliments = myAliments.filter(
-    (myAl) => !aliments.some((a) => a.name_snapshot === myAl.name),
+    (myAl) => !aliments.some((a) => a.nameSnapshot === myAl.name),
   );
 
   if (myAliments.length === 0) {

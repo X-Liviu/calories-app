@@ -1,11 +1,10 @@
 import { useSelector } from "react-redux";
-import { selectMyAliments } from "../redux/selectors/myAlimentSelectors";
 
 import MyAlimentItemList from "./MyAlimentItemList";
 
 const MyAlimentList = () => {
   //Cuando se renderiza el MyAlimentForm, se hace un get a /api/my-aliments, por eso ya se puede hacer directamente el useSelector.
-  const myAliments = useSelector((state) => selectMyAliments(state));
+  const myAliments = useSelector((state) => state.myAliments);
 
   //Styling prematuro, sólo para ver un poco mejor el preview de la tabla.
   return (

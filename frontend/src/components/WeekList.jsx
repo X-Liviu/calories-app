@@ -6,7 +6,6 @@ import {
   selectWeekByNumber,
 } from "../redux/selectors/weekSelectors";
 
-//Cambiar number_week por numberWeek
 const WeekList = ({ filter, del }) => {
   const navigate = useNavigate();
   const filteredWeeks = useSelector((state) =>

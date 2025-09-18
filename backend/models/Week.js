@@ -27,8 +27,11 @@ const weekSchema = new mongoose.Schema({
 weekSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
+    returnedObject.numberWeek = returnedObject.number_week;
+
     delete returnedObject._id;
     delete returnedObject.__v;
+    delete returnedObject.number_week;
   },
 });
 

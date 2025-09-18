@@ -4,7 +4,7 @@ import useMyAliments from "../hooks/useMyAliments";
 const MyAlimentItemList = ({ myAliment, isOdd }) => {
   const { del, update } = useMyAliments();
   const [editableValues, setEditableValues] = useState({
-    ...myAliment.nutrition_facts,
+    ...myAliment.nutritionFacts,
   });
   const [activeInput, setActiveInput] = useState(null); //para quitar cursor del input en el que hemos hecho el submit. Se hace con la propiedad readOnly de input, dependiendo del valor de activeInput.
 
@@ -28,11 +28,11 @@ const MyAlimentItemList = ({ myAliment, isOdd }) => {
   const handleBlur = (key) => {
     setEditableValues({
       ...editableValues,
-      [key]: myAliment.nutrition_facts[key],
+      [key]: myAliment.nutritionFacts[key],
     });
   };
 
-  const nutritionKeys = Object.keys(myAliment.nutrition_facts);
+  const nutritionKeys = Object.keys(myAliment.nutritionFacts);
 
   return (
     <tr

@@ -12,13 +12,13 @@ export const selectDayCalories = createSelector(
       (sumMeals, meal) =>
         sumMeals +
         meal.aliments.reduce((sumAliments, aliment) => {
-          if (aliment.custom_kcal && !aliment.user_aliment) {
-            return sumAliments + aliment.custom_kcal;
-          } else if (!aliment.custom_kcal && aliment.user_aliment) {
+          if (aliment.customKcal && !aliment.userAliment) {
+            return sumAliments + aliment.customKcal;
+          } else if (!aliment.customKcal && aliment.userAliment) {
             return (
               sumAliments +
               (aliment.grams *
-                (aliment.user_aliment?.nutrition_facts?.kcal_100g ?? 0)) /
+                (aliment.userAliment?.nutritionFacts?.kcal100G ?? 0)) /
                 100
             );
           } else return sumAliments + 0;

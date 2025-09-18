@@ -4,144 +4,70 @@ import MyAlimentList from "./MyAlimentList";
 
 const INITIAL_STATE = {
   name: "",
-  kcal_100g: "",
-  fat_g: "",
-  saturated_fat_g: "",
-  carbs_g: "",
-  sugar_g: "",
-  fiber_g: "",
-  protein_g: "",
-  salt_g: "",
+  kcal100G: "",
+  fatG: "",
+  saturatedFatG: "",
+  carbsG: "",
+  sugarG: "",
+  fiberG: "",
+  proteinG: "",
+  saltG: "",
 };
 const MyAlimentForm = () => {
   const [newAliment, setNewAliment] = useState(INITIAL_STATE);
   const { create } = useMyAliments();
+
+  const labels = {
+    name: "Name",
+    kcal100G: "Kcal / 100g",
+    fatG: "Grams of fat",
+    saturatedFatG: "Grams of saturated fat",
+    carbsG: "Grams of carbohydrates",
+    sugarG: "Grams of sugar",
+    fiberG: "Grams of fiber",
+    proteinG: "Grams of protein",
+    saltG: "Grams of salt",
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newAlimentParsed = {
+    const alimentToCreate = {
       name: newAliment.name,
-      nutrition_facts: {
-        kcal_100g:
-          newAliment.kcal_100g === "" ? 0 : Number(newAliment.kcal_100g),
-        fat_g: newAliment.fat_g === "" ? 0 : Number(newAliment.fat_g),
-        saturated_fat_g:
-          newAliment.saturated_fat_g === ""
+      nutritionFacts: {
+        kcal100G: newAliment.kcal100G === "" ? 0 : Number(newAliment.kcal100G),
+        fatG: newAliment.fatG === "" ? 0 : Number(newAliment.fatG),
+        saturatedFatG:
+          newAliment.saturatedFatG === ""
             ? 0
-            : Number(newAliment.saturated_fat_g),
-        carbs_g: newAliment.carbs_g === "" ? 0 : Number(newAliment.carbs_g),
-        sugar_g: newAliment.sugar_g === "" ? 0 : Number(newAliment.sugar_g),
-        fiber_g: newAliment.fiber_g === "" ? 0 : Number(newAliment.fiber_g),
-        protein_g:
-          newAliment.protein_g === "" ? 0 : Number(newAliment.protein_g),
-        salt_g: newAliment.salt_g === "" ? 0 : Number(newAliment.salt_g),
+            : Number(newAliment.saturatedFatG),
+        carbsG: newAliment.carbsG === "" ? 0 : Number(newAliment.carbsG),
+        sugarG: newAliment.sugarG === "" ? 0 : Number(newAliment.sugarG),
+        fiberG: newAliment.fiberG === "" ? 0 : Number(newAliment.fiberG),
+        proteinG: newAliment.proteinG === "" ? 0 : Number(newAliment.proteinG),
+        saltG: newAliment.saltG === "" ? 0 : Number(newAliment.saltG),
       },
     };
-    create(newAlimentParsed);
+    create(alimentToCreate);
     setNewAliment(INITIAL_STATE);
   };
   //Importante hacer el spread primero.
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              name: target.value,
-            })
-          }
-          placeholder="Name"
-          value={newAliment.name}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              kcal_100g: target.value,
-            })
-          }
-          placeholder="Kcal / 100g"
-          value={newAliment.kcal_100g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              fat_g: target.value,
-            })
-          }
-          placeholder="Grams of fat"
-          value={newAliment.fat_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              saturated_fat_g: target.value,
-            })
-          }
-          placeholder="Grams of saturated fat"
-          value={newAliment.saturated_fat_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              carbs_g: target.value,
-            })
-          }
-          placeholder="Grams of carbohydrates"
-          value={newAliment.carbs_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              sugar_g: target.value,
-            })
-          }
-          placeholder="Grams of sugars"
-          value={newAliment.sugar_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              fiber_g: target.value,
-            })
-          }
-          placeholder="Grams of fiber"
-          value={newAliment.fiber_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              protein_g: target.value,
-            })
-          }
-          placeholder="Grams of protein"
-          value={newAliment.protein_g}
-        />
-        <input
-          className="input"
-          onChange={({ target }) =>
-            setNewAliment({
-              ...newAliment,
-              salt_g: target.value,
-            })
-          }
-          placeholder="Grams of salt"
-          value={newAliment.salt_g}
-        />
+        {Object.keys(newAliment).map((ll) => (
+          <input
+            key={ll}
+            className="input"
+            onChange={({ target }) =>
+              setNewAliment({
+                ...newAliment,
+                [ll]: target.value,
+              })
+            }
+            placeholder={labels[ll]}
+            value={newAliment[ll]}
+          />
+        ))}
         <br />
         <button>Create</button>
       </form>

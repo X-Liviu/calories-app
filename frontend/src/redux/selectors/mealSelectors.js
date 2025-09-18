@@ -11,17 +11,17 @@ export const selectMealCalories = createSelector(
   (aliments) => {
     if (!aliments || aliments.length === 0) return 0;
 
-    const result = aliments.reduce((sum, aliment) => {
-      if (aliment.custom_kcal && !aliment.user_aliment) {
-        return sum + aliment.custom_kcal;
-      } else if (!aliment.custom_kcal && aliment.user_aliment) {
+    const result = aliments.reduce((sumAliments, aliment) => {
+      if (aliment.customKcal && !aliment.userAliment) {
+        return sumAliments + aliment.customKcal;
+      } else if (!aliment.customKcal && aliment.userAliment) {
         return (
-          sum +
+          sumAliments +
           (aliment.grams *
-            (aliment.user_aliment?.nutrition_facts?.kcal_100g ?? 0)) /
+            (aliment.userAliment?.nutritionFacts?.kcal100G ?? 0)) /
             100
         );
-      } else return sum + 0;
+      } else return sumAliments + 0;
     }, 0);
 
     return Math.round(result * 100) / 100;
