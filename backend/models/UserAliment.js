@@ -43,6 +43,7 @@ userAlimentSchema.set("toJSON", {
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.nutrition_facts;
+    delete returnedObject.user; //De momento lo quito, igual en un futuro sí que me sirve. (23/09/25)
   },
 });
 

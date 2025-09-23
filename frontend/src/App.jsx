@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import useInitializeAuth from "./hooks/useInitializeAuth";
 import useMyAliments from "./hooks/useMyAliments";
 
+import BreadcrumbListener from "./components/BreadcrumbListener";
 import Breadcrumb from "./components/Breadcrumb";
 import Menu from "./components/Menu";
 import Logout from "./components/Logout";
@@ -22,6 +23,7 @@ const App = () => {
   useMyAliments().get();
   return (
     <>
+      <BreadcrumbListener />
       <Breadcrumb />
       <Menu />
       <Logout />

@@ -21,26 +21,20 @@ const useWeeks = () => {
   };
 
   const create = async (week) => {
-    setLoading(true);
     setError(null);
     try {
       await dispatch(addWeek(week));
     } catch (err) {
       setError(err.message || "Failed to add week");
-    } finally {
-      setLoading(false);
     }
   };
 
   const del = async (week) => {
-    setLoading(true);
     setError(null);
     try {
       await dispatch(removeWeek(week));
     } catch (err) {
       setError(err.message || "Failed to remove week");
-    } finally {
-      setLoading(false);
     }
   };
 

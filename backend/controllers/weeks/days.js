@@ -9,7 +9,7 @@ router.post("/:weekId", async (req, res, next) => {
     const { weekId } = req.params;
     const { name } = req.body;
 
-    const week = await Week.findById(weekId, "-user");
+    const week = await Week.findById(weekId);
     if (!week) return res.status(404).json({ error: "Week not found" });
 
     const day = new Day({
@@ -20,18 +20,14 @@ router.post("/:weekId", async (req, res, next) => {
     await day.save(); // El hook se encargará de agregarlo a Week.days
 
     // AQUÍ VIENE LA CLAVE: devolvemos la semana actualizada y populada, pero de momento no es mi opción favorita de solución. De todos modos, me tendría que haber decantado por una BD Relacional.
-    const updatedWeek = await Week.findById(weekId, "-user").populate({
+    const updatedWeek = await Week.findById(weekId).populate({
       path: "days",
-      select: "-user",
       populate: {
         path: "meals",
-        select: "-user",
         populate: {
           path: "aliments",
-          select: "-user",
           populate: {
             path: "user_aliment",
-            select: "-user",
           },
         },
       },

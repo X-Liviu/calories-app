@@ -40,6 +40,7 @@ mealAlimentSchema.set("toJSON", {
     delete returnedObject.name_snapshot;
     delete returnedObject.custom_kcal;
     delete returnedObject.user_aliment;
+    delete returnedObject.user;
   },
 });
 

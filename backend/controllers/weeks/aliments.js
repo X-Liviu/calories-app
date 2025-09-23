@@ -13,12 +13,10 @@ router.post(
       const { weekId, dayId, mealId } = req.params;
       const { name, grams, userAliment, customKcal } = req.body;
 
-      const week = await Week.findById(weekId, "-user").populate({
+      const week = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
         },
       });
       if (!week)
@@ -40,18 +38,14 @@ router.post(
       });
       await aliment.save(); // El hook se encargará de agregarlo a Meal.aliments
 
-      const updatedWeek = await Week.findById(weekId, "-user").populate({
+      const updatedWeek = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
           populate: {
             path: "aliments",
-            select: "-user",
             populate: {
               path: "user_aliment",
-              select: "-user",
             },
           },
         },
@@ -72,12 +66,10 @@ router.put(
       const { weekId, dayId, mealId, mealAlimentId } = req.params;
       const { grams } = req.body;
 
-      const week = await Week.findById(weekId, "-user").populate({
+      const week = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
         },
       });
       if (!week)
@@ -94,18 +86,14 @@ router.put(
         { grams: grams } //eslint-disable-line
       );
 
-      const updatedWeek = await Week.findById(weekId, "-user").populate({
+      const updatedWeek = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
           populate: {
             path: "aliments",
-            select: "-user",
             populate: {
               path: "user_aliment",
-              select: "-user",
             },
           },
         },

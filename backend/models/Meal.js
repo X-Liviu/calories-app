@@ -32,8 +32,10 @@ const mealSchema = new mongoose.Schema({
 mealSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
+
     delete returnedObject._id;
     delete returnedObject.__v;
+    delete returnedObject.user;
   },
 });
 mealSchema.index({ user: 1, day: 1, name: 1 }, { unique: true });

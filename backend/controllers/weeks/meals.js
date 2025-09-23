@@ -10,9 +10,8 @@ router.post("/:weekId/:dayId", async (req, res, next) => {
     const { weekId, dayId } = req.params;
     const { name } = req.body;
 
-    const week = await Week.findById(weekId, "-user").populate({
+    const week = await Week.findById(weekId).populate({
       path: "days",
-      select: "-user",
     }); //Este populate es para obtener los días con las ids de los meals, para luego hacer la búsqueda de meal.
     if (!week) return res.status(404).json({ error: "Week not found" });
 
@@ -26,18 +25,14 @@ router.post("/:weekId/:dayId", async (req, res, next) => {
     });
     await meal.save(); // El hook se encargará de agregarlo a Day.meals
 
-    const updatedWeek = await Week.findById(weekId, "-user").populate({
+    const updatedWeek = await Week.findById(weekId).populate({
       path: "days",
-      select: "-user",
       populate: {
         path: "meals",
-        select: "-user",
         populate: {
           path: "aliments",
-          select: "-user",
           populate: {
             path: "user_aliment",
-            select: "-user",
           },
         },
       },
@@ -58,12 +53,10 @@ router.put(
       const { weekId, dayId, mealId } = req.params;
       const { cheat } = req.body;
 
-      const week = await Week.findById(weekId, "-user").populate({
+      const week = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
         },
       });
       if (!week)
@@ -80,18 +73,14 @@ router.put(
         { cheat: cheat } //eslint-disable-line
       );
 
-      const updatedWeek = await Week.findById(weekId, "-user").populate({
+      const updatedWeek = await Week.findById(weekId).populate({
         path: "days",
-        select: "-user",
         populate: {
           path: "meals",
-          select: "-user",
           populate: {
             path: "aliments",
-            select: "-user",
             populate: {
               path: "user_aliment",
-              select: "-user",
             },
           },
         },
@@ -111,10 +100,10 @@ router.delete(
   async (req, res, next) => {
     try {
       const { weekId, dayId, mealId } = req.params;
-      const week = await Week.findById(weekId, "-user");
+      const week = await Week.findById(weekId);
       if (!week) res.status(404).json({ error: "Week not found" });
 
-      const day = await Day.findById(dayId, "-user");
+      const day = await Day.findById(dayId);
       if (!day) res.status(404).json({ error: "Day not found" });
 
       const deletedMeal = await Meal.findOneAndDelete({

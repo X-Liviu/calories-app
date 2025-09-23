@@ -13,10 +13,9 @@ const WeekItem = () => {
   const week = useSelector((state) => selectWeek(state, weekId));
 
   if (!week) return <h1>Loading...</h1>;
-  //Cambiar number_week por numberWeek
   return (
     <>
-      <h1>Week {week?.number_week}</h1>
+      <h1>Week {week?.numberWeek}</h1>
       <DayList weekId={week?.id} days={week?.days} />
       <DayForm weekId={week?.id} />
     </>

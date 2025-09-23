@@ -32,6 +32,7 @@ weekSchema.set("toJSON", {
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.number_week;
+    delete returnedObject.user;
   },
 });
 

@@ -15,7 +15,7 @@ const camelToSnake = {
 
 router.get("/", async (req, res, next) => {
   try {
-    const aliments = await UserAliment.find({ user: req.userId }, "-user");
+    const aliments = await UserAliment.find({ user: req.userId });
     res.json(aliments);
   } catch (err) {
     next(err);
@@ -66,7 +66,7 @@ router.put(
       );
       updatedUserAliment.nutrition_facts = {
         ...updatedUserAliment.nutrition_facts,
-      }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente
+      }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente. No sé si esto de verdad sirve.
 
       res.json(updatedUserAliment);
     } catch (err) {

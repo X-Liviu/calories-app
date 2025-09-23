@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import WeekItemList from "./WeekItemList";
 import { useSelector } from "react-redux";
 import {
   selectWeeks,
   selectWeekByNumber,
 } from "../redux/selectors/weekSelectors";
+
+import WeekItemList from "./WeekItemList";
 
 const WeekList = ({ filter, del }) => {
   const navigate = useNavigate();

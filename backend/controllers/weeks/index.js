@@ -8,18 +8,14 @@ const Week = require("../../models/Week");
 //GET all Week, including Day, Meal and MealAliment.
 router.get("/", async (req, res, next) => {
   try {
-    const weeks = await Week.find({ user: req.userId }, "-user").populate({
+    const weeks = await Week.find({ user: req.userId }).populate({
       path: "days",
-      select: "-user",
       populate: {
         path: "meals",
-        select: "-user",
         populate: {
           path: "aliments",
-          select: "-user",
           populate: {
             path: "user_aliment",
-            select: "-user",
           },
         },
       },
