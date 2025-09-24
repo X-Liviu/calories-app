@@ -1,4 +1,3 @@
-// Week.js
 const mongoose = require("mongoose");
 const Day = require("./Day"); // Importamos Day
 //Para ir haciendo la app, de momento solo va a haber semanas únicas de 1 año. Los años están comentados.

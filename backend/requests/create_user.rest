@@ -31,3 +31,15 @@ Content-Type: application/json
   "email": "yeyeyeye@gmail.com",
   "password": "12345"
 }
+
+###
+
+POST http://localhost:7000/api/users
+Content-Type: application/json
+
+{
+  "name": "paco",
+  "username": "paco",
+  "email": "paco",
+  "password": "paco"
+}

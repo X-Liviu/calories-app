@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../utils/config");
+const User = require("../models/User");
+
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
   console.log("Path:  ", request.path);
@@ -8,7 +10,7 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
-const tokenExtractor = (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
   const authorization = req.get("authorization");
 
   if (!authorization || !authorization.toLowerCase().startsWith("bearer ")) {
@@ -22,8 +24,15 @@ const tokenExtractor = (req, res, next) => {
     if (!decodedToken.id) {
       return res.status(401).json({ error: "token invalid: missing user id" });
     }
+
+    const user = await User.findById(decodedToken.id);
+    if (!user) {
+      return res.status(401).json({ error: "token invalid: user not found" });
+    }
+
     //req.decodedToken = decodedToken; //No sé si me va a hacer falta.
     req.userId = decodedToken.id;
+
     next();
   } catch (err) {
     return res

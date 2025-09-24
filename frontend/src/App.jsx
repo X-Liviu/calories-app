@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import useInitializeAuth from "./hooks/useInitializeAuth";
+import useAuthInitAndSync from "./hooks/useAuthInitAndSync";
 import useMyAliments from "./hooks/useMyAliments";
 
 import BreadcrumbListener from "./components/BreadcrumbListener";
@@ -13,13 +13,14 @@ import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
 import MyAlimentForm from "./components/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
+import AccountView from "./components/AccountView";
 import WeekSearch from "./components/WeekSearch";
 import WeekItem from "./components/WeekItem";
 import DayItem from "./components/DayItem";
 import MealItem from "./components/MealItem";
 
 const App = () => {
-  useInitializeAuth();
+  useAuthInitAndSync();
   useMyAliments().get();
   return (
     <>
@@ -35,6 +36,7 @@ const App = () => {
         </Route>
         <Route element={<PrivateRoute />}>
           <Route path="/my-aliments" element={<MyAlimentForm />} />
+          <Route path="/account" element={<AccountView />} />
           <Route path="/weeks" element={<WeekSearch />} />
           <Route path="/weeks/:weekId/" element={<WeekItem />} />
           <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />

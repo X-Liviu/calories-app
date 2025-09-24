@@ -23,6 +23,8 @@ const MealItem = () => {
 
   //Actualizamos los alimentos que vamos a pasar acorde con los posibles cambios que puedan haber sucecido en myAliments. Hay que hacer esto ya que si uso las flechas del navegador para navegar, no se vuelven a montar los componentes, por eso que no se actualiza por sí solo.
 
+  //El problema que tengo es en el caso de que haga lo mismo que he mencionado arriba, pero en vez de añadir o borrar un elemento, me falla cuando cambio alguno de los valores nutricionales de un alimento. (24/09/25)
+
   //Esto funciona de la misma manera que en AlimentCatalogSelectorForm.
   const alimentsAvailable = meal.aliments.map((aliment) => {
     const existsInCatalog = myAliments.some(

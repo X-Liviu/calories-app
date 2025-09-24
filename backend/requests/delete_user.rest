@@ -1,2 +1,2 @@
-DELETE  http://localhost:7000/api/users/68bf20931a1180559d7ff828
-
+DELETE  http://localhost:7000/api/users/68d4201ad1be47ef90d00f6f
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhY28iLCJpZCI6IjY4ZDQyMDFhZDFiZTQ3ZWY5MGQwMGY2ZiIsImlhdCI6MTc1ODczMjMyMiwiZXhwIjoxNzU5OTQxOTIyfQ.X2qwU1TC_o-bleootcGpa3__4e2yVxyd8zMUfcF4IYw

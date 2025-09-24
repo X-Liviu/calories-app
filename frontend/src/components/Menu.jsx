@@ -15,6 +15,9 @@ const Menu = () => {
           <Link style={{ paddingRight: 5 }} to="/my-aliments">
             Catalog
           </Link>
+          <Link style={{ paddingRight: 5 }} to="/account">
+            Account
+          </Link>
         </>
       ) : (
         <>
