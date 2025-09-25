@@ -22,10 +22,15 @@ const weekSlice = createSlice({
         w.id === action.payload.id ? action.payload : w,
       );
     },
+
+    clearWeeks() {
+      return [];
+    },
   },
 });
 
-export const { setWeeks, appendWeek, popWeek, updateWeek } = weekSlice.actions;
+export const { setWeeks, appendWeek, popWeek, updateWeek, clearWeeks } =
+  weekSlice.actions;
 export const saveGlobalWeeks = () => {
   return async (dispatch) => {
     try {

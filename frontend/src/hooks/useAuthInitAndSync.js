@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeUser, clearUser } from "../reducers/userReducer";
+import { clearWeeks } from "../reducers/weekReducer";
+import { clearMyAliments } from "../reducers/myAlimentReducer";
 
 const useAuthInitAndSync = () => {
   const dispatch = useDispatch();
@@ -15,6 +17,8 @@ const useAuthInitAndSync = () => {
       const tokenJSON = window.localStorage.getItem("token");
       if (!tokenJSON && user) {
         dispatch(clearUser());
+        dispatch(clearWeeks());
+        dispatch(clearMyAliments());
       }
     };
 
@@ -27,6 +31,8 @@ const useAuthInitAndSync = () => {
       const tokenJSON = window.localStorage.getItem("token");
       if (!tokenJSON && user) {
         dispatch(clearUser());
+        dispatch(clearWeeks());
+        dispatch(clearMyAliments());
       }
     }, 1000);
     return () => clearInterval(interval);

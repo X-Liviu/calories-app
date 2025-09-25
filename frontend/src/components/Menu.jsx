@@ -3,33 +3,21 @@ import { Link } from "react-router-dom";
 const Menu = () => {
   const user = useSelector((state) => state.user);
   return (
-    <>
-      <Link style={{ paddingRight: 5 }} to="/">
-        Home
-      </Link>
+    <div className="menu">
+      <Link to="/">Home</Link>
       {user ? (
         <>
-          <Link style={{ paddingRight: 5 }} to="/weeks">
-            Search
-          </Link>
-          <Link style={{ paddingRight: 5 }} to="/my-aliments">
-            Catalog
-          </Link>
-          <Link style={{ paddingRight: 5 }} to="/account">
-            Account
-          </Link>
+          <Link to="/weeks">Search</Link>
+          <Link to="/my-aliments">Catalog</Link>
+          <Link to="/account">Account</Link>
         </>
       ) : (
         <>
-          <Link style={{ paddingRight: 5 }} to={"/login"}>
-            Login
-          </Link>
-          <Link style={{ paddingRight: 5 }} to={"/signup"}>
-            Sign Up
-          </Link>
+          <Link to={"/login"}>Login</Link>
+          <Link to={"/signup"}>Sign Up</Link>
         </>
       )}
-    </>
+    </div>
   );
 };
 

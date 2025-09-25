@@ -21,11 +21,19 @@ const myAlimentSlice = createSlice({
       console.log(newState);
       return newState;
     },
+    clearMyAliments() {
+      return [];
+    },
   },
 });
 
-export const { setMyAliments, appendMyAliment, popMyAliment, updateMyAliment } =
-  myAlimentSlice.actions;
+export const {
+  setMyAliments,
+  appendMyAliment,
+  popMyAliment,
+  updateMyAliment,
+  clearMyAliments,
+} = myAlimentSlice.actions;
 export const saveMyAliments = () => {
   return async (dispatch) => {
     try {

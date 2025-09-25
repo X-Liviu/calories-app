@@ -15,14 +15,15 @@ const Breadcrumb = () => {
   } else if (itemLinks.length > 1)
     return (
       <div>
-        {itemLinks.map((item) => {
+        {itemLinks.map((item, index) => {
           return (
             <Link
               style={{ paddingRight: 5, color: "white" }}
               key={item.name}
               to={item.URL}
             >
-              {`${item.name} >`}
+              {item.name}
+              {index < itemLinks.length - 1 && " >"}
             </Link>
           );
         })}
