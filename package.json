@@ -8,6 +8,7 @@
     "frontend"
   ],
   "scripts": {
+    "lint": "eslint \"frontend/**/*.{js,jsx,ts,tsx}\" \"backend/**/*.{js,ts}\" --max-warnings=0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

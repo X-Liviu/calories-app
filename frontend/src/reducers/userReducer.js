@@ -2,12 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import loginService from "../services/login";
 import signupService from "../services/signup";
-
 import weekService from "../services/weeks";
 import myAlimentService from "../services/myAliments";
 import dayService from "../services/days";
 import mealService from "../services/meals";
 import alimentService from "../services/aliments";
+
+import { clearWeeks } from "./weekReducer";
+import { clearMyAliments } from "./myAlimentReducer";
 
 const userSlice = createSlice({
   name: "user",
@@ -75,6 +77,8 @@ export const eraseGlobalUser = () => {
   return (dispatch) => {
     window.localStorage.removeItem("token");
     dispatch(clearUser());
+    dispatch(clearWeeks());
+    dispatch(clearMyAliments());
     //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
     weekService.setToken(null);
     myAlimentService.setToken(null);

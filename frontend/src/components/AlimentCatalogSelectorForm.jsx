@@ -53,7 +53,7 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
   return (
     <>
-      <select>
+      <select className="select">
         {availableAliments.map((a) => (
           <option key={a.id} value={a.name}>
             {a.name}
@@ -63,6 +63,7 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
       <form onSubmit={handleSubmit}>
         <input
+          className="input"
           value={grams}
           placeholder="Grams of the aliment eaten"
           onChange={({ target }) => setGrams(target.value)}

@@ -50,17 +50,6 @@
   background-color: #3a3a3a;
 }
 
-/* Cards de contenido */
-.card {
-  padding: 2em;
-  background-color: #2a2a2a;
-  border-radius: 16px;
-  margin: 1em 0;
-  width: 100%;
-  max-width: 800px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-
 /* Inputs */
 .input {
   padding: 10px 14px;
@@ -97,3 +86,217 @@
   color: #aaa;
   font-size: 0.9em;
 }
+
+/* ====== WEEKS SECTION ====== */
+
+/* Formularios de búsqueda y creación */
+.week-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+/* Botones generales */
+.week-form button {
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background-color: #2a2a2a;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+.week-form button:hover {
+  border-color: #646cff;
+  background-color: #3a3a3a;
+}
+
+/* Tabla de semanas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+table button {
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  transition: transform 0.2s;
+}
+table button:hover {
+  transform: scale(1.05);
+}
+
+
+
+/* WeekItemList */
+.week-item h2 {
+  font-size: 1.4em;
+  margin: 0;
+  color: #fff;
+}
+
+
+/* Select personalizado */
+.select {
+  padding: 10px 14px;
+  margin: 10px;
+  border-radius: 12px;
+  border: 1px solid #555;
+  font-family: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+  position: relative;
+  display: inline-block;
+}
+
+/* ====== MY ALIMENT LIST ====== */
+
+/* Tabla general */
+.my-aliment-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-family: inherit;
+}
+
+/* Encabezado */
+.my-aliment-table thead tr {
+  background-color: #2bb2d4;
+  color: #fff;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.my-aliment-table th {
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+/* Filas */
+
+.my-aliment-table tbody tr {
+  background-color: #7f899e;
+}
+
+/*.my-aliment-table tbody tr:nth-child(odd) {
+  background-color: #7f899e;
+}
+
+.my-aliment-table tbody tr:nth-child(even) {
+  background-color: #66696f;
+}*/
+
+.my-aliment-table tbody tr:hover {
+  background-color: #467474; /* Hover más suave */
+  transition: transform 0.2s, color 0.2s;
+}
+
+/* Celdas */
+.my-aliment-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #000000;
+  border-top: 1px solid #000000;
+}
+
+/* Botón de eliminar */
+.my-aliment-table button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  color: #ff5555;
+}
+
+.my-aliment-table button:hover {
+  transform: scale(1.1);
+  color: #ff0000;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .my-aliment-table thead {
+    display: none; /* Opcional: ocultar cabecera en móviles */
+  }
+  .my-aliment-table tbody td {
+    display: block;
+    width: 100%;
+    padding: 6px 0;
+  }
+  .my-aliment-table tbody tr {
+    margin-bottom: 1rem;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff3b0;
+  }
+}
+
+
+/* ====== HOME image gif ====== */
+.profile-gif {
+  width: 220px; 
+  display: block;
+  margin: 30px auto;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.profile-gif:hover {
+  transform: scale(1.05);
+}
+
+/* ====== NOT FOUND PAGE ====== */
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;  
+}
+
+.not-found-container h1 {
+  font-size: 10rem;
+  color: #ff4d4f;
+}
+
+.not-found-container p {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.not-found-container img {
+  max-width: 300px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.not-found-container a {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #1890ff;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.not-found-container a:hover {
+  background-color: #40a9ff;
+  transform: scale(1.05);
+}
+

@@ -1,6 +1,7 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import useAuthInitAndSync from "./hooks/useAuthInitAndSync";
+import useInitWeeks from "./hooks/useInitWeeks";
 import useMyAliments from "./hooks/useMyAliments";
 
 import BreadcrumbListener from "./components/BreadcrumbListener";
@@ -18,10 +19,13 @@ import WeekSearch from "./components/WeekSearch";
 import WeekItem from "./components/WeekItem";
 import DayItem from "./components/DayItem";
 import MealItem from "./components/MealItem";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   useAuthInitAndSync();
+  useInitWeeks().get();
   useMyAliments().get();
+
   return (
     <>
       <BreadcrumbListener />
@@ -42,6 +46,7 @@ const App = () => {
           <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />
           <Route path="/weeks/:weekId/:dayId/:mealId" element={<MealItem />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

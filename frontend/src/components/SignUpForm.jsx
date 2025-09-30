@@ -58,7 +58,7 @@ const SignUpForm = () => {
           onChange={({ target }) => setPasswordRepeated(target.value)}
         />
         <br />
-        <button>Sign Up</button>
+        <button>Confirm</button>
       </form>
     </Toggable>
   );

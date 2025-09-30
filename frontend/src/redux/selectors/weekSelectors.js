@@ -11,7 +11,7 @@ export const selectWeekByNumber = createSelector(
     if (!filterNumber) return weeks;
 
     const filterStr = String(filterNumber);
-    return weeks.filter((w) => String(w.number_week).startsWith(filterStr));
+    return weeks.filter((w) => String(w.numberWeek).startsWith(filterStr));
   },
 );
 

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import useWeeks from "../hooks/useWeeks";
 import {
   selectWeeks,
   selectWeekByNumber,
@@ -7,8 +8,9 @@ import {
 
 import WeekItemList from "./WeekItemList";
 
-const WeekList = ({ filter, del }) => {
+const WeekList = ({ filter }) => {
   const navigate = useNavigate();
+  const { del } = useWeeks();
   const filteredWeeks = useSelector((state) =>
     filter !== ""
       ? selectWeekByNumber(state, Number(filter))
@@ -37,9 +39,11 @@ const WeekList = ({ filter, del }) => {
           <tr>
             <td>
               <h2>
-                {filter !== ""
-                  ? `No se encontró la semana ${filter}.`
-                  : "No hay semanas disponibles."}
+                {!filteredWeeks
+                  ? "Loading"
+                  : filter !== ""
+                    ? `No se encontró la semana ${filter}.`
+                    : "No hay semanas disponibles."}
               </h2>
             </td>
           </tr>

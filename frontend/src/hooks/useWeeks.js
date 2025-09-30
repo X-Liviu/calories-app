@@ -1,24 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { saveGlobalWeeks, addWeek, removeWeek } from "../reducers/weekReducer";
+import { addWeek, removeWeek } from "../reducers/weekReducer";
 
 const useWeeks = () => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
-
-  const get = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await dispatch(saveGlobalWeeks());
-    } catch (err) {
-      setError(err.message || "Failed to get weeks");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const create = async (week) => {
     setError(null);
@@ -38,15 +25,9 @@ const useWeeks = () => {
     }
   };
 
-  useEffect(() => {
-    get();
-  }, []); //eslint-disable-line
-
   return {
-    get,
     create,
     del,
-    loading,
     error,
   };
 };

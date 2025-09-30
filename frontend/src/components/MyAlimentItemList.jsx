@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useMyAliments from "../hooks/useMyAliments";
 
-const MyAlimentItemList = ({ myAliment, isOdd }) => {
+const MyAlimentItemList = ({ myAliment }) => {
   const { del, update } = useMyAliments();
   const [editableValues, setEditableValues] = useState({
     ...myAliment.nutritionFacts,
@@ -35,16 +35,11 @@ const MyAlimentItemList = ({ myAliment, isOdd }) => {
   const nutritionKeys = Object.keys(myAliment.nutritionFacts);
 
   return (
-    <tr
-      style={{
-        backgroundColor: isOdd ? "rgba(197, 181, 57, 1)" : "#ffbf00ff",
-        borderBottom: "1px solid #e0e0e0",
-      }}
-    >
-      <td style={{ padding: "8px 12px" }}>{myAliment.name}</td>
+    <tr>
+      <td>{myAliment.name}</td>
 
       {nutritionKeys.map((key) => (
-        <td key={key} style={{ padding: "8px 12px" }}>
+        <td key={key}>
           <form onSubmit={(e) => handleSubmit(e, key)}>
             <input
               className="invisible-input"
@@ -61,7 +56,7 @@ const MyAlimentItemList = ({ myAliment, isOdd }) => {
         </td>
       ))}
 
-      <td style={{ padding: "8px 12px" }}>
+      <td>
         <button onClick={() => del({ id: myAliment.id })}>❌</button>
       </td>
     </tr>

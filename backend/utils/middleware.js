@@ -65,7 +65,12 @@ const ERROR_HANDLERS = {
   defaultError: (res) => res.status(500).end(),
 };
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (
+  error,
+  request,
+  response,
+  /*eslint-disable-line */ next
+) => {
   //Falla todo si no pones el next, un poco raro y que no entiendo bien el fallo. Tampoco puedo usar eslint-disable-line porque el formatter me lo mueve en la siguiente línea
   console.error(error.message);
 

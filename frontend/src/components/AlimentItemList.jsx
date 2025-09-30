@@ -80,8 +80,10 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
           <Toggable ref={togglableRef} buttonLabel="✏️">
             <form onSubmit={handleSubmit}>
               <input
+                className="input"
                 onChange={({ target }) => setEditGrams(target.value)}
                 value={editGrams}
+                placeholder="grams of aliment"
               />
               <button>✅</button>
             </form>

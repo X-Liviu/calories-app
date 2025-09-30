@@ -32,7 +32,7 @@ const LoginForm = () => {
         />
         <br />
         <br />
-        <button>Log In</button>
+        <button>Confirm</button>
       </form>
     </Toggable>
   );

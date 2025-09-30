@@ -1,6 +1,8 @@
 import { useState } from "react";
-const WeekForm = ({ create }) => {
+import useWeeks from "../hooks/useWeeks";
+const WeekForm = () => {
   const [numberWeek, setNumberWeek] = useState("");
+  const { create } = useWeeks();
   const handleSubmit = (e) => {
     e.preventDefault();
     create({ numberWeek: Number(numberWeek) });
@@ -9,7 +11,7 @@ const WeekForm = ({ create }) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form className="week-form" onSubmit={handleSubmit}>
         <input
           className="input"
           onChange={({ target }) => setNumberWeek(target.value)}
