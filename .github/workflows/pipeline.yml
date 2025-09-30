@@ -2,16 +2,10 @@ name: Deployment pipeline
 on:
   push:
     branches: [main]
-    paths:
-      - "part11/pokedex-for-ci/**"
-      - ".github/**"
 
   pull_request:
     branches: [main]
     types: [opened, synchronize]
-
-permissions:
-  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,12 +19,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: npm
-          cache-dependency-path: /package-lock.json
+          cache-dependency-path: package-lock.json
           node-version: "20"
 
       - name: Install dependencies
         run: |
-          npm install -E
+          npm ci
 
       - name: Check style
         run: |
