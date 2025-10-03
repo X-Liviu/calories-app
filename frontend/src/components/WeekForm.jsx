@@ -14,7 +14,9 @@ const WeekForm = () => {
       <form className="week-form" onSubmit={handleSubmit}>
         <input
           className="input"
-          onChange={({ target }) => setNumberWeek(target.value)}
+          onChange={({ target }) => {
+            !isNaN(Number(target.value)) && setNumberWeek(target.value);
+          }}
           placeholder="Number of the week"
           value={numberWeek}
         />

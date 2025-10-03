@@ -2,6 +2,9 @@ const router = require("express").Router();
 
 const UserAliment = require("../models/UserAliment");
 
+const { throwNotFound } = require("../utils/helpers");
+const { userAlimentSchema } = require("../utils/validations");
+
 const camelToSnake = {
   kcal100G: "kcal_100g",
   fatG: "fat_g",
@@ -25,6 +28,8 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const { name, nutritionFacts } = req.body;
+
+    await userAlimentSchema.validateAsync(nutritionFacts);
 
     const nutrition_facts = {};
     for (const key in nutritionFacts) {
@@ -55,7 +60,11 @@ router.put(
         /*eslint-disable-line */ Object.keys(camelToSnake).includes(k)
       );
 
-      if (!clientKey) return res.status(400).json({ error: "Invalid field" });
+      if (!clientKey) {
+        const error = new Error("Invalid field");
+        error.name = "ValidationError";
+        throw error;
+      }
 
       const snakeKey = camelToSnake[clientKey];
 
@@ -83,8 +92,7 @@ router.delete("/:userAlimentId", async (req, res, next) => {
       _id: userAlimentId,
       user: req.userId,
     });
-    if (!deletedUserAliment)
-      res.status(404).end({ error: "Could not find the aliment to delete it" });
+    if (!deletedUserAliment) throwNotFound("Aliment not found");
 
     return res.status(204).end();
   } catch (err) {

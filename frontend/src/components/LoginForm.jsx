@@ -1,14 +1,24 @@
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
+
 import Toggable from "./Toggable";
+import { loginSchema } from "../utils/validations";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null); //provisional
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login({ email, password });
+
+    try {
+      await loginSchema.validate({ email, password }, { abortEarly: false });
+      login({ email, password });
+    } catch (err) {
+      setError(err); //provisional
+      setTimeout(() => setError(null), 5000); //provisional
+    }
 
     setEmail("");
     setPassword("");
@@ -30,7 +40,7 @@ const LoginForm = () => {
           type="password"
           onChange={({ target }) => setPassword(target.value)}
         />
-        <br />
+        <p>{error?.message /*provisional */}</p>
         <br />
         <button>Confirm</button>
       </form>

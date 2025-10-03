@@ -13,6 +13,7 @@ const DayForm = ({ weekId }) => {
     <>
       <form onSubmit={handleSubmit}>
         <input
+          className="input"
           onChange={({ target }) => setNameDay(target.value)}
           placeholder="Name of the day"
           value={nameDay}

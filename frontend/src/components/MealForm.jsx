@@ -13,6 +13,7 @@ const MealForm = ({ weekId, dayId }) => {
     <>
       <form onSubmit={handleSubmit}>
         <input
+          className="input"
           onChange={({ target }) => setNameMeal(target.value)}
           placeholder="Name of the meal"
           value={nameMeal}

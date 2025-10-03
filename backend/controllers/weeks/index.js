@@ -4,6 +4,7 @@ const mealsRouter = require("./meals");
 const alimentsRouter = require("./aliments");
 
 const Week = require("../../models/Week");
+const { weekSchema } = require("../../utils/validations");
 
 //GET all Week, including Day, Meal and MealAliment.
 router.get("/", async (req, res, next) => {
@@ -31,6 +32,7 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const { numberWeek } = req.body;
+    await weekSchema.validateAsync(req.body);
 
     const week = new Week({
       user: req.userId, //Viene del tokenExtractor

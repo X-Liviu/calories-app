@@ -1,6 +1,8 @@
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
+
 import Toggable from "./Toggable";
+
 const SignUpForm = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -12,15 +14,12 @@ const SignUpForm = () => {
     e.preventDefault();
     if (password === passwordRepeated) {
       signup({ name, username, email, password });
-
       setName("");
       setUsername("");
       setEmail("");
       setPassword("");
       setPasswordRepeated("");
-    } else {
-      console.log("passwords must match"); //Cambiar esto obviamente después.
-    }
+    } else console.log("yo must repeat the same password");
   };
   return (
     <Toggable buttonLabel="Sign Up">

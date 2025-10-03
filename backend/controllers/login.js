@@ -4,11 +4,12 @@ const bcrypt = require("bcrypt");
 const { SECRET } = require("../utils/config");
 
 const User = require("../models/User");
+const { loginUserSchema } = require("../utils/validations");
 
 router.post("/", async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) res.send(400).end();
+    await loginUserSchema.validateAsync(req.body);
 
     const user = await User.findOne({ email: email });
     const passwordCorrect =
@@ -17,10 +18,11 @@ router.post("/", async (req, res, next) => {
         : await bcrypt.compare(password, user.password_hash);
 
     if (!(user && passwordCorrect)) {
-      return res.status(401).json({
-        error: "invalid username or password",
-      });
+      const authError = new Error("invalid username or password");
+      authError.name = "AuthenticationError";
+      throw authError;
     }
+
     const userForToken = {
       username: user.username,
       id: user._id,
@@ -31,7 +33,7 @@ router.post("/", async (req, res, next) => {
       expiresIn: 60 * 60 * 168 * 2,
     });
 
-    res.send({ token, username: user.username, name: user.name });
+    res.json({ token, username: user.username, name: user.name });
   } catch (err) {
     next(err);
   }

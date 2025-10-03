@@ -3,14 +3,20 @@ const router = require("express").Router();
 const Week = require("../../models/Week");
 const Day = require("../../models/Day");
 
+const { daySchema } = require("../../utils/validations");
+const { throwNotFound, capitalize } = require("../../utils/helpers");
+
 //POST new Day in Week.
 router.post("/:weekId", async (req, res, next) => {
   try {
     const { weekId } = req.params;
-    const { name } = req.body;
+    let { name } = req.body;
+    name = capitalize(name); //normalized
+
+    await daySchema.validateAsync({ name });
 
     const week = await Week.findById(weekId);
-    if (!week) return res.status(404).json({ error: "Week not found" });
+    if (!week) throwNotFound("Week");
 
     const day = new Day({
       user: req.userId,
@@ -45,14 +51,15 @@ router.delete("/:weekId/:dayId", async (req, res, next) => {
     const { weekId, dayId } = req.params;
 
     const week = await Week.findById(weekId);
-    if (!week) res.status(404).end();
+    if (!week) throwNotFound("Week");
 
     const deletedDay = await Day.findOneAndDelete({
       user: req.userId,
       week: weekId,
       _id: dayId,
     });
-    if (!deletedDay) return res.status(404).json({ error: "Day not found" });
+
+    if (!deletedDay) throwNotFound("Day");
     // El hook en Day se encargará de borrar comidas, alimentos y quitar la referencia de la semana
     res.status(204).end();
   } catch (err) {
