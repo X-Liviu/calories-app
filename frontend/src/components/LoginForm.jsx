@@ -1,29 +1,32 @@
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-
 import Toggable from "./Toggable";
-import { loginSchema } from "../utils/validations";
+import { validateLoginForm } from "../utils/validations";
+import ErrorMessage from "./ErrorMessage";
+
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null); //provisional
+  const [errors, setErrors] = useState({});
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await loginSchema.validate({ email, password }, { abortEarly: false });
-      login({ email, password });
-    } catch (err) {
-      setError(err); //provisional
-      setTimeout(() => setError(null), 5000); //provisional
-    }
+    const { isValid, errors } = validateLoginForm({ email, password });
+    setErrors(errors);
+
+    if (!isValid) return;
+
+    await login({ email, password });
 
     setEmail("");
     setPassword("");
+    setErrors({});
   };
-  //Para repasar lo aprendido en fullstackopen (Toggable).
+
+  const { isValid: isFormValid } = validateLoginForm({ email, password });
+
   return (
     <Toggable buttonLabel="Log In">
       <form onSubmit={handleSubmit}>
@@ -33,16 +36,25 @@ const LoginForm = () => {
           value={email}
           onChange={({ target }) => setEmail(target.value)}
         />
+        <ErrorMessage message={errors.email} />
+
         <input
           className="input"
           placeholder="Password"
-          value={password}
           type="password"
+          value={password}
           onChange={({ target }) => setPassword(target.value)}
         />
-        <p>{error?.message /*provisional */}</p>
+        <ErrorMessage message={errors.password} />
+
         <br />
-        <button>Confirm</button>
+        <button
+          type="submit"
+          disabled={!isFormValid}
+          className={`button ${!isFormValid ? "button-disabled" : "button-enabled"}`}
+        >
+          Confirm
+        </button>
       </form>
     </Toggable>
   );

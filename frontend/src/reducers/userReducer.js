@@ -10,6 +10,7 @@ import alimentService from "../services/aliments";
 
 import { clearWeeks } from "./weekReducer";
 import { clearMyAliments } from "./myAlimentReducer";
+import { setError } from "./globalErrorReducer";
 
 const userSlice = createSlice({
   name: "user",
@@ -56,6 +57,7 @@ export const saveGlobalUser = (credentials) => {
       alimentService.setToken(user.token);
     } catch (error) {
       console.error("Error during login:", error);
+      dispatch(setError(error));
     }
   };
 };
@@ -69,6 +71,7 @@ export const signupUser = (userInfo) => {
       await dispatch(saveGlobalUser({ email, password }));
     } catch (error) {
       console.error("Error during signup:", error);
+      dispatch(setError(error));
     }
   };
 };

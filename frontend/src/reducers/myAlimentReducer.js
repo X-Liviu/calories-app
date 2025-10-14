@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import myAlimentService from "../services/myAliments";
+import { setError } from "../reducers/globalErrorReducer";
 
 const myAlimentSlice = createSlice({
   name: "myAliments",
@@ -41,6 +42,7 @@ export const saveMyAliments = () => {
       dispatch(setMyAliments(userAliments));
     } catch (error) {
       console.error(error);
+      dispatch(setError(error));
     }
   };
 };
@@ -52,6 +54,7 @@ export const addMyAliment = (myAliment) => {
       dispatch(appendMyAliment(newMyAliment));
     } catch (error) {
       console.error(error);
+      dispatch(setError(error));
     }
   };
 };
@@ -65,6 +68,7 @@ export const changeMyAliment = (myAliment) => {
       dispatch(updateMyAliment(updatedAliment));
     } catch (error) {
       console.error(error);
+      dispatch(setError(error));
     }
   };
 };
@@ -76,6 +80,7 @@ export const removeMyAliment = (myAliment) => {
       dispatch(popMyAliment(myAliment));
     } catch (error) {
       console.error(error);
+      dispatch(setError(error));
     }
   };
 };
