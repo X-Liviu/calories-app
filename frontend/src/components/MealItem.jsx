@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useMeals from "../hooks/useMeals";
@@ -19,6 +20,8 @@ const MealItem = () => {
     selectUpdatedAliments(state, meal?.aliments),
   );
 
+  const updatingRef = useRef(false); //Uso necesario para impedir hacer peticiones constantes.
+
   if (!meal) return <h1>Loading...</h1>;
 
   //Solución anterior que sólo revisaba si cambiaban los alimentos, no los valores nutricionales. Ahora se usa un custom selector que se encarga también de eso.
@@ -35,15 +38,27 @@ const MealItem = () => {
   return (
     <>
       <h1>
-        {meal?.name}{" "}
-        <input
-          type="checkbox"
-          checked={meal.cheat}
-          onChange={async ({ target }) => {
-            const newValue = target.checked;
-            await update({ weekId, dayId, mealId, cheat: newValue });
-          }}
-        />
+        {meal.name}{" "}
+        <label className="checkbox-container">
+          <input
+            type="checkbox"
+            checked={meal.cheat}
+            onChange={async ({ target }) => {
+              if (updatingRef.current) return;
+
+              const newValue = target.checked;
+              if (newValue !== meal.cheat) {
+                updatingRef.current = true;
+                try {
+                  await update({ weekId, dayId, mealId, cheat: newValue });
+                } finally {
+                  updatingRef.current = false;
+                }
+              }
+            }}
+          />
+          <span className="checkmark"></span>
+        </label>
       </h1>
 
       <AlimentList

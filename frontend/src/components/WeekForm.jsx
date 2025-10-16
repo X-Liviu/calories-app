@@ -1,13 +1,19 @@
 import { useState } from "react";
 import useWeeks from "../hooks/useWeeks";
+import { validateNumberWeek } from "../utils/validations";
 const WeekForm = () => {
   const [numberWeek, setNumberWeek] = useState("");
   const { create } = useWeeks();
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { isValid } = validateNumberWeek(numberWeek);
+    if (!isValid) return;
+
     create({ numberWeek: Number(numberWeek) });
     setNumberWeek("");
   };
+
+  const { isValid } = validateNumberWeek(numberWeek);
 
   return (
     <>
@@ -17,10 +23,15 @@ const WeekForm = () => {
           onChange={({ target }) => {
             !isNaN(Number(target.value)) && setNumberWeek(target.value);
           }}
-          placeholder="Number of the week"
+          placeholder="Number of the week (1 - 52)"
           value={numberWeek}
         />
-        <button>Create</button>
+        <button
+          disabled={!isValid}
+          className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+        >
+          Create
+        </button>
       </form>
     </>
   );

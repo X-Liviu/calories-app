@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import Toggable from "./Toggable";
 import { validateSignUpForm } from "../utils/validations";
@@ -12,24 +12,11 @@ const SignUpForm = () => {
   const [passwordRepeated, setPasswordRepeated] = useState("");
   const [errors, setErrors] = useState({});
   const [passwordRules, setPasswordRules] = useState([]);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const { signup } = useAuth();
 
-  const handlePasswordChange = (value) => {
-    setPassword(value);
-    const { passwordRules } = validateSignUpForm({
-      name,
-      username,
-      email,
-      password: value,
-      passwordRepeated,
-    });
-    setPasswordRules(passwordRules);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  useEffect(() => {
     const { isValid, errors, passwordRules } = validateSignUpForm({
       name,
       username,
@@ -37,10 +24,16 @@ const SignUpForm = () => {
       password,
       passwordRepeated,
     });
+
     setErrors(errors);
     setPasswordRules(passwordRules);
+    setIsFormValid(isValid);
+  }, [name, username, email, password, passwordRepeated]);
 
-    if (!isValid) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isFormValid) return;
 
     await signup({ name, username, email, password });
 
@@ -50,11 +43,8 @@ const SignUpForm = () => {
     setPassword("");
     setPasswordRepeated("");
     setErrors({});
-    setPasswordRules({});
+    setPasswordRules([]);
   };
-
-  const isPasswordValid =
-    passwordRules.length > 0 && passwordRules.every((rule) => rule.valid);
 
   return (
     <Toggable buttonLabel="Sign Up">
@@ -63,7 +53,7 @@ const SignUpForm = () => {
           className="input"
           placeholder="Name"
           value={name}
-          onChange={({ target }) => setName(target.value)}
+          onChange={(e) => setName(e.target.value)}
         />
         <ErrorMessage message={errors.name} />
 
@@ -71,7 +61,7 @@ const SignUpForm = () => {
           className="input"
           placeholder="Username"
           value={username}
-          onChange={({ target }) => setUsername(target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <ErrorMessage message={errors.username} />
 
@@ -79,7 +69,7 @@ const SignUpForm = () => {
           className="input"
           placeholder="E-Mail"
           value={email}
-          onChange={({ target }) => setEmail(target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <ErrorMessage message={errors.email} />
 
@@ -88,18 +78,16 @@ const SignUpForm = () => {
           placeholder="Password"
           type="password"
           value={password}
-          onChange={({ target }) => handlePasswordChange(target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        <ErrorMessage message={errors.password} />
 
         <input
           className="input"
           placeholder="Repeat Password"
           type="password"
           value={passwordRepeated}
-          onChange={({ target }) => setPasswordRepeated(target.value)}
+          onChange={(e) => setPasswordRepeated(e.target.value)}
         />
-        <ErrorMessage message={errors.passwordRepeated} />
 
         <ul className={`password-requirements ${password ? "show" : ""}`}>
           {passwordRules.map((rule) => (
@@ -115,8 +103,8 @@ const SignUpForm = () => {
         <br />
         <button
           type="submit"
-          disabled={!isPasswordValid}
-          className={`button ${!isPasswordValid ? "button-disabled" : "button-enabled"}`}
+          disabled={!isFormValid}
+          className={`${!isFormValid ? "button-disabled" : "button-enabled"}`}
         >
           Confirm
         </button>

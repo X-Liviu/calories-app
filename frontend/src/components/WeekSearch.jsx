@@ -15,7 +15,9 @@ const WeekSearch = () => {
         Search your number of the week:{" "}
         <input
           className="input"
-          onChange={({ target }) => setSearch(target.value)}
+          onChange={({ target }) =>
+            !isNaN(Number(target.value)) && setSearch(target.value)
+          }
           value={search}
         />
       </form>

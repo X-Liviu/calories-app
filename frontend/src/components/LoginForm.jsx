@@ -25,7 +25,7 @@ const LoginForm = () => {
     setErrors({});
   };
 
-  const { isValid: isFormValid } = validateLoginForm({ email, password });
+  const { isValid } = validateLoginForm({ email, password });
 
   return (
     <Toggable buttonLabel="Log In">
@@ -50,8 +50,8 @@ const LoginForm = () => {
         <br />
         <button
           type="submit"
-          disabled={!isFormValid}
-          className={`button ${!isFormValid ? "button-disabled" : "button-enabled"}`}
+          disabled={!isValid}
+          className={`${!isValid ? "button-disabled" : "button-enabled"}`}
         >
           Confirm
         </button>

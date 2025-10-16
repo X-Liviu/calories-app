@@ -78,6 +78,13 @@ export const validateLoginForm = ({ email, password }) => {
   };
 };
 
+export const validateNumberWeek = (n) => {
+  const num = Number(n);
+  return {
+    isValid: num >= 1 && num <= 52 && !isNaN(num),
+  };
+};
+
 const validateName = (name) => {
   const trimmed = (name || "").trim();
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
