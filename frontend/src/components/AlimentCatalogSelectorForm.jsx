@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import useAliments from "../hooks/useAliments";
 import useMyAliments from "../hooks/useMyAliments";
+import { validateOnlyNumbers } from "../utils/validations";
 
 const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
   let myAliments = useSelector((state) => state.myAliments);
@@ -41,6 +42,9 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
     const selectElement = e.target.previousSibling; // el select justo antes del form
     const selectedObject = availableAliments[selectElement.selectedIndex]; // usar lista filtrada
 
+    const isValid = validateOnlyNumbers(grams);
+    if (!isValid) return;
+
     create({
       name: selectedObject.name,
       grams: Number(grams),
@@ -50,6 +54,8 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
       userAliment: selectedObject.id,
     });
   };
+
+  const isValid = validateOnlyNumbers(grams);
 
   return (
     <>
@@ -66,9 +72,16 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
           className="input"
           value={grams}
           placeholder="Grams of the aliment eaten"
-          onChange={({ target }) => setGrams(target.value)}
+          onChange={({ target }) =>
+            !isNaN(Number(target.value)) && setGrams(target.value)
+          }
         />
-        <button type="submit">Add Aliment From Catalog</button>
+        <button
+          disabled={!isValid}
+          className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+        >
+          Add Aliment From Catalog
+        </button>
       </form>
     </>
   );

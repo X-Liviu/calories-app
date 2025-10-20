@@ -6,14 +6,14 @@ const WeekForm = () => {
   const { create } = useWeeks();
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { isValid } = validateNumberWeek(numberWeek);
+    const isValid = validateNumberWeek(numberWeek);
     if (!isValid) return;
 
     create({ numberWeek: Number(numberWeek) });
     setNumberWeek("");
   };
 
-  const { isValid } = validateNumberWeek(numberWeek);
+  const isValid = validateNumberWeek(numberWeek);
 
   return (
     <>
@@ -23,7 +23,7 @@ const WeekForm = () => {
           onChange={({ target }) => {
             !isNaN(Number(target.value)) && setNumberWeek(target.value);
           }}
-          placeholder="Number of the week (1 - 52)"
+          placeholder="Week (1 - 52)"
           value={numberWeek}
         />
         <button

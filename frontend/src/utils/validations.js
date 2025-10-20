@@ -10,7 +10,8 @@ export const validateSignUpForm = ({
   if (!name.trim()) {
     errors.name = "Name is required";
   } else if (!validateName(name)) {
-    errors.name = "Name can only contain letters and spaces";
+    errors.name =
+      "Name can only contain letters and single spaces, hyphens, apostrophes, or commas, without leading or trailing spaces";
   }
 
   if (!username.trim()) {
@@ -80,21 +81,55 @@ export const validateLoginForm = ({ email, password }) => {
 
 export const validateNumberWeek = (n) => {
   const num = Number(n);
-  return {
-    isValid: num >= 1 && num <= 52 && !isNaN(num),
-  };
+  return num >= 1 && num <= 52 && !isNaN(num);
 };
 
-const validateName = (name) => {
-  const trimmed = (name || "").trim();
-  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
-  return nameRegex.test(trimmed);
+export const validateOnlyLetters = (text) => {
+  const evaluate = text || "";
+  const regex = /^[A-Za-z]+$/;
+  return regex.test(evaluate);
+};
+
+export const validateOnlyNumbers = (grams) => {
+  return grams.trim() !== "" && !isNaN(Number(grams));
+};
+
+export const validateNoEmpty = (text) => {
+  const regex = /^[^\s]+( [^\s]+)*$/;
+  return regex.test(text);
+};
+
+export const validateCustomAliment = ({
+  nameAliment,
+  gramsAliment,
+  totalKcalAliment,
+}) => {
+  if (!nameAliment || nameAliment.trim().length === 0 || /\s/.test(nameAliment))
+    return false;
+
+  if (!gramsAliment || isNaN(gramsAliment) || Number(gramsAliment) <= 0)
+    return false;
+
+  if (
+    !totalKcalAliment ||
+    isNaN(totalKcalAliment) ||
+    Number(totalKcalAliment) <= 0
+  )
+    return false;
+
+  return true;
+};
+
+export const validateName = (name) => {
+  const evaluate = name || "";
+  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ ,'-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+  return nameRegex.test(evaluate);
 };
 
 const validateUsername = (username) => {
-  const trimmed = (username || "").trim();
+  const evaluate = username || "";
   const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
-  return usernameRegex.test(trimmed);
+  return usernameRegex.test(evaluate);
 };
 
 const validateEmail = (email) => {

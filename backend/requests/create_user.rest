@@ -2,44 +2,8 @@ POST http://localhost:7000/api/users
 Content-Type: application/json
 
 {
-  "name": "Liviu Deleanu",
-  "username": "X-Liviu",
-  "email": "liv@gmail.com",
-  "password": "12345"
-}
-
-###
-
-POST http://localhost:7000/api/users
-Content-Type: application/json
-
-{
-  "name": "Dei V",
-  "username": "DeiV77",
-  "email": "a@gmail.com",
-  "password": "12345"
-}
-
-###
-
-POST http://localhost:7000/api/users
-Content-Type: application/json
-
-{
-  "name": "Bad Bunny",
-  "username": "conejo_malo",
-  "email": "yeyeyeye@gmail.com",
-  "password": "12345"
-}
-
-###
-
-POST http://localhost:7000/api/users
-Content-Type: application/json
-
-{
-  "name": "paco",
-  "username": "paco",
-  "email": "paco",
-  "password": "paco"
+  "name": "prueba",
+  "username": "prueba",
+  "email": "liviu@gmail.com",
+  "password": "@1234Abc"
 }

@@ -49,7 +49,7 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
         <h2>
           {!aliment.userAliment && aliment.customKcal && "⚠️"}{" "}
           {!aliment.userAliment && !aliment.customKcal && "❗"}{" "}
-          {aliment.nameSnapshot} ({aliment.grams}g):{" "}
+          {aliment.nameSnapshot} ({aliment.grams} g):{" "}
           {!aliment.customKcal
             ? calculate100g(aliment.userAliment?.nutritionFacts.kcal100G)
             : aliment.customKcal}{" "}

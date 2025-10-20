@@ -1,7 +1,7 @@
 POST http://localhost:7000/api/weeks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlgtTGl2aXUiLCJpZCI6IjY4YWQ3ZjVmZTA3YTZlZDJmZjVlMGYzNiIsImlhdCI6MTc1NjI5MjExNiwiZXhwIjoxNzU3NTAxNzE2fQ.LxUlPVZeKYvVvEoAuEmtAri6Q3MqP-Uf2Nta3RYw1N4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBydWViYSIsImlkIjoiNjhmNjQ2Njg0MTg0MzY0NTAwYzg0NTlkIiwiaWF0IjoxNzYwOTcwMzcyLCJleHAiOjE3NjIxNzk5NzJ9.jZAbv3-UquYRM8-xI2igNAO0XspINwBjBEY61EZ7uw8
 Content-Type: application/json
 
 {
-  "weekNumber": 35
+  "numberWeek": 21
 }

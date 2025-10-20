@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useAliments from "../hooks/useAliments";
+import { validateCustomAliment } from "../utils/validations";
 const AlimentForm = ({ weekId, dayId, mealId }) => {
   const [nameAliment, setNameAliment] = useState("");
   const [gramsAliment, setGramsAliment] = useState("");
@@ -20,6 +21,13 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
     setGramsAliment("");
     setTotalKcalAliment("");
   };
+
+  const isValid = validateCustomAliment({
+    nameAliment,
+    gramsAliment,
+    totalKcalAliment,
+  });
+
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -40,7 +48,12 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
         value={totalKcalAliment}
         onChange={({ target }) => setTotalKcalAliment(target.value)}
       />
-      <button>Add Custom Aliment</button>
+      <button
+        disabled={!isValid}
+        className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+      >
+        Add Custom Aliment
+      </button>
     </form>
   );
 };
