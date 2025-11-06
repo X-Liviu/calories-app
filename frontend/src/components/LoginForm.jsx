@@ -1,7 +1,10 @@
 import { useState } from "react";
+
 import useAuth from "../hooks/useAuth";
-import Toggable from "./Toggable";
+
 import { validateLoginForm } from "../utils/validations";
+
+import Toggable from "./Toggable";
 import ErrorMessage from "./ErrorMessage";
 
 const LoginForm = () => {

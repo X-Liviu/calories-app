@@ -104,7 +104,11 @@ export const validateCustomAliment = ({
   gramsAliment,
   totalKcalAliment,
 }) => {
-  if (!nameAliment || nameAliment.trim().length === 0 || /\s/.test(nameAliment))
+  if (
+    !nameAliment ||
+    nameAliment.trim().length === 0 ||
+    !/^[^\s]+( [^\s]+)*$/.test(nameAliment)
+  )
     return false;
 
   if (!gramsAliment || isNaN(gramsAliment) || Number(gramsAliment) <= 0)

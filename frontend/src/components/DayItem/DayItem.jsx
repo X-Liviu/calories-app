@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectDay } from "../redux/selectors/daySelectors";
+
+import { selectDay } from "../../redux/selectors/daySelectors";
 
 import MealList from "./MealList";
 import MealForm from "./MealForm";

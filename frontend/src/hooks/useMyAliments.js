@@ -11,9 +11,7 @@ const useMyAliments = () => {
   const user = useSelector((state) => state.user);
 
   const get = async () => {
-    if (user?.token) {
-      await dispatch(saveMyAliments());
-    }
+    if (user?.token) await dispatch(saveMyAliments());
   };
 
   const create = async (myAliment) => {

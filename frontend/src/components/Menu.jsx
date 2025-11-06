@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
 const Menu = () => {
   const user = useSelector((state) => state.user);
   return (
-    <div className="menu">
+    <nav className="menu">
       <Link to="/">Home</Link>
       {user ? (
         <>
@@ -17,7 +18,7 @@ const Menu = () => {
           <Link to={"/signup"}>Sign Up</Link>
         </>
       )}
-    </div>
+    </nav>
   );
 };
 

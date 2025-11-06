@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
+
 import useAuthInitAndSync from "./hooks/useAuthInitAndSync";
 import useInitWeeks from "./hooks/useInitWeeks";
 import useMyAliments from "./hooks/useMyAliments";
@@ -7,19 +8,19 @@ import useMyAliments from "./hooks/useMyAliments";
 import BreadcrumbListener from "./components/BreadcrumbListener";
 import Breadcrumb from "./components/Breadcrumb";
 import Menu from "./components/Menu";
-import Logout from "./components/Logout";
 import Home from "./components/Home";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
-import MyAlimentForm from "./components/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
-import AccountView from "./components/AccountView";
-import WeekSearch from "./components/WeekSearch";
-import WeekItem from "./components/WeekItem";
-import DayItem from "./components/DayItem";
-import MealItem from "./components/MealItem";
+import MyAlimentForm from "./components/MyAlimentForm/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
+import AccountView from "./components/AccountView/AccountView";
+import WeekSearch from "./components/WeekSearch/WeekSearch";
+import WeekItem from "./components/WeekItem/WeekItem";
+import DayItem from "./components/DayItem/DayItem";
+import MealItem from "./components/MealItem/MealItem";
 import NotFound from "./components/NotFound";
+import Footer from "./components/Footer";
 
 const App = () => {
   useAuthInitAndSync();
@@ -31,7 +32,6 @@ const App = () => {
       <BreadcrumbListener />
       <Breadcrumb />
       <Menu />
-      <Logout />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route element={<RedirectIfAuthenticated />}>
@@ -48,6 +48,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </>
   );
 };

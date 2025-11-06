@@ -1,6 +1,9 @@
 import { useState } from "react";
-import useMeals from "../hooks/useMeals";
-import { validateNoEmpty } from "../utils/validations";
+
+import useMeals from "../../hooks/useMeals";
+
+import { validateNoEmpty } from "../../utils/validations";
+
 const MealForm = ({ weekId, dayId }) => {
   const [nameMeal, setNameMeal] = useState("");
   const { create } = useMeals();

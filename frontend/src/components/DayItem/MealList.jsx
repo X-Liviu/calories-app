@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+
+import useMeals from "../../hooks/useMeals";
+
 import MealItemList from "./MealItemList";
-import useMeals from "../hooks/useMeals";
+
 const MealList = ({ meals, weekId, dayId }) => {
   const navigate = useNavigate();
   const { del } = useMeals();

@@ -6,7 +6,48 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem; /* separación entre Breadcrumb, Menu y Logout */
+}
+
+/*ELEMENTOS HTML GENERALES*/
+
+/*Home*/
+
+/**/
+
+a {
+  font-weight: 600;
+  color: #646cff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #535bf2;
+}
+
+h1, h2, h3 {
+  margin: 0.5em 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.8em;
+}
+
+button {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.4em;
+  font-size: 1em;
+  font-family: inherit;
+  background-color: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+button:hover {
+  background-color: #3a3a3a;
 }
 
 /* Breadcrumb centrado */
@@ -253,21 +294,6 @@ table button:hover {
     border-radius: 8px;
     background-color: #fff3b0;
   }
-}
-
-
-/* ====== HOME image gif ====== */
-.profile-gif {
-  width: 220px; 
-  display: block;
-  margin: 30px auto;
-  border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
-}
-
-.profile-gif:hover {
-  transform: scale(1.05);
 }
 
 /* ====== NOT FOUND PAGE ====== */

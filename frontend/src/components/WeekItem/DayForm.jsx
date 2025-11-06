@@ -1,6 +1,9 @@
 import { useState } from "react";
-import useDays from "../hooks/useDays";
-import { validateOnlyLetters } from "../utils/validations";
+
+import useDays from "../../hooks/useDays";
+
+import { validateOnlyLetters } from "../../utils/validations";
+
 const DayForm = ({ weekId }) => {
   const [nameDay, setNameDay] = useState("");
   const { create } = useDays();

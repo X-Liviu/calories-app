@@ -1,5 +1,7 @@
 import { useSelector } from "react-redux";
-import { selectMealCalories } from "../redux/selectors/mealSelectors";
+
+import { selectMealCalories } from "../../redux/selectors/mealSelectors";
+
 const MealItemList = ({ meal }) => {
   const totalCalories = useSelector((state) =>
     selectMealCalories(state, meal.aliments),

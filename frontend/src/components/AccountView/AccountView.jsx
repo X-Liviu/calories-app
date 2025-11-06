@@ -1,10 +1,14 @@
 import { useSelector } from "react-redux";
+
+import Logout from "./Logout";
+
 const AccountView = () => {
   const user = useSelector((state) => state.user);
 
   return (
     <>
-      <div>{user.name}, you logged in succesfully!</div>
+      <h2>{user.name}, you logged in succesfully!</h2>
+      <Logout />
     </>
   );
 };

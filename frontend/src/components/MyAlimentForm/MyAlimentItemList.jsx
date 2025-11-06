@@ -1,5 +1,6 @@
 import { useState } from "react";
-import useMyAliments from "../hooks/useMyAliments";
+
+import useMyAliments from "../../hooks/useMyAliments";
 
 const MyAlimentItemList = ({ myAliment }) => {
   const { del, update } = useMyAliments();

@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
-import { selectWeekCalories } from "../redux/selectors/weekSelectors";
 
-import { daysOfIsoWeek } from "../utils/days";
+import { selectWeekCalories } from "../../redux/selectors/weekSelectors";
+
+import { daysOfIsoWeek } from "../../utils/days";
 
 const WeekItemList = ({ week }) => {
   const totalCalories = useSelector((state) =>

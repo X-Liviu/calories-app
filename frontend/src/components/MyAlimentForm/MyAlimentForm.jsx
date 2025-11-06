@@ -1,5 +1,7 @@
 import { useState } from "react";
-import useMyAliments from "../hooks/useMyAliments";
+
+import useMyAliments from "../../hooks/useMyAliments";
+
 import MyAlimentList from "./MyAlimentList";
 
 const INITIAL_STATE = {

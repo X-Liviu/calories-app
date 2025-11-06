@@ -1,6 +1,9 @@
 import { useState } from "react";
-import useAliments from "../hooks/useAliments";
-import { validateCustomAliment } from "../utils/validations";
+
+import useAliments from "../../hooks/useAliments";
+
+import { validateCustomAliment } from "../../utils/validations";
+
 const AlimentForm = ({ weekId, dayId, mealId }) => {
   const [nameAliment, setNameAliment] = useState("");
   const [gramsAliment, setGramsAliment] = useState("");
@@ -9,6 +12,14 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
   const { create } = useAliments();
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const isValid = validateCustomAliment({
+      nameAliment,
+      gramsAliment,
+      totalKcalAliment,
+    });
+    if (!isValid) return;
+
     create({
       name: nameAliment,
       grams: Number(gramsAliment),
@@ -40,13 +51,17 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
         className="input"
         placeholder="grams"
         value={gramsAliment}
-        onChange={({ target }) => setGramsAliment(target.value)}
+        onChange={({ target }) =>
+          !isNaN(Number(target.value)) && setGramsAliment(target.value)
+        }
       />
       <input
         className="input"
         placeholder="total kcal"
         value={totalKcalAliment}
-        onChange={({ target }) => setTotalKcalAliment(target.value)}
+        onChange={({ target }) =>
+          !isNaN(Number(target.value)) && setTotalKcalAliment(target.value)
+        }
       />
       <button
         disabled={!isValid}

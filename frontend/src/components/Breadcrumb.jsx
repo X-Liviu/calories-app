@@ -6,28 +6,22 @@ const Breadcrumb = () => {
 
   if (itemLinks.length === 1) {
     return (
-      <div>
-        <Link style={{ paddingRight: 5, color: "white" }} to={itemLinks[0].URL}>
-          {itemLinks[0].name}
-        </Link>
-      </div>
+      <nav>
+        <Link to={itemLinks[0].URL}>{itemLinks[0].name}</Link>
+      </nav>
     );
   } else if (itemLinks.length > 1)
     return (
-      <div>
+      <nav>
         {itemLinks.map((item, index) => {
           return (
-            <Link
-              style={{ paddingRight: 5, color: "white" }}
-              key={item.name}
-              to={item.URL}
-            >
+            <Link key={item.name} to={item.URL}>
               {item.name}
-              {index < itemLinks.length - 1 && " >"}
+              {index < itemLinks.length - 1 && " > "}
             </Link>
           );
         })}
-      </div>
+      </nav>
     );
 };
 

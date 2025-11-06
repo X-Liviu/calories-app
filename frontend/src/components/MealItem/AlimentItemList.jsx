@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
-import useAliments from "../hooks/useAliments";
-import Toggable from "./Toggable";
+
+import useAliments from "../../hooks/useAliments";
+
+import Toggable from "../Toggable";
 
 const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
   const [visible, setVisible] = useState(false);

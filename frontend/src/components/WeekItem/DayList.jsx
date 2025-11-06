@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-import useDays from "../hooks/useDays";
+import useDays from "../../hooks/useDays";
+
 import DayItemList from "./DayItemList";
 
 const DayList = ({ days, weekId }) => {

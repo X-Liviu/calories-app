@@ -1,5 +1,7 @@
 import { useSelector } from "react-redux";
-import useAuth from "../hooks/useAuth";
+
+import useAuth from "../../hooks/useAuth";
+
 const Logout = () => {
   const user = useSelector((state) => state.user);
   const { logout } = useAuth();

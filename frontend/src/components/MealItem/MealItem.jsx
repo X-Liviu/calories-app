@@ -1,10 +1,12 @@
 import { useRef } from "react";
-import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import useMeals from "../hooks/useMeals";
 
-import { selectMeal } from "../redux/selectors/mealSelectors";
-import { selectUpdatedAliments } from "../redux/selectors/myAlimentSelectors";
+import { useParams } from "react-router-dom";
+
+import useMeals from "../../hooks/useMeals";
+
+import { selectMeal } from "../../redux/selectors/mealSelectors";
+import { selectUpdatedAliments } from "../../redux/selectors/myAlimentSelectors";
 
 import AlimentList from "./AlimentList";
 import AlimentForm from "./AlimentForm";
@@ -67,12 +69,7 @@ const MealItem = () => {
         dayId={dayId}
         mealId={mealId}
       />
-      <br />
-
       <AlimentForm weekId={weekId} dayId={dayId} mealId={mealId} />
-      <br />
-      <br />
-
       <AlimentCatalogSelectorForm
         aliments={alimentsAvailable}
         weekId={weekId}

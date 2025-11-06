@@ -1,6 +1,9 @@
 import { useState } from "react";
-import useWeeks from "../hooks/useWeeks";
-import { validateNumberWeek } from "../utils/validations";
+
+import useWeeks from "../../hooks/useWeeks";
+
+import { validateNumberWeek } from "../../utils/validations";
+
 const WeekForm = () => {
   const [numberWeek, setNumberWeek] = useState("");
   const { create } = useWeeks();

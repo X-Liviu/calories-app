@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+
 import useAuth from "../hooks/useAuth";
-import Toggable from "./Toggable";
+
 import { validateSignUpForm } from "../utils/validations";
+
+import Toggable from "./Toggable";
 import ErrorMessage from "./ErrorMessage";
 
 const SignUpForm = () => {

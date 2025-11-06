@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectWeek } from "../redux/selectors/weekSelectors";
+
+import { selectWeek } from "../../redux/selectors/weekSelectors";
+
 import DayList from "./DayList";
 import DayForm from "./DayForm";
 

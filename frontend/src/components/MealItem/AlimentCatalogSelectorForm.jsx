@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import useAliments from "../hooks/useAliments";
-import useMyAliments from "../hooks/useMyAliments";
-import { validateOnlyNumbers } from "../utils/validations";
+
+import useAliments from "../../hooks/useAliments";
+import useMyAliments from "../../hooks/useMyAliments";
+
+import { validateOnlyNumbers } from "../../utils/validations";
 
 const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
   let myAliments = useSelector((state) => state.myAliments);

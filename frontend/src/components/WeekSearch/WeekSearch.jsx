@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { weekToday } from "../utils/days";
+import { weekToday } from "../../utils/days";
 
 import WeekList from "./WeekList";
 import WeekForm from "./WeekForm";

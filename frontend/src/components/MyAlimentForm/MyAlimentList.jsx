@@ -8,7 +8,7 @@ const MyAlimentList = () => {
   console.log(myAliments);
 
   return (
-    <table className="my-aliment-table">
+    <table>
       <thead>
         <tr>
           <th>Name</th>

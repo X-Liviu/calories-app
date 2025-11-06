@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import useWeeks from "../hooks/useWeeks";
+
+import useWeeks from "../../hooks/useWeeks";
+
 import {
   selectWeeks,
   selectWeekByNumber,
-} from "../redux/selectors/weekSelectors";
+} from "../../redux/selectors/weekSelectors";
 
 import WeekItemList from "./WeekItemList";
 

@@ -1,0 +1,89 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  align-items: center;
+}
+
+footer {
+  background-color: #666666;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+h1 {
+
+}
+
+h2 {
+
+}
+
+img {
+  height: auto;
+  width: 400px;
+  border-radius: 16px;
+}
+
+.select {
+
+}
+.input {
+
+}
+.invisible-input {
+
+}
+button {
+
+}
+
+.button-disabled {}
+.button-enabled {}
+
+
+table {
+
+}
+
+tbody {
+
+}
+
+tr {
+
+}
+
+td {
+
+}
+
+label .checkbox-container {
+
+}
+
+.checkmark span{
+
+}
+
+.week-form {
+
+}
+
+.error {
+
+}
+
+.global-error {
+
+}
+
+.password-requirements {
+  
+}

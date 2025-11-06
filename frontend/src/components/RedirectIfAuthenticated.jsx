@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 const RedirectIfAuthenticated = () => {
   const user = useSelector((state) => state.user);
   const location = useLocation();
