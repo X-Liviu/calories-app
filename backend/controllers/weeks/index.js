@@ -9,18 +9,24 @@ const { weekSchema } = require("../../utils/validations");
 //GET all Week, including Day, Meal and MealAliment.
 router.get("/", async (req, res, next) => {
   try {
-    const weeks = await Week.find({ user: req.userId }).populate({
-      path: "days",
-      populate: {
-        path: "meals",
+    const { year } = req.query;
+    const weeks = await Week.find({
+      user: req.userId,
+      year: Number(year),
+    })
+      .sort({ weekNumber: 1 })
+      .populate({
+        path: "days",
         populate: {
-          path: "aliments",
+          path: "meals",
           populate: {
-            path: "user_aliment",
+            path: "aliments",
+            populate: {
+              path: "user_aliment",
+            },
           },
         },
-      },
-    });
+      });
 
     res.json(weeks);
   } catch (err) {
@@ -31,12 +37,13 @@ router.get("/", async (req, res, next) => {
 //POST new Week.
 router.post("/", async (req, res, next) => {
   try {
-    const { numberWeek } = req.body;
+    const { numberWeek, year } = req.body;
     await weekSchema.validateAsync(req.body);
 
     const week = new Week({
       user: req.userId, //Viene del tokenExtractor
       number_week: numberWeek,
+      year,
     });
     await week.save();
 

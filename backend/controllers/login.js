@@ -24,16 +24,20 @@ router.post("/", async (req, res, next) => {
     }
 
     const userForToken = {
-      username: user.username,
+      usernqame: user.username, //Esto no lo voy a usar nunca, pero puede ser interesante en un futuro.
       id: user._id,
     };
-
     // el token expira en 14 días.
     const token = jwt.sign(userForToken, process.env.SECRET, {
       expiresIn: 60 * 60 * 168 * 2,
     });
 
-    res.json({ token, username: user.username, name: user.name });
+    res.json({
+      token,
+      username: user.username,
+      name: user.name,
+      since: user.registrationDate.getFullYear(),
+    });
   } catch (err) {
     next(err);
   }

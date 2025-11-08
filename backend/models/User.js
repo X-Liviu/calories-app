@@ -21,15 +21,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  registrationDate: {
+    type: Date,
+    required: true,
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0,
+  },
+  lockUntil: {
+    type: Date,
+  },
 });
 
+//Esto no lo uso ya (08-11-2025)
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
-    // el passwordHash no debe mostrarse
-    delete returnedObject.password_hash;
+    delete returnedObject.password_hash; // el passwordHash no debe mostrarse
+    delete returnedObject.registrationDate;
   },
 });
 

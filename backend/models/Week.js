@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-const Day = require("./Day"); // Importamos Day
-//Para ir haciendo la app, de momento solo va a haber semanas únicas de 1 año. Los años están comentados.
+const Day = require("./Day");
 const weekSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,10 +10,10 @@ const weekSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  /*year: {
+  year: {
     type: Number,
     required: true,
-  },*/
+  },
   days: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -35,7 +34,7 @@ weekSchema.set("toJSON", {
   },
 });
 
-weekSchema.index({ user: 1, number_week: 1 /*year: 1*/ }, { unique: true });
+weekSchema.index({ user: 1, number_week: 1, year: 1 }, { unique: true });
 
 // --- Middleware para borrado en cascada --- por ChatGPT
 weekSchema.pre("findOneAndDelete", async function (next) {

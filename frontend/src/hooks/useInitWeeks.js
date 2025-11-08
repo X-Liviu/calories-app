@@ -3,10 +3,10 @@ import { saveGlobalWeeks } from "../reducers/weekReducer";
 
 const useInitWeeks = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const get = async () => {
-    if (user?.token) {
-      await dispatch(saveGlobalWeeks());
+  const token = useSelector((state) => state.user?.token);
+  const get = async (year) => {
+    if (token) {
+      await dispatch(saveGlobalWeeks(year));
     }
   };
 

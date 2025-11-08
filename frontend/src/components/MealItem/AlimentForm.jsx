@@ -22,8 +22,8 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
 
     create({
       name: nameAliment,
-      grams: Number(gramsAliment),
-      customKcal: Number(totalKcalAliment),
+      grams: Number(gramsAliment), //Se convierte a number, por si queda "" porque se deja vacío, entonces se convierte a 0.
+      customKcal: totalKcalAliment,
       weekId,
       dayId,
       mealId,
@@ -49,19 +49,31 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
       />
       <input
         className="input"
-        placeholder="grams"
+        placeholder="grams (optional)"
         value={gramsAliment}
-        onChange={({ target }) =>
-          !isNaN(Number(target.value)) && setGramsAliment(target.value)
-        }
+        onChange={({ target }) => {
+          if (target.value.trim() === "") {
+            setGramsAliment("");
+            return;
+          }
+          target.value.length <= 5 &&
+            !isNaN(Number(target.value)) &&
+            setGramsAliment(Number(target.value));
+        }}
       />
       <input
         className="input"
         placeholder="total kcal"
         value={totalKcalAliment}
-        onChange={({ target }) =>
-          !isNaN(Number(target.value)) && setTotalKcalAliment(target.value)
-        }
+        onChange={({ target }) => {
+          if (target.value.trim() === "") {
+            setTotalKcalAliment("");
+            return;
+          }
+          target.value.length <= 5 &&
+            !isNaN(Number(target.value)) &&
+            setTotalKcalAliment(Number(target.value));
+        }}
       />
       <button
         disabled={!isValid}

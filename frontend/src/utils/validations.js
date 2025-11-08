@@ -1,3 +1,5 @@
+import { weeksPerYear } from "weeknumber";
+
 export const validateSignUpForm = ({
   name,
   username,
@@ -10,15 +12,13 @@ export const validateSignUpForm = ({
   if (!name.trim()) {
     errors.name = "Name is required";
   } else if (!validateName(name)) {
-    errors.name =
-      "Name can only contain letters and single spaces, hyphens, apostrophes, or commas, without leading or trailing spaces";
+    errors.name = "2-50 chars, letters, numbers, . _ - ,";
   }
 
   if (!username.trim()) {
     errors.username = "Username is required";
   } else if (!validateUsername(username)) {
-    errors.username =
-      "Username can only contain letters, numbers, dots, or underscores (3-20 chars)";
+    errors.username = "3‑20 chars, letters/numbers/._-";
   }
 
   if (!validateEmail(email)) errors.email = "E-Mail not valid";
@@ -79,24 +79,30 @@ export const validateLoginForm = ({ email, password }) => {
   };
 };
 
-export const validateNumberWeek = (n) => {
-  const num = Number(n);
-  return num >= 1 && num <= 52 && !isNaN(num);
+export const validateNumberWeek = ({ numberWeek, year }) => {
+  const maxWeeks = weeksPerYear(year);
+  console.log(year);
+  numberWeek = Number(numberWeek);
+  if (isNaN(numberWeek) || numberWeek < 1 || numberWeek > maxWeeks)
+    return false;
+
+  return true;
 };
 
 export const validateOnlyLetters = (text) => {
   const evaluate = text || "";
-  const regex = /^[A-Za-z]+$/;
-  return regex.test(evaluate);
+  const regex = /^[^\s\d]+( [^\s\d]+)*$/;
+  return regex.test(evaluate) && text.length <= 30;
 };
 
-export const validateOnlyNumbers = (grams) => {
-  return grams.trim() !== "" && !isNaN(Number(grams));
+export const validateOnlyNumbers = (n) => {
+  const regex = /^\d{1,5}$/;
+  return regex.test(n.toString());
 };
 
 export const validateNoEmpty = (text) => {
   const regex = /^[^\s]+( [^\s]+)*$/;
-  return regex.test(text);
+  return regex.test(text) && text.length <= 30;
 };
 
 export const validateCustomAliment = ({
@@ -107,11 +113,11 @@ export const validateCustomAliment = ({
   if (
     !nameAliment ||
     nameAliment.trim().length === 0 ||
-    !/^[^\s]+( [^\s]+)*$/.test(nameAliment)
+    !validateNoEmpty(nameAliment)
   )
     return false;
 
-  if (!gramsAliment || isNaN(gramsAliment) || Number(gramsAliment) <= 0)
+  if (gramsAliment && (isNaN(gramsAliment) || Number(gramsAliment) <= 0))
     return false;
 
   if (
@@ -126,7 +132,8 @@ export const validateCustomAliment = ({
 
 export const validateName = (name) => {
   const evaluate = name || "";
-  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ ,'-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+  const nameRegex =
+    /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
   return nameRegex.test(evaluate);
 };
 

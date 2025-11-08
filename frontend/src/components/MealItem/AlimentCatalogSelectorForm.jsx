@@ -49,7 +49,7 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
     create({
       name: selectedObject.name,
-      grams: Number(grams),
+      grams,
       weekId,
       dayId,
       mealId,
@@ -74,9 +74,13 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
           className="input"
           value={grams}
           placeholder="Grams of the aliment eaten"
-          onChange={({ target }) =>
-            !isNaN(Number(target.value)) && setGrams(target.value)
-          }
+          onChange={({ target }) => {
+            if (target.value.trim() === "") {
+              setGrams("");
+              return;
+            }
+            !isNaN(Number(target.value)) && setGrams(Number(target.value));
+          }}
         />
         <button
           disabled={!isValid}

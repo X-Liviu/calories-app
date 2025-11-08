@@ -7,9 +7,10 @@ const setToken = (newToken) => {
   token = `Bearer ${newToken}`;
 };
 
-const getAll = async () => {
+const getAll = async (year) => {
   const config = {
     headers: { Authorization: token },
+    params: year ? { year } : {},
   };
   const response = await axios.get(baseURL, config);
   return response.data;

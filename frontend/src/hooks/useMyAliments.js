@@ -1,4 +1,6 @@
+import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   saveMyAliments,
   addMyAliment,
@@ -8,21 +10,23 @@ import {
 
 const useMyAliments = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.user?.token);
 
-  const get = async () => {
-    if (user?.token) await dispatch(saveMyAliments());
-  };
+  const get = useCallback(async () => {
+    if (token) {
+      await dispatch(saveMyAliments());
+    }
+  }, [dispatch, token]);
 
   const create = async (myAliment) => {
-    if (user?.token) await dispatch(addMyAliment(myAliment));
+    if (token) await dispatch(addMyAliment(myAliment));
   };
 
   const update = async (myAliment) => {
-    if (user?.token) await dispatch(changeMyAliment(myAliment));
+    if (token) await dispatch(changeMyAliment(myAliment));
   };
   const del = async (myAliment) => {
-    if (user?.token) await dispatch(removeMyAliment(myAliment));
+    if (token) await dispatch(removeMyAliment(myAliment));
   };
 
   return { get, create, update, del };

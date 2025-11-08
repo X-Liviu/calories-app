@@ -1,9 +1,15 @@
 const Joi = require("joi");
 
 const createUserSchema = Joi.object({
-  name: Joi.string().min(2).required(),
+  name: Joi.string()
+    .pattern(
+      /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/ //eslint-disable-line
+    )
+    .required(),
   username: Joi.string()
-    .pattern(/^[a-zA-Z0-9._-]{3,20}$/)
+    .pattern(
+      /^[a-zA-Z0-9._-]{3,20}$/ //eslint-disable-line
+    )
     .required(),
   email: Joi.string().email().required(),
   password: Joi.string()
@@ -23,20 +29,14 @@ const loginUserSchema = Joi.object({
 });
 
 const weekSchema = Joi.object({
-  numberWeek: Joi.number().min(1).max(52).required(),
+  year: Joi.number().required(),
+  numberWeek: Joi.number().min(1).max(53).required(), //TODO Aplicar weekNumber (paquete) para que no se añada una semana de un año que no exista (lo digo por la semana 53)
 });
 
 const daySchema = Joi.object({
   name: Joi.string()
-    .valid(
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday" //eslint-disable-line
-    )
+    .pattern(/^[^\s\d]+( [^\s\d]+)*$/)
+    .max(30)
     .required(),
 });
 
@@ -45,7 +45,10 @@ const mealSchema = Joi.object({
 });
 
 const createMealAlimentSchema = Joi.object({
-  name: Joi.string().required(),
+  name: Joi.string()
+    .pattern(/^[^\s]+( [^\s]+)*$/)
+    .max(30)
+    .required(),
   grams: Joi.number().required(),
   userAliment: Joi.string(),
   customKcal: Joi.number(),

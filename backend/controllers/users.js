@@ -32,10 +32,11 @@ router.post("/", async (req, res, next) => {
       username,
       email,
       password_hash: passwordHash,
+      registrationDate: new Date(),
     });
 
-    const savedUser = await user.save();
-    res.status(201).json(savedUser);
+    await user.save();
+    res.status(201).json({ message: "Registration done correctly" }); //De momento lo dejo así. Igual en un futuro lo cambio. (08-11-25)
   } catch (err) {
     next(err);
   }

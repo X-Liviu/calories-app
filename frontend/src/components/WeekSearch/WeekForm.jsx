@@ -4,19 +4,19 @@ import useWeeks from "../../hooks/useWeeks";
 
 import { validateNumberWeek } from "../../utils/validations";
 
-const WeekForm = () => {
+const WeekForm = ({ year }) => {
   const [numberWeek, setNumberWeek] = useState("");
   const { create } = useWeeks();
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateNumberWeek(numberWeek);
+    const isValid = validateNumberWeek({ numberWeek, year });
     if (!isValid) return;
 
-    create({ numberWeek: Number(numberWeek) });
+    create({ numberWeek, year });
     setNumberWeek("");
   };
 
-  const isValid = validateNumberWeek(numberWeek);
+  const isValid = validateNumberWeek({ numberWeek, year });
 
   return (
     <>
@@ -24,9 +24,15 @@ const WeekForm = () => {
         <input
           className="input"
           onChange={({ target }) => {
-            !isNaN(Number(target.value)) && setNumberWeek(target.value);
+            if (target.value.trim() === "") {
+              setNumberWeek("");
+              return;
+            }
+            target.value.length <= 2 &&
+              !isNaN(Number(target.value)) &&
+              setNumberWeek(Number(target.value));
           }}
-          placeholder="Week (1 - 52)"
+          placeholder="Week (1 - 53)"
           value={numberWeek}
         />
         <button
@@ -36,6 +42,12 @@ const WeekForm = () => {
           Create
         </button>
       </form>
+      {numberWeek === 53 && !isValid && (
+        <p>
+          <strong>Note:</strong> A few years have 53 weeks. This week cannot be
+          created for {year}.
+        </p>
+      )}
     </>
   );
 };

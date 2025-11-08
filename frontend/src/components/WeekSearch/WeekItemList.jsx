@@ -8,7 +8,8 @@ const WeekItemList = ({ week }) => {
   const totalCalories = useSelector((state) =>
     selectWeekCalories(state, week.days),
   );
-  const days = daysOfIsoWeek(week.numberWeek, 2025, "DDMMYYYY");
+  const { lastSavedYear } = useSelector((state) => state.year);
+  const days = daysOfIsoWeek(week.numberWeek, lastSavedYear, "DDMMYYYY");
 
   return (
     <>

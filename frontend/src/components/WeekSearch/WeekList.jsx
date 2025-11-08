@@ -14,12 +14,8 @@ const WeekList = ({ filter }) => {
   const navigate = useNavigate();
   const { del } = useWeeks();
   const filteredWeeks = useSelector((state) =>
-    filter !== ""
-      ? selectWeekByNumber(state, Number(filter))
-      : selectWeeks(state),
+    filter !== "" ? selectWeekByNumber(state, filter) : selectWeeks(state),
   );
-
-  console.log(filteredWeeks);
 
   return (
     <table>
@@ -41,11 +37,15 @@ const WeekList = ({ filter }) => {
           <tr>
             <td>
               <h2>
-                {!filteredWeeks
-                  ? "Loading"
-                  : filter !== ""
-                    ? `No se encontró la semana ${filter}.`
-                    : "No hay semanas disponibles."}
+                {!filteredWeeks ? (
+                  "Loading"
+                ) : filter !== "" ? (
+                  <>
+                    <strong>{`Week ${filter}`}</strong> was not found.
+                  </>
+                ) : (
+                  "There are no weeks available."
+                )}
               </h2>
             </td>
           </tr>

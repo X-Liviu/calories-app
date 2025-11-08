@@ -4,6 +4,7 @@ import weekReducer from "./reducers/weekReducer";
 import myAlimentReducer from "./reducers/myAlimentReducer";
 import itemLinkReducer from "./reducers/itemLinkReducer";
 import globalErrorReducer from "./reducers/globalErrorReducer";
+import yearReducer from "./reducers/yearReducer";
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -11,6 +12,7 @@ const store = configureStore({
     myAliments: myAlimentReducer,
     itemLinks: itemLinkReducer,
     globalError: globalErrorReducer,
+    year: yearReducer,
   },
 });
 

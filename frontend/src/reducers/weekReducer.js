@@ -33,10 +33,10 @@ const weekSlice = createSlice({
 
 export const { setWeeks, appendWeek, popWeek, updateWeek, clearWeeks } =
   weekSlice.actions;
-export const saveGlobalWeeks = () => {
+export const saveGlobalWeeks = (year) => {
   return async (dispatch) => {
     try {
-      const weeks = await weekService.getAll();
+      const weeks = await weekService.getAll(year);
       dispatch(setWeeks(weeks));
     } catch (error) {
       console.error(error);

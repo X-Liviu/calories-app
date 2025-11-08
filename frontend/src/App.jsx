@@ -1,5 +1,7 @@
 import "./App.css";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import useAuthInitAndSync from "./hooks/useAuthInitAndSync";
 import useInitWeeks from "./hooks/useInitWeeks";
@@ -20,12 +22,22 @@ import WeekItem from "./components/WeekItem/WeekItem";
 import DayItem from "./components/DayItem/DayItem";
 import MealItem from "./components/MealItem/MealItem";
 import NotFound from "./components/NotFound";
-import Footer from "./components/Footer";
 
 const App = () => {
   useAuthInitAndSync();
-  useInitWeeks().get();
-  useMyAliments().get();
+
+  const { get: initWeeks } = useInitWeeks();
+  const { get: initAliments } = useMyAliments();
+  const { lastSavedYear } = useSelector((state) => state.year);
+  // Inicializar semanas al montar o cuando cambie year
+  useEffect(() => {
+    initWeeks(lastSavedYear);
+  }, [initWeeks, lastSavedYear]);
+
+  // Inicializar mis alimentos solo al montar
+  useEffect(() => {
+    initAliments();
+  }, [initAliments]);
 
   return (
     <>
@@ -48,7 +60,6 @@ const App = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
     </>
   );
 };
