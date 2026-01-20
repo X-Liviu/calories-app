@@ -8,14 +8,22 @@ import {
   selectWeekByNumber,
 } from "../../redux/selectors/weekSelectors";
 
+import SkeletonWeeks from "./SkeletonWeeks";
 import WeekItemList from "./WeekItemList";
 
 const WeekList = ({ filter }) => {
   const navigate = useNavigate();
   const { del } = useWeeks();
+
+  const { loading } = useSelector((state) => state.weeks);
+  console.log(loading);
+
   const filteredWeeks = useSelector((state) =>
     filter !== "" ? selectWeekByNumber(state, filter) : selectWeeks(state),
   );
+  //TODO Sigue pasando el error de explotar la app debido a la semana 53. Da igual el loading si aún así se hace el useSelector de filteredWeeks.
+
+  if (loading) return <SkeletonWeeks />;
 
   return (
     <table>

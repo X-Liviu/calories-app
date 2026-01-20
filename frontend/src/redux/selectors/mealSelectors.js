@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 
 export const selectMeal = (state, weekId, dayId, mealId) =>
-  state.weeks
+  state.weeks.data
     .find((w) => w.id === weekId)
     ?.days.find((d) => d.id === dayId)
     ?.meals.find((m) => m.id === mealId);

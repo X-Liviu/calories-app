@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
 
-export const selectWeeks = (state) => state.weeks; //Lo defino aunque sea trivial, simplemente para entender mejor el selectWeek.
+export const selectWeeks = (state) => state.weeks.data; //Lo defino aunque sea trivial, simplemente para entender mejor el selectWeek.
 
 export const selectWeek = (state, weekId) =>
-  state.weeks.find((w) => w.id === weekId);
+  state.weeks.data.find((w) => w.id === weekId);
 
 export const selectWeekByNumber = createSelector(
   [selectWeeks, (state, filterNumber) => filterNumber],

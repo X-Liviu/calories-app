@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Se obtiene del localStorage, el since. Lo hago de esta manera puesto que no puedo usar useSelector, ya que esto no es un componente de React.
-/**const initialYear =
-  JSON.parse(localStorage.getItem("token"))?.since || new Date().getFullYear(); */
+const initialYear =
+  JSON.parse(localStorage.getItem("token"))?.since || new Date().getFullYear();
 
 const INITIAL_STATE = {
-  currentYear: 2030,
-  lastSavedYear: 2030,
+  currentYear: 2029, //para probar
+  lastSavedYear: initialYear,
 };
 
 const yearSlice = createSlice({

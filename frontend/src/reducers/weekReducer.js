@@ -8,38 +8,60 @@ import { setError } from "../reducers/globalErrorReducer";
 
 const weekSlice = createSlice({
   name: "weeks",
-  initialState: [],
+  initialState: {
+    data: [],
+    loading: false,
+    error: null,
+  },
   reducers: {
     setWeeks(state, action) {
-      return action.payload;
+      state.data = action.payload;
+      state.loading = false;
+      state.error = null;
     },
     appendWeek(state, action) {
-      return state.concat(action.payload); //se puede hacer con un push si se quiere debido a la librería Immer de Toolkit
+      state.data = state.data.concat(action.payload); //se puede hacer con un push si se quiere debido a la librería Immer de Toolkit
     },
     popWeek(state, action) {
-      return state.filter((w) => w.id !== action.payload.id);
+      state.data = state.data.filter((w) => w.id !== action.payload.id);
     },
     updateWeek(state, action) {
-      return state.map((w) =>
+      state.data = state.data.map((w) =>
         w.id === action.payload.id ? action.payload : w,
       );
     },
-
-    clearWeeks() {
-      return [];
+    clearWeeks(state) {
+      state.data = [];
+    },
+    setLoading(state, action) {
+      state.loading = action.payload;
+    },
+    setErrorWeeks(state, action) {
+      state.error = action.payload;
+      state.loading = false;
     },
   },
 });
 
-export const { setWeeks, appendWeek, popWeek, updateWeek, clearWeeks } =
-  weekSlice.actions;
+export const {
+  setWeeks,
+  appendWeek,
+  popWeek,
+  updateWeek,
+  clearWeeks,
+  setLoading,
+  setErrorWeeks,
+} = weekSlice.actions;
+
 export const saveGlobalWeeks = (year) => {
   return async (dispatch) => {
+    dispatch(setLoading(true));
     try {
       const weeks = await weekService.getAll(year);
       dispatch(setWeeks(weeks));
     } catch (error) {
       console.error(error);
+      dispatch(setErrorWeeks(error.message || "Error al obtener semanas"));
       dispatch(setError(error));
     }
   };

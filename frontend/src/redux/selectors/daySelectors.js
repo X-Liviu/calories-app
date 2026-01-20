@@ -1,7 +1,9 @@
 import { createSelector } from "reselect";
 
 export const selectDay = (state, weekId, dayId) =>
-  state.weeks.find((w) => w.id === weekId)?.days.find((d) => d.id === dayId);
+  state.weeks.data
+    .find((w) => w.id === weekId)
+    ?.days.find((d) => d.id === dayId);
 
 export const selectDayCalories = createSelector(
   [(state, meals) => meals],
