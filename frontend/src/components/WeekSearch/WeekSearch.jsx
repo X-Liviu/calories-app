@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import useYear from "../../hooks/useYear";
+import useYearManager from "../../hooks/useYearManager";
 
 import { weekToday } from "../../utils/days";
 
@@ -12,7 +12,7 @@ const WeekSearch = () => {
   const user = useSelector((state) => state.user);
   const { currentYear, lastSavedYear } = useSelector((state) => state.year);
 
-  const { update } = useYear();
+  const { changeYear } = useYearManager();
 
   const [search, setSearch] = useState("");
   const [showWeekToday, setShowWeekToday] = useState(false);
@@ -27,7 +27,7 @@ const WeekSearch = () => {
         className="select"
         value={lastSavedYear}
         onChange={({ target }) => {
-          update(Number(target.value));
+          changeYear(Number(target.value));
         }}
       >
         {allYears.map((y) => {
