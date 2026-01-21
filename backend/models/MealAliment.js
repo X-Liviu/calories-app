@@ -30,10 +30,26 @@ const mealAlimentSchema = new mongoose.Schema({
 
 mealAlimentSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
+    // 🛡️ BLINDAJE 1: Si no hay ID, no intentes convertirlo
+    if (returnedObject._id) {
+      returnedObject.id = returnedObject._id.toString();
+    }
+
     returnedObject.nameSnapshot = returnedObject.name_snapshot;
     returnedObject.customKcal = returnedObject.custom_kcal;
-    returnedObject.userAliment = returnedObject.user_aliment;
+
+    // 🛡️ BLINDAJE 2: Gestión segura del populate de user_aliment
+    // Si user_aliment se ha populado correctamente, es un objeto.
+    // Si no, podría ser un ID o null.
+    if (
+      returnedObject.user_aliment &&
+      typeof returnedObject.user_aliment === "object"
+    ) {
+      returnedObject.userAliment = returnedObject.user_aliment;
+    } else {
+      // Si no se pudo popular o es solo un ID, lo dejamos tal cual o null
+      returnedObject.userAliment = returnedObject.user_aliment || null;
+    }
 
     delete returnedObject._id;
     delete returnedObject.__v;
@@ -46,7 +62,7 @@ mealAlimentSchema.set("toJSON", {
 
 mealAlimentSchema.index(
   { user: 1, meal: 1, name_snapshot: 1 },
-  { unique: true } //eslint-disable-line
+  { unique: true },
 );
 
 mealAlimentSchema.pre("findOneAndDelete", async function (next) {

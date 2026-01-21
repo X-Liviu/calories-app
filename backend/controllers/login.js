@@ -24,7 +24,7 @@ router.post("/", async (req, res, next) => {
     }
 
     const userForToken = {
-      usernqame: user.username, //Esto no lo voy a usar nunca, pero puede ser interesante en un futuro.
+      //username: user.username, //Esto no lo voy a usar nunca, pero puede ser interesante en un futuro.
       id: user._id,
     };
     // el token expira en 14 días.

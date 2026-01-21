@@ -1,28 +1,6 @@
 import { weeksPerYear } from "weeknumber";
 
-export const validateSignUpForm = ({
-  name,
-  username,
-  email,
-  password,
-  passwordRepeated,
-}) => {
-  const errors = {};
-
-  if (!name.trim()) {
-    errors.name = "Name is required";
-  } else if (!validateName(name)) {
-    errors.name = "2-50 chars, letters, numbers, . _ - ,";
-  }
-
-  if (!username.trim()) {
-    errors.username = "Username is required";
-  } else if (!validateUsername(username)) {
-    errors.username = "3‑20 chars, letters/numbers/._-";
-  }
-
-  if (!validateEmail(email)) errors.email = "E-Mail not valid";
-
+export const evaluatePasswordRules = (password) => {
   const passwordRules = [
     {
       key: "length",
@@ -47,10 +25,36 @@ export const validateSignUpForm = ({
     },
   ];
 
-  const evaluatedRules = passwordRules.map((rule) => ({
+  return passwordRules.map((rule) => ({
     label: rule.label,
-    valid: rule.test(password),
+    valid: rule.test(password || ""),
   }));
+};
+
+export const validateSignUpForm = ({
+  name,
+  username,
+  email,
+  password,
+  passwordRepeated,
+}) => {
+  const errors = {};
+
+  if (!name.trim()) {
+    errors.name = "Name is required";
+  } else if (!validateName(name)) {
+    errors.name = "2-50 chars, letters, numbers, . _ - ,";
+  }
+
+  if (!username.trim()) {
+    errors.username = "Username is required";
+  } else if (!validateUsername(username)) {
+    errors.username = "3‑20 chars, letters/numbers/._-";
+  }
+
+  if (!validateEmail(email)) errors.email = "E-Mail not valid";
+
+  const evaluatedRules = evaluatePasswordRules(password);
 
   const passwordError = validatePassword(password);
   if (passwordError) errors.password = passwordError;
@@ -62,6 +66,42 @@ export const validateSignUpForm = ({
     isValid: Object.keys(errors).length === 0,
     errors,
     passwordRules: evaluatedRules,
+  };
+};
+
+export const validateUpdateUserForm = ({
+  name,
+  username,
+  currentPassword,
+  newPassword,
+  newPasswordRepeated,
+}) => {
+  const errors = {};
+
+  if (!name.trim()) errors.name = "Name is required";
+  else if (!validateName(name))
+    errors.name = "2-50 chars, letters, numbers, . _ - ,";
+
+  if (!username.trim()) errors.username = "Username is required";
+  else if (!validateUsername(username))
+    errors.username = "3‑20 chars, letters/numbers/._-";
+
+  if (currentPassword || newPassword || newPasswordRepeated) {
+    if (!currentPassword) {
+      errors.currentPassword = "Current password is required to set a new one";
+    }
+
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) errors.newPassword = passwordError;
+
+    if (newPassword !== newPasswordRepeated) {
+      errors.newPasswordRepeated = "New passwords do not match";
+    }
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
   };
 };
 

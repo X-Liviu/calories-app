@@ -50,17 +50,17 @@ const WeekSearch = () => {
           value={search}
         />
       </form>
-
-      {/*<button onClick={weeks?.length === 0 ? get : undefined} type="button">
-        Reintentar
-      </button>*/}
-
-      <WeekList filter={search} />
       <WeekForm year={lastSavedYear} />
       <button onClick={() => setShowWeekToday(!showWeekToday)}>
         Consult the current week
       </button>
       {showWeekToday && <p>Week {weekToday()}</p> /*Esto se puede mejorar */}
+
+      {/*TODO que no se te olvide LIVIU DE QUITAR ESTO DE PRODUCCIÓN!!!!<button onClick={weeks?.length === 0 ? get : undefined} type="button">
+        Reintentar
+      </button>*/}
+
+      <WeekList filter={search} />
     </>
   );
 };

@@ -24,7 +24,10 @@ const userAlimentSchema = new mongoose.Schema({
 
 userAlimentSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
+    // 🛡️ BLINDAJE
+    if (returnedObject._id) {
+      returnedObject.id = returnedObject._id.toString();
+    }
 
     if (returnedObject.nutrition_facts) {
       const nf = returnedObject.nutrition_facts;

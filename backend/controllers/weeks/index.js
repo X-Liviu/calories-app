@@ -14,7 +14,7 @@ router.get("/", async (req, res, next) => {
       user: req.userId,
       year: Number(year),
     })
-      .sort({ weekNumber: 1 })
+      .sort({ number_week: 1 })
       .populate({
         path: "days",
         populate: {

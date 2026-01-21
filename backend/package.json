@@ -5,7 +5,8 @@
     "start:test": "NODE_ENV=test node index.js",
     "dev": "nodemon index.js",
     "devDocker": "nodemon index.js --legacy-watch -- --host 0.0.0.0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node scripts/seed.js"
   },
   "license": "ISC",
   "description": "",

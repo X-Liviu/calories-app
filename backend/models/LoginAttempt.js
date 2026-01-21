@@ -22,6 +22,10 @@ const loginAttemptSchema = new mongoose.Schema({
 
 loginAttemptSchema.set("toJSON", {
   transform: (document, returnedObject) => {
+    if (returnedObject._id) {
+      returnedObject.id = returnedObject._id.toString();
+    }
+
     delete returnedObject._id;
     delete returnedObject.__v;
   },

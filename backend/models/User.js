@@ -37,9 +37,12 @@ const userSchema = new mongoose.Schema({
 //Esto no lo uso ya (08-11-2025)
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
+    if (returnedObject._id) {
+      returnedObject.id = returnedObject._id.toString();
+    }
     delete returnedObject._id;
     delete returnedObject.__v;
-    delete returnedObject.password_hash; // el passwordHash no debe mostrarse
+    delete returnedObject.password_hash; // El passwordHash no debe mostrarse NUNCA.
     delete returnedObject.registrationDate;
   },
 });

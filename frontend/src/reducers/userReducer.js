@@ -34,6 +34,7 @@ export const initializeUser = () => {
       const user = JSON.parse(loggedUserJSON);
       dispatch(setUser(user));
       //De momento lo dejo así, luego voy a usar un API Client o algo parecido
+      signupService.setToken(user.token);
       weekService.setToken(user.token);
       myAlimentService.setToken(user.token);
       dayService.setToken(user.token);
@@ -50,6 +51,7 @@ export const saveGlobalUser = (credentials) => {
       window.localStorage.setItem("token", JSON.stringify(user));
       dispatch(setUser(user));
       //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+      signupService.setToken(user.token);
       weekService.setToken(user.token);
       myAlimentService.setToken(user.token);
       dayService.setToken(user.token);
@@ -83,11 +85,45 @@ export const eraseGlobalUser = () => {
     dispatch(clearWeeks());
     dispatch(clearMyAliments());
     //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
+    signupService.setToken(null);
     weekService.setToken(null);
     myAlimentService.setToken(null);
     dayService.setToken(null);
     mealService.setToken(null);
     alimentService.setToken(null);
+  };
+};
+
+export const updateUser = (newUserData) => {
+  return async (dispatch) => {
+    try {
+      const updatedUser = await signupService.update(newUserData);
+
+      // NOTA: El backend devuelve el usuario actualizado, pero a veces no devuelve el token.
+      // Mantenemos el token que ya teníamos en localStorage.
+      const loggedUserJSON = window.localStorage.getItem("token");
+      const currentUser = JSON.parse(loggedUserJSON);
+
+      const userToSave = { ...currentUser, ...updatedUser };
+
+      window.localStorage.setItem("token", JSON.stringify(userToSave));
+      dispatch(setUser(userToSave));
+    } catch (error) {
+      console.error("Error updating user:", error);
+      dispatch(setError(error));
+    }
+  };
+};
+
+export const deleteUser = () => {
+  return async (dispatch) => {
+    try {
+      await signupService.del();
+      dispatch(eraseGlobalUser());
+    } catch (error) {
+      console.error("Error during the deletion of the account:", error);
+      dispatch(setError(error));
+    }
   };
 };
 

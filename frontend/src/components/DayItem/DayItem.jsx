@@ -16,8 +16,8 @@ const DayItem = () => {
   return (
     <>
       <h1>{day.name}</h1>
-      <MealList meals={day.meals} weekId={weekId} dayId={dayId} />
       <MealForm weekId={weekId} dayId={dayId} />
+      <MealList meals={day.meals} weekId={weekId} dayId={dayId} />
     </>
   );
 };

@@ -24,8 +24,13 @@ const weekSchema = new mongoose.Schema({
 
 weekSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    returnedObject.numberWeek = returnedObject.number_week;
+    if (returnedObject._id) {
+      returnedObject.id = returnedObject._id.toString();
+    }
+
+    if (returnedObject.number_week !== undefined) {
+      returnedObject.numberWeek = returnedObject.number_week;
+    }
 
     delete returnedObject._id;
     delete returnedObject.__v;

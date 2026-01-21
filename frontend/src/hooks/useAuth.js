@@ -3,6 +3,8 @@ import {
   saveGlobalUser,
   signupUser,
   eraseGlobalUser,
+  updateUser,
+  deleteUser,
 } from "../reducers/userReducer.js";
 
 const useAuth = () => {
@@ -20,7 +22,15 @@ const useAuth = () => {
     dispatch(eraseGlobalUser());
   };
 
-  return { signup, login, logout };
+  const editUser = async (newUserData) => {
+    await dispatch(updateUser(newUserData));
+  };
+
+  const deleteAcc = async () => {
+    await dispatch(deleteUser()); //Pone vscode que no es necesario el await¿?¿?
+  };
+
+  return { signup, login, logout, editUser, deleteAcc };
 };
 
 export default useAuth;

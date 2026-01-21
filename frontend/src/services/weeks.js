@@ -1,6 +1,5 @@
 import axios from "axios";
-//No olvidar cambiar la baseURL después
-const baseURL = "http://localhost:7000/api/weeks";
+const baseURL = "/api/weeks";
 let token;
 
 const setToken = (newToken) => {

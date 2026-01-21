@@ -3,27 +3,56 @@ const Joi = require("joi");
 const createUserSchema = Joi.object({
   name: Joi.string()
     .pattern(
-      /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/ //eslint-disable-line
+      /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
     )
     .required(),
   username: Joi.string()
-    .pattern(
-      /^[a-zA-Z0-9._-]{3,20}$/ //eslint-disable-line
-    )
+    .pattern(/^[a-zA-Z0-9._-]{3,20}$/)
     .required(),
   email: Joi.string().email().required(),
   password: Joi.string()
     .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ /*eslint-disable-line */
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     )
     .required(),
+});
+
+const updateUserSchema = Joi.object({
+  name: Joi.string().pattern(
+    /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
+  ),
+
+  username: Joi.string().pattern(/^[a-zA-Z0-9._-]{3,20}$/),
+
+  // LOGICA DE PASSWORD:
+  // newPassword es opcional. PERO si se envía (y no está vacío), debe cumplir el Regex
+  newPassword: Joi.string()
+    .pattern(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    )
+    .allow("") // Permitimos string vacío si el usuario no quiere cambiarla
+    .optional(),
+
+  // newPasswordRepeated debe ser igual a newPassword
+  newPasswordRepeated: Joi.any()
+    .valid(Joi.ref("newPassword"))
+    .messages({ "any.only": "New passwords do not match" }),
+
+  // currentPassword es obligatorio SOLO SI newPassword tiene contenido
+  currentPassword: Joi.string().when("newPassword", {
+    is: Joi.string().min(1), // Si newPassword tiene al menos 1 caracter
+    then: Joi.required().messages({
+      "any.required": "Current password is required to set a new one",
+    }),
+    otherwise: Joi.optional().allow(""),
+  }),
 });
 
 const loginUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string()
     .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ /*eslint-disable-line */
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     )
     .required(),
 });
@@ -78,4 +107,5 @@ module.exports = {
   createMealAlimentSchema,
   changeMealAlimentSchema,
   userAlimentSchema,
+  updateUserSchema,
 };
