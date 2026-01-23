@@ -16,7 +16,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
 import MyAlimentForm from "./components/MyAlimentForm/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
-import AccountView from "./components/AccountView/AccountView";
 import WeekSearch from "./components/WeekSearch/WeekSearch";
 import WeekItem from "./components/WeekItem/WeekItem";
 import DayItem from "./components/DayItem/DayItem";
@@ -52,7 +51,6 @@ const App = () => {
         </Route>
         <Route element={<PrivateRoute />}>
           <Route path="/my-aliments" element={<MyAlimentForm />} />
-          <Route path="/account" element={<AccountView />} />
           <Route path="/weeks" element={<WeekSearch />} />
           <Route path="/weeks/:weekId/" element={<WeekItem />} />
           <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />

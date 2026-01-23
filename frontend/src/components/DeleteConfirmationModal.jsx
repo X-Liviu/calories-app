@@ -1,20 +1,24 @@
-const DeleteConfirmationModal = ({ onClose, onConfirm }) => {
+const DeleteConfirmationModal = ({
+  onClose,
+  onConfirm,
+  title = "¿Are you sure?",
+  message = "This action is permanent and cannot be undone.",
+  confirmText = "Yes, I confirm",
+  cancelText = "Cancel",
+}) => {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h3 style={{ marginTop: 0 }}>¿Estás seguro?</h3>
-        <p>
-          Esta acción es permanente. Todos los datos guardados con este usuario
-          serán eliminados.
-        </p>
+        <h3 style={{ marginTop: 0 }}>{title}</h3>
+        <p>{message}</p>
 
         <div style={styles.buttonContainer}>
           <button onClick={onClose} style={styles.cancelButton}>
-            Cancelar
+            {cancelText}
           </button>
 
           <button onClick={onConfirm} style={styles.deleteButton}>
-            Sí, borrar cuenta
+            {confirmText}
           </button>
         </div>
       </div>
@@ -22,7 +26,6 @@ const DeleteConfirmationModal = ({ onClose, onConfirm }) => {
   );
 };
 
-// Estilos básicos para que funcione al copiar y pegar
 const styles = {
   overlay: {
     position: "fixed",
@@ -30,7 +33,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo semitransparente
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
-import { validateUpdateUserForm } from "../../utils/validations"; // Importamos el validador
+
+import { validateUpdateUserForm } from "../../utils/validations";
 
 const EditProfileModal = ({ user, onClose }) => {
   const { editUser } = useAuth();
@@ -20,7 +21,6 @@ const EditProfileModal = ({ user, onClose }) => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    // Limpiamos el error del campo al escribir
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: null });
     }
@@ -29,7 +29,6 @@ const EditProfileModal = ({ user, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Validamos en Frontend antes de enviar
     const validation = validateUpdateUserForm(formData);
 
     if (!validation.isValid) {
@@ -38,14 +37,10 @@ const EditProfileModal = ({ user, onClose }) => {
     }
 
     try {
-      // Enviamos solo los datos necesarios
-      // Si los campos de password están vacíos, el backend los ignorará
       await editUser(formData);
       onClose();
     } catch (exception) {
       console.error(`Error updating profile: ${exception}`);
-      // Si el backend devuelve error (ej. contraseña actual incorrecta), lo mostramos
-      // Asumiendo que tu backend devuelve { error: "mensaje" }
       if (
         exception.response &&
         exception.response.data &&
@@ -56,7 +51,6 @@ const EditProfileModal = ({ user, onClose }) => {
     }
   };
 
-  // Estilos simples
   const overlayStyle = {
     position: "fixed",
     top: 0,
@@ -79,7 +73,7 @@ const EditProfileModal = ({ user, onClose }) => {
     flexDirection: "column",
     gap: "10px",
     maxHeight: "90vh",
-    overflowY: "auto", // Por si crece mucho el modal
+    overflowY: "auto",
   };
 
   const errorStyle = {
@@ -98,7 +92,6 @@ const EditProfileModal = ({ user, onClose }) => {
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "12px" }}
         >
-          {/* NOMBRE */}
           <label>
             Name:
             <input
@@ -114,7 +107,6 @@ const EditProfileModal = ({ user, onClose }) => {
           </label>
           {errors.name && <span style={errorStyle}>{errors.name}</span>}
 
-          {/* USERNAME */}
           <label>
             Username:
             <input
@@ -133,7 +125,6 @@ const EditProfileModal = ({ user, onClose }) => {
           <hr style={{ width: "100%", margin: "5px 0" }} />
           <small>Leave blank to keep current password</small>
 
-          {/* CURRENT PASSWORD */}
           <label>
             Current Password:
             <input
@@ -153,7 +144,6 @@ const EditProfileModal = ({ user, onClose }) => {
             <span style={errorStyle}>{errors.currentPassword}</span>
           )}
 
-          {/* NEW PASSWORD */}
           <label>
             New Password:
             <input
@@ -171,7 +161,6 @@ const EditProfileModal = ({ user, onClose }) => {
             <span style={errorStyle}>{errors.newPassword}</span>
           )}
 
-          {/* REPEAT NEW PASSWORD */}
           <label>
             Repeat New Password:
             <input

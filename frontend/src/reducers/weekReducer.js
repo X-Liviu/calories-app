@@ -157,7 +157,7 @@ export const removeMealInDay = (meal) => {
 
       //Tengo que actualizar el día aquí ya que un delete con 204 NO PUEDE DEVOLVER NADA
       const { weeks } = getState();
-      const week = weeks.data.aliment((w) => w.id === meal.weekId);
+      const week = weeks.data.find((w) => w.id === meal.weekId);
       if (!week) return;
 
       const day = week.days.find((d) => d.id === meal.dayId);
