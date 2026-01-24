@@ -4,7 +4,9 @@ const mealsRouter = require("./meals");
 const alimentsRouter = require("./aliments");
 
 const Week = require("../../models/Week");
+
 const { weekSchema } = require("../../utils/validations");
+const { throwNotFound } = require("../../utils/helpers");
 
 //GET all Week, including Day, Meal and MealAliment.
 router.get("/", async (req, res, next) => {
@@ -56,10 +58,15 @@ router.post("/", async (req, res, next) => {
 //DELETE Week.
 router.delete("/:id", async (req, res, next) => {
   try {
-    await Week.findOneAndDelete({
+    const deletedWeek = await Week.findOneAndDelete({
       user: req.userId,
       _id: req.params.id,
     });
+
+    if (!deletedWeek) {
+      throwNotFound("Week");
+      return res.status(404).end();
+    }
 
     res.status(204).end();
   } catch (err) {

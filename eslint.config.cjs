@@ -7,7 +7,7 @@ const { defineConfig, globalIgnores } = require("eslint/config");
 
 module.exports = defineConfig([
   // Ignorar carpetas globales
-  globalIgnores(["dist", "node_modules"]),
+  globalIgnores(["dist", "node_modules", "coverage"]),
 
   // --- FRONTEND (React con ESM) ---
   {
@@ -37,6 +37,8 @@ module.exports = defineConfig([
   // --- BACKEND (Node con CommonJS) ---
   {
     files: ["backend/**/*.js"],
+    // Excluir los tests de esta regla general para evitar conflictos si fuera necesario
+    // aunque la regla de abajo (TESTS) se fusionará correctamente.
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: "latest",
@@ -47,6 +49,18 @@ module.exports = defineConfig([
     rules: {
       "prettier/prettier": "error",
       "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
+    },
+  },
+
+  // --- TESTS (Jest & Supertest) ---
+  // Esta configuración aplica solo a archivos que terminen en .test.js o estén en carpetas de tests
+  {
+    files: ["**/*.test.js", "tests/**/*.js", "backend/tests/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.node, // Necesitamos 'require', 'process', etc.
+        ...globals.jest,
+      },
     },
   },
 ]);

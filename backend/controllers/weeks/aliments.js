@@ -12,112 +12,113 @@ const {
 } = require("../../utils/validations");
 
 //POST new MealAliment in Meal.
-router.post(
-  "/:weekId/:dayId/:mealId",
-  async (req, res, next) => {
-    try {
-      const { weekId, dayId, mealId } = req.params;
-      const { name, grams, userAliment, customKcal } = req.body;
+router.post("/:weekId/:dayId/:mealId", async (req, res, next) => {
+  try {
+    const { weekId, dayId, mealId } = req.params;
+    const { name, grams, userAliment, customKcal } = req.body;
 
-      await createMealAlimentSchema.validateAsync({
-        name,
-        grams,
-        userAliment,
-        customKcal,
-      });
+    await createMealAlimentSchema.validateAsync({
+      name,
+      grams,
+      userAliment,
+      customKcal,
+    });
 
-      const week = await Week.findById(weekId).populate({
-        path: "days",
+    const week = await Week.findOne({
+      _id: weekId,
+      user: req.userId,
+    }).populate({
+      path: "days",
+      populate: {
+        path: "meals",
+      },
+    });
+    if (!week) throwNotFound("Week");
+
+    const day = week.days.find((d) => d.id === dayId);
+    if (!day) throwNotFound("Day");
+
+    const meal = day.meals.find((m) => m.id === mealId);
+    if (!meal) throwNotFound("Meal");
+
+    const aliment = new MealAliment({
+      user: req.userId, //Viene del tokenExtractor
+      name_snapshot: name,
+      grams: grams,
+      custom_kcal: customKcal,
+      meal: mealId,
+      user_aliment: userAliment,
+    });
+    await aliment.save(); // El hook se encargará de agregarlo a Meal.aliments
+
+    const updatedWeek = await Week.findById(weekId).populate({
+      path: "days",
+      populate: {
+        path: "meals",
         populate: {
-          path: "meals",
-        },
-      });
-      if (!week) throwNotFound("Week");
-
-      const day = week.days.find((d) => d.id === dayId);
-      if (!day) throwNotFound("Day");
-
-      const meal = day.meals.find((m) => m.id === mealId);
-      if (!meal) throwNotFound("Meal");
-
-      const aliment = new MealAliment({
-        user: req.userId, //Viene del tokenExtractor
-        name_snapshot: name,
-        grams: grams,
-        custom_kcal: customKcal,
-        meal: mealId,
-        user_aliment: userAliment,
-      });
-      await aliment.save(); // El hook se encargará de agregarlo a Meal.aliments
-
-      const updatedWeek = await Week.findById(weekId).populate({
-        path: "days",
-        populate: {
-          path: "meals",
+          path: "aliments",
           populate: {
-            path: "aliments",
-            populate: {
-              path: "user_aliment",
-            },
+            path: "user_aliment",
           },
         },
-      });
+      },
+    });
 
-      res.status(201).json(updatedWeek);
-    } catch (err) {
-      next(err);
-    }
-  } //eslint-disable-line
-);
+    res.status(201).json(updatedWeek);
+  } catch (err) {
+    next(err);
+  }
+});
 
 //PUT MealAliment. Change grams.
-router.put(
-  "/:weekId/:dayId/:mealId/:mealAlimentId",
-  async (req, res, next) => {
-    try {
-      const { weekId, dayId, mealId, mealAlimentId } = req.params;
-      const { grams } = req.body;
+router.put("/:weekId/:dayId/:mealId/:mealAlimentId", async (req, res, next) => {
+  try {
+    const { weekId, dayId, mealId, mealAlimentId } = req.params;
+    const { grams } = req.body;
 
-      await changeMealAlimentSchema.validateAsync({ grams });
+    await changeMealAlimentSchema.validateAsync({ grams });
 
-      const week = await Week.findById(weekId).populate({
+    const week = await Week.findOne({ _id: weekId, user: req.userId }).populate(
+      {
         path: "days",
         populate: {
           path: "meals",
         },
-      });
-      if (!week) throwNotFound("Week");
+      },
+    );
+    if (!week) throwNotFound("Week");
 
-      const day = week.days.find((d) => d.id === dayId);
-      if (!day) throwNotFound("Day");
+    const day = week.days.find((d) => d.id === dayId);
+    if (!day) throwNotFound("Day");
 
-      const meal = day.meals.find((m) => m.id === mealId);
-      if (!meal) throwNotFound("Meal");
+    const meal = day.meals.find((m) => m.id === mealId);
+    if (!meal) throwNotFound("Meal");
 
-      await MealAliment.updateOne(
-        { _id: mealAlimentId, user: req.userId },
-        { grams: grams } //eslint-disable-line
-      );
+    const result = await MealAliment.updateOne(
+      { _id: mealAlimentId, user: req.userId },
+      { grams: grams },
+    );
 
-      const updatedWeek = await Week.findById(weekId).populate({
-        path: "days",
+    if (result.matchedCount === 0) throwNotFound("MealAliment");
+
+    const updatedWeek = await Week.findById(weekId).populate({
+      path: "days",
+      populate: {
+        path: "meals",
         populate: {
-          path: "meals",
+          path: "aliments",
           populate: {
-            path: "aliments",
-            populate: {
-              path: "user_aliment",
-            },
+            path: "user_aliment",
           },
         },
-      });
+      },
+    });
 
-      res.json(updatedWeek);
-    } catch (err) {
-      next(err);
-    }
-  } //eslint-disable-line
-);
+    res.json(updatedWeek);
+  } catch (err) {
+    next(err);
+  }
+});
 
 //DELETE MealAliment in Meal.
 router.delete(
@@ -125,7 +126,7 @@ router.delete(
   async (req, res, next) => {
     try {
       const { weekId, dayId, mealId, mealAlimentId } = req.params;
-      const week = await Week.findById(weekId);
+      const week = await Week.findOne({ _id: weekId, user: req.userId });
       if (!week) throwNotFound("Week");
 
       const day = await Day.findById(dayId);
@@ -139,13 +140,13 @@ router.delete(
         meal: mealId,
         _id: mealAlimentId,
       });
-      if (!deletedMealAliment) throwNotFound("Meal");
+      if (!deletedMealAliment) throwNotFound("MealAliment");
 
       res.status(204).end();
     } catch (err) {
       next(err);
     }
-  } //eslint-disable-line
+  },
 );
 
 module.exports = router;

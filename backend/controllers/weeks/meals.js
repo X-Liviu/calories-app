@@ -4,7 +4,7 @@ const Week = require("../../models/Week");
 const Day = require("../../models/Day");
 const Meal = require("../../models/Meal");
 const { throwNotFound } = require("../../utils/helpers");
-const { mealSchema } = require("../../utils/validations");
+const { mealSchema, createMealSchema } = require("../../utils/validations");
 
 //POST new Meal in Day.
 router.post("/:weekId/:dayId", async (req, res, next) => {
@@ -12,9 +12,13 @@ router.post("/:weekId/:dayId", async (req, res, next) => {
     const { weekId, dayId } = req.params;
     const { name } = req.body;
 
-    const week = await Week.findById(weekId).populate({
-      path: "days",
-    }); //Este populate es para obtener los días con las ids de los meals, para luego hacer la búsqueda de meal.
+    await createMealSchema.validateAsync({ name });
+
+    const week = await Week.findOne({ _id: weekId, user: req.userId }).populate(
+      {
+        path: "days",
+      },
+    ); //Este populate es para obtener los días con las ids de los meals, para luego hacer la búsqueda de meal.
 
     if (!week) throwNotFound("Week");
 
@@ -57,7 +61,10 @@ router.put(
       const { cheat } = req.body;
       await mealSchema.validateAsync({ cheat });
 
-      const week = await Week.findById(weekId).populate({
+      const week = await Week.findOne({
+        _id: weekId,
+        user: req.userId,
+      }).populate({
         path: "days",
         populate: {
           path: "meals",
@@ -71,10 +78,7 @@ router.put(
       const meal = day.meals.find((m) => m.id === mealId);
       if (!meal) throwNotFound("Meal");
 
-      await Meal.updateOne(
-        { _id: mealId, user: req.userId },
-        { cheat: cheat } //eslint-disable-line
-      );
+      await Meal.updateOne({ _id: mealId, user: req.userId }, { cheat: cheat });
 
       const updatedWeek = await Week.findById(weekId).populate({
         path: "days",
@@ -93,7 +97,7 @@ router.put(
     } catch (err) {
       next(err);
     }
-  } //eslint-disable-line
+  },
 );
 
 //DELETE Meal in Day.
@@ -103,7 +107,7 @@ router.delete(
   async (req, res, next) => {
     try {
       const { weekId, dayId, mealId } = req.params;
-      const week = await Week.findById(weekId);
+      const week = await Week.findOne({ _id: weekId, user: req.userId });
       if (!week) throwNotFound("Week");
 
       const day = await Day.findById(dayId);
@@ -121,7 +125,7 @@ router.delete(
     } catch (err) {
       next(err);
     }
-  } //eslint-disable-line
+  },
 );
 
 module.exports = router;

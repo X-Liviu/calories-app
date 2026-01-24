@@ -14,8 +14,7 @@ router.post("/:weekId", async (req, res, next) => {
     name = capitalize(name); //normalized
 
     await daySchema.validateAsync({ name });
-
-    const week = await Week.findById(weekId);
+    const week = await Week.findOne({ _id: weekId, user: req.userId });
     if (!week) throwNotFound("Week");
 
     const day = new Day({
@@ -50,7 +49,7 @@ router.delete("/:weekId/:dayId", async (req, res, next) => {
   try {
     const { weekId, dayId } = req.params;
 
-    const week = await Week.findById(weekId);
+    const week = await Week.findOne({ _id: weekId, user: req.userId });
     if (!week) throwNotFound("Week");
 
     const deletedDay = await Day.findOneAndDelete({

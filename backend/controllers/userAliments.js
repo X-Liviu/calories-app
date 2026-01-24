@@ -51,38 +51,36 @@ router.post("/", async (req, res, next) => {
 });
 
 //PUT UserAliment. Change a specific nutrition_fact
-router.put(
-  "/:userAlimentId",
-  async (req, res, next) => {
-    try {
-      const { userAlimentId } = req.params;
-      const clientKey = Object.keys(req.body).find((k) =>
-        /*eslint-disable-line */ Object.keys(camelToSnake).includes(k)
-      );
+router.put("/:userAlimentId", async (req, res, next) => {
+  try {
+    const { userAlimentId } = req.params;
+    const clientKey = Object.keys(req.body).find((k) =>
+      Object.keys(camelToSnake).includes(k),
+    );
 
-      if (!clientKey) {
-        const error = new Error("Invalid field");
-        error.name = "ValidationError";
-        throw error;
-      }
-
-      const snakeKey = camelToSnake[clientKey];
-
-      const updatedUserAliment = await UserAliment.findByIdAndUpdate(
-        userAlimentId,
-        { [`nutrition_facts.${snakeKey}`]: req.body[clientKey] }, //ESTO MUY IMPORTANTE COMO CONOCIMIENTO DE ES6
-        { new: true } //eslint-disable-line
-      );
-      updatedUserAliment.nutrition_facts = {
-        ...updatedUserAliment.nutrition_facts,
-      }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente. No sé si esto de verdad sirve.
-
-      res.json(updatedUserAliment);
-    } catch (err) {
-      next(err);
+    if (!clientKey) {
+      const error = new Error("Invalid field");
+      error.name = "ValidationError";
+      throw error;
     }
-  } //eslint-disable-line
-);
+
+    const snakeKey = camelToSnake[clientKey];
+
+    const updatedUserAliment = await UserAliment.findOneAndUpdate(
+      { _id: userAlimentId, user: req.userId },
+      { [`nutrition_facts.${snakeKey}`]: req.body[clientKey] }, //ESTO MUY IMPORTANTE COMO CONOCIMIENTO DE ES6
+      { new: true },
+    );
+
+    updatedUserAliment.nutrition_facts = {
+      ...updatedUserAliment.nutrition_facts,
+    }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente. No sé si esto de verdad sirve.
+
+    res.json(updatedUserAliment);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.delete("/:userAlimentId", async (req, res, next) => {
   try {

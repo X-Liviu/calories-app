@@ -40,7 +40,7 @@ const updateUserSchema = Joi.object({
 
   // currentPassword es obligatorio SOLO SI newPassword tiene contenido
   currentPassword: Joi.string().when("newPassword", {
-    is: Joi.string().min(1), // Si newPassword tiene al menos 1 caracter
+    is: Joi.string().min(1).required(), // Si newPassword tiene al menos 1 caracter
     then: Joi.required().messages({
       "any.required": "Current password is required to set a new one",
     }),
@@ -73,6 +73,10 @@ const mealSchema = Joi.object({
   cheat: Joi.boolean().required(),
 });
 
+const createMealSchema = Joi.object({
+  name: Joi.string().required().max(30), // Validamos que exista y no sea enorme
+});
+
 const createMealAlimentSchema = Joi.object({
   name: Joi.string()
     .pattern(/^[^\s]+( [^\s]+)*$/)
@@ -84,7 +88,7 @@ const createMealAlimentSchema = Joi.object({
 });
 
 const changeMealAlimentSchema = Joi.object({
-  grams: Joi.number().required(),
+  grams: Joi.number().required().min(0),
 });
 
 const userAlimentSchema = Joi.object({
@@ -104,6 +108,7 @@ module.exports = {
   weekSchema,
   daySchema,
   mealSchema,
+  createMealSchema,
   createMealAlimentSchema,
   changeMealAlimentSchema,
   userAlimentSchema,
