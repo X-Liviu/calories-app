@@ -55,11 +55,19 @@ module.exports = defineConfig([
   // --- TESTS (Jest & Supertest) ---
   // Esta configuración aplica solo a archivos que terminen en .test.js o estén en carpetas de tests
   {
-    files: ["**/*.test.js", "tests/**/*.js", "backend/tests/**/*.js"],
+    // CAMBIO 1: Añadimos "**/*.test.jsx" para que detecte tus tests de React
+    files: [
+      "**/*.test.js",
+      "**/*.test.jsx",
+      "tests/**/*.js",
+      "backend/tests/**/*.js",
+    ],
     languageOptions: {
       globals: {
-        ...globals.node, // Necesitamos 'require', 'process', etc.
-        ...globals.jest,
+        ...globals.node, // Para process.env, etc.
+        ...globals.jest, // Esto arregla 'beforeEach', 'describe', 'it', 'expect'
+        ...globals.browser, // Para 'document', 'window' (necesario en tests de React/jsdom)
+        vi: "readonly", // Para que reconozca 'vi' (vi.mock, vi.fn)
       },
     },
   },
