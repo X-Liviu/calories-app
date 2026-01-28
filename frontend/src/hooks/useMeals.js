@@ -3,7 +3,7 @@ import {
   addMealInDay,
   changeMealInDay,
   removeMealInDay,
-} from "../reducers/weekReducer";
+} from "../redux/reducers/weekReducer";
 
 const useMeals = () => {
   const dispatch = useDispatch();

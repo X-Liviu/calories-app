@@ -43,6 +43,7 @@ const MyAlimentItemList = ({ myAliment }) => {
         <td key={key}>
           <form onSubmit={(e) => handleSubmit(e, key)}>
             <input
+              type="number"
               className="invisible-input"
               value={editableValues[key]}
               onChange={(e) => handleChange(key, e.target.value)}

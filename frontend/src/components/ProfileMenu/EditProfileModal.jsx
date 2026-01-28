@@ -46,7 +46,7 @@ const EditProfileModal = ({ user, onClose }) => {
         exception.response.data &&
         exception.response.data.error
       ) {
-        alert(exception.response.data.error);
+        console.error(exception.response.data.error);
       }
     }
   };

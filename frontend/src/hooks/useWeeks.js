@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addWeek, removeWeek } from "../reducers/weekReducer";
+import { addWeek, removeWeek } from "../redux/reducers/weekReducer";
 
 const useWeeks = () => {
   const [error, setError] = useState(null);

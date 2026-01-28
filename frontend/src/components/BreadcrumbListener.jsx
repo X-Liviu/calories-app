@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { setItem, resetItems } from "../reducers/itemLinkReducer";
+import { setItem, resetItems } from "../redux/reducers/itemLinkReducer";
 import { selectWeeks } from "../redux/selectors/weekSelectors";
 
 const BreadcrumbListener = () => {

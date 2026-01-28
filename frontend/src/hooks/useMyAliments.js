@@ -6,7 +6,7 @@ import {
   addMyAliment,
   removeMyAliment,
   changeMyAliment,
-} from "../reducers/myAlimentReducer";
+} from "../redux/reducers/myAlimentReducer";
 
 const useMyAliments = () => {
   const dispatch = useDispatch();

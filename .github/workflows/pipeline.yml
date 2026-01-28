@@ -1,17 +1,20 @@
 name: Deployment pipeline
+
 on:
   push:
     branches: [main]
-
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # 1. LINT: Se ejecuta primero. Si falla, nada más corre.
   lint:
     runs-on: ubuntu-22.04
     steps:
@@ -21,11 +24,42 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
           node-version: "20"
+      - run: npm ci
+      - run: npm run lint
 
-      - name: Install dependencies
-        run: |
-          npm ci
+  # 2. TEST BACKEND: Depende de 'lint'. Corre en paralelo con Frontend.
+  test_backend:
+    needs: [lint]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: package-lock.json
+          node-version: "20"
+      - run: npm ci
 
-      - name: Check style
-        run: |
-          npm run lint
+      - name: Run Backend Tests
+        run: npm test -w backend
+        env:
+          # Aquí inyectamos las variables "invisibles"
+          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          SECRET: ${{ secrets.SECRET }}
+          NODE_ENV: test
+
+  # 3. TEST FRONTEND: Depende de 'lint'. Corre en paralelo con Backend.
+  test_frontend:
+    needs: [lint]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: package-lock.json
+          node-version: "20"
+      - run: npm ci
+
+      - name: Run Frontend Tests
+        run: npm test -w frontend

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { initializeUser, clearUser } from "../reducers/userReducer";
-import { clearWeeks } from "../reducers/weekReducer";
-import { clearMyAliments } from "../reducers/myAlimentReducer";
+import { initializeUser, clearUser } from "../redux/reducers/userReducer";
+import { clearWeeks } from "../redux/reducers/weekReducer";
+import { clearMyAliments } from "../redux/reducers/myAlimentReducer";
 
 const useAuthInitAndSync = () => {
   const dispatch = useDispatch();

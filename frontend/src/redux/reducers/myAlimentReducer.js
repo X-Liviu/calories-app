@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import myAlimentService from "../services/myAliments";
-import { setError } from "../reducers/globalErrorReducer";
+import myAlimentService from "../../services/myAliments";
+import { setError } from "./globalErrorReducer";
 
 const myAlimentSlice = createSlice({
   name: "myAliments",

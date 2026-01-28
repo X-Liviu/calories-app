@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import useAuth from "../hooks/useAuth";
 
@@ -12,6 +12,16 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (email || password) {
+      const { errors: validationErrors } = validateLoginForm({
+        email,
+        password,
+      });
+      setErrors(validationErrors);
+    }
+  }, [email, password]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -92,14 +92,14 @@ const changeMealAlimentSchema = Joi.object({
 });
 
 const userAlimentSchema = Joi.object({
-  kcal100G: Joi.number(),
-  fatG: Joi.number(),
-  saturatedFatG: Joi.number(),
-  carbsG: Joi.number(),
-  sugarG: Joi.number(),
-  fiberG: Joi.number(),
-  proteinG: Joi.number(),
-  saltG: Joi.number(),
+  kcal100G: Joi.number().min(0).required(),
+  fatG: Joi.number().min(0),
+  saturatedFatG: Joi.number().min(0),
+  carbsG: Joi.number().min(0),
+  sugarG: Joi.number().min(0),
+  fiberG: Joi.number().min(0),
+  proteinG: Joi.number().min(0),
+  saltG: Joi.number().min(0),
 });
 
 module.exports = {

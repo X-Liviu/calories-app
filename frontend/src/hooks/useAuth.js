@@ -5,7 +5,7 @@ import {
   eraseGlobalUser,
   updateUser,
   deleteUser,
-} from "../reducers/userReducer.js";
+} from "../redux/reducers/userReducer.js";
 
 const useAuth = () => {
   const dispatch = useDispatch();

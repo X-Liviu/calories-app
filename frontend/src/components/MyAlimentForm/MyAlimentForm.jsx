@@ -59,6 +59,7 @@ const MyAlimentForm = () => {
         {Object.keys(newAliment).map((ll) => (
           <input
             key={ll}
+            type={ll === "name" ? "text" : "number"}
             className="input"
             onChange={({ target }) =>
               setNewAliment({

@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { addDayInWeek, removeDayInWeek } from "../reducers/weekReducer";
+import { addDayInWeek, removeDayInWeek } from "../redux/reducers/weekReducer";
 
 const useDays = () => {
   const dispatch = useDispatch();

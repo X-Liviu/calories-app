@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./reducers/userReducer";
-import weekReducer from "./reducers/weekReducer";
-import myAlimentReducer from "./reducers/myAlimentReducer";
-import itemLinkReducer from "./reducers/itemLinkReducer";
-import globalErrorReducer from "./reducers/globalErrorReducer";
-import yearReducer from "./reducers/yearReducer";
+import userReducer from "./redux/reducers/userReducer";
+import weekReducer from "./redux/reducers/weekReducer";
+import myAlimentReducer from "./redux/reducers/myAlimentReducer";
+import itemLinkReducer from "./redux/reducers/itemLinkReducer";
+import globalErrorReducer from "./redux/reducers/globalErrorReducer";
+import yearReducer from "./redux/reducers/yearReducer";
 const store = configureStore({
   reducer: {
     user: userReducer,

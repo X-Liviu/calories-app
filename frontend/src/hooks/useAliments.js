@@ -3,7 +3,7 @@ import {
   addAlimentInMeal,
   changeAlimentInMeal,
   removeAlimentInMeal,
-} from "../reducers/weekReducer";
+} from "../redux/reducers/weekReducer";
 
 const useAliments = () => {
   const dispatch = useDispatch();

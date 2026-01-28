@@ -43,8 +43,9 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
 
   //Uso labels como fuente de verdad.
   const nutritionFactKeys = Object.keys(labels).filter(
-    (key) => aliment.userAliment?.nutritionFacts[key] !== undefined,
+    (key) => aliment.userAliment?.nutritionFacts?.[key] !== undefined,
   );
+
   return (
     <>
       <td>

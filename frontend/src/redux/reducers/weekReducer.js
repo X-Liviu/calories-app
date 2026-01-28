@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import weekService from "../services/weeks";
-import dayService from "../services/days";
-import mealService from "../services/meals";
-import alimentService from "../services/aliments";
+import weekService from "../../services/weeks";
+import dayService from "../../services/days";
+import mealService from "../../services/meals";
+import alimentService from "../../services/aliments";
 
-import { setError } from "../reducers/globalErrorReducer";
+import { setError } from "./globalErrorReducer";
 
 const weekSlice = createSlice({
   name: "weeks",

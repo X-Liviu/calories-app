@@ -29,14 +29,23 @@ router.post("/", async (req, res, next) => {
   try {
     const { name, nutritionFacts } = req.body;
 
-    await userAlimentSchema.validateAsync(nutritionFacts);
-
-    const nutrition_facts = {};
-    for (const key in nutritionFacts) {
-      if (camelToSnake[key]) {
-        nutrition_facts[camelToSnake[key]] = nutritionFacts[key];
-      }
+    if (!nutritionFacts || typeof nutritionFacts !== "object") {
+      const error = new Error(
+        "nutritionFacts is required and must be an object",
+      );
+      error.name = "ValidationError";
+      throw error;
     }
+
+    await userAlimentSchema.validateAsync(nutritionFacts);
+    const nutrition_facts = {};
+
+    Object.keys(camelToSnake).forEach((key) => {
+      const value = nutritionFacts[key];
+      if (value !== undefined && Number.isFinite(Number(value))) {
+        nutrition_facts[camelToSnake[key]] = Number(value);
+      } else nutrition_facts[camelToSnake[key]] = 0;
+    });
 
     const aliment = new UserAliment({
       user: req.userId, //Viene del tokenExtractor

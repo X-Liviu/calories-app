@@ -1,14 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
-import MyAlimentForm from "./MyAlimentForm";
+import MyAlimentForm from "../../src/components/MyAlimentForm/MyAlimentForm";
 
 // 1. MOCKEAR EL HOOK PERSONALIZADO
 // Le decimos a Vitest: "Cuando el componente pida 'useMyAliments', dale esto en su lugar".
 // Usamos vi.fn() para poder espiar si la función 'create' fue llamada después.
 const mockCreate = vi.fn();
 
-vi.mock("../../hooks/useMyAliments", () => ({
+vi.mock("../../src/hooks/useMyAliments", () => ({
   default: () => ({
     create: mockCreate,
   }),
@@ -17,7 +17,7 @@ vi.mock("../../hooks/useMyAliments", () => ({
 // 2. MOCKEAR EL COMPONENTE HIJO
 // MyAlimentList usa Redux. Si no lo mockeamos, el test fallaría pidiendo un <Provider>.
 // Simplemente hacemos que renderice un div vacío o texto simple.
-vi.mock("./MyAlimentList", () => ({
+vi.mock("../../src/components/MyAlimentForm/MyAlimentList", () => ({
   default: () => <div data-testid="mock-list">Lista Mockeada</div>,
 }));
 
@@ -93,5 +93,28 @@ describe("MyAlimentForm Component", () => {
 
     // Verificamos que el valor del input vuelve a estar vacío
     expect(nameInput).toHaveValue("");
+  });
+
+  it("debe transformar strings vacíos a 0 automáticamente", async () => {
+    const user = userEvent.setup();
+    render(<MyAlimentForm />);
+
+    const nameInput = screen.getByPlaceholderText("Name");
+    await user.type(nameInput, "Agua");
+
+    // No escribimos nada en los campos numéricos (se quedan vacíos)
+
+    const submitBtn = screen.getByRole("button", { name: /Create/i });
+    await user.click(submitBtn);
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Agua",
+        nutritionFacts: expect.objectContaining({
+          kcal100G: 0, // Verificamos la lógica del ternario: value === "" ? 0
+          fatG: 0,
+        }),
+      }),
+    );
   });
 });

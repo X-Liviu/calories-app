@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import loginService from "../services/login";
-import signupService from "../services/signup";
-import weekService from "../services/weeks";
-import myAlimentService from "../services/myAliments";
-import dayService from "../services/days";
-import mealService from "../services/meals";
-import alimentService from "../services/aliments";
+import loginService from "../../services/login";
+import signupService from "../../services/signup";
+import weekService from "../../services/weeks";
+import myAlimentService from "../../services/myAliments";
+import dayService from "../../services/days";
+import mealService from "../../services/meals";
+import alimentService from "../../services/aliments";
 
 import { clearWeeks } from "./weekReducer";
 import { clearMyAliments } from "./myAlimentReducer";

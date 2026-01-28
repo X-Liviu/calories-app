@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { setYear } from "../reducers/yearReducer";
-import { clearWeeks } from "../reducers/weekReducer";
+import { setYear } from "../redux/reducers/yearReducer";
+import { clearWeeks } from "../redux/reducers/weekReducer";
 
 const useYearManager = () => {
   const dispatch = useDispatch();
