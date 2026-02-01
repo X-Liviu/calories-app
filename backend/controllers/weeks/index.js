@@ -63,10 +63,7 @@ router.delete("/:id", async (req, res, next) => {
       _id: req.params.id,
     });
 
-    if (!deletedWeek) {
-      throwNotFound("Week");
-      return res.status(404).end();
-    }
+    if (!deletedWeek) throwNotFound("Week");
 
     res.status(204).end();
   } catch (err) {

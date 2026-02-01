@@ -5,22 +5,30 @@ const api = supertest(app);
 const UserAliment = require("../models/UserAliment");
 const helper = require("./test_helper");
 
+// Limpieza inicial
 beforeEach(async () => {
   await UserAliment.deleteMany({});
-  // El helper limpiará Users internamente al llamar a getAuthToken
 });
 
 describe("Controlador de UserAliments (Mi Despensa)", () => {
   let token;
   let userId;
 
+  // Setup: Creamos usuario y obtenemos token antes de cada test
   beforeEach(async () => {
     const authData = await helper.getAuthToken();
     token = authData.token;
     userId = authData.userId;
   });
 
+  // ======================================================
+  // 1. GET - Obtener alimentos
+  // ======================================================
   describe("GET /api/my-aliments", () => {
+    test("falla con 401 si no se provee token", async () => {
+      await api.get("/api/my-aliments").expect(401); // Verificamos protección de ruta
+    });
+
     test("devuelve lista vacía inicialmente", async () => {
       const response = await api
         .get("/api/my-aliments")
@@ -31,8 +39,7 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
       expect(response.body).toHaveLength(0);
     });
 
-    test("devuelve los alimentos creados por el usuario", async () => {
-      // Insertar un alimento manualmente
+    test("devuelve los alimentos creados por el usuario (transformación camelCase)", async () => {
       const aliment = new UserAliment({
         user: userId,
         name: "My Protein",
@@ -47,14 +54,16 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
 
       expect(response.body).toHaveLength(1);
       expect(response.body[0].name).toBe("My Protein");
-      // Verifica que toJSON transformó snake_case a camelCase
       expect(response.body[0].nutritionFacts.kcal100G).toBe(300);
       expect(response.body[0].nutritionFacts.proteinG).toBe(80);
     });
   });
 
+  // ======================================================
+  // 2. POST - Crear alimentos
+  // ======================================================
   describe("POST /api/my-aliments", () => {
-    test("crea un alimento válido y transforma camelCase a snake_case", async () => {
+    test("crea un alimento válido y transforma camelCase a snake_case en DB", async () => {
       const newAliment = {
         name: "Oats",
         nutritionFacts: {
@@ -72,21 +81,47 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .expect("Content-Type", /application\/json/);
 
       expect(response.body.name).toBe("Oats");
-      expect(response.body.nutritionFacts.kcal100G).toBe(350);
 
-      // Verificación en DB (snake_case)
+      // Verificación directa en base de datos
       const inDb = await UserAliment.findOne({ user: userId });
-      expect(inDb.nutrition_facts.kcal_100g).toBe(350);
+      expect(inDb.nutrition_facts.kcal_100g).toBe(350); // Se guardó snake_case
       expect(inDb.nutrition_facts.carbs_g).toBe(60);
     });
 
-    test("falla con 400 si faltan campos obligatorios en el schema Joi (aunque sean opcionales en DB, Joi valida estructura)", async () => {
-      // Tu schema userAlimentSchema define kcal100G como Joi.number().
-      // Si enviamos texto, debe fallar.
+    test("falla con 400 si falta el nombre (Mongoose Validation)", async () => {
+      const invalidAliment = {
+        // name: missing
+        nutritionFacts: { kcal100G: 100 },
+      };
+
+      const result = await api
+        .post("/api/my-aliments")
+        .set("Authorization", token)
+        .send(invalidAliment)
+        .expect(400); // Bad Request por ValidationError
+
+      // CAMBIO AQUÍ: Adaptado al mensaje de tu nuevo middleware
+      expect(result.body.error).toContain("name");
+      expect(result.body.error).toContain("required");
+    });
+
+    test("falla con 400 si falta el objeto nutritionFacts (Controller Check)", async () => {
+      const invalidAliment = { name: "Air" };
+
+      const result = await api
+        .post("/api/my-aliments")
+        .set("Authorization", token)
+        .send(invalidAliment)
+        .expect(400); // Tu controlador lanza ValidationError manual aquí
+
+      expect(result.body.error).toContain("nutritionFacts is required");
+    });
+
+    test("falla con 400 si Joi detecta tipos incorrectos", async () => {
       const invalidData = {
         name: "Bad Input",
         nutritionFacts: {
-          kcal100G: "muchas calorías",
+          kcal100G: "muchas calorías", // Debe ser número
         },
       };
 
@@ -97,27 +132,32 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .expect(400);
     });
 
-    test("falla con 400 si se intenta crear duplicado (mismo nombre)", async () => {
+    test("falla con 400 al intentar crear duplicado (Unique Index)", async () => {
       const aliment = { name: "Milk", nutritionFacts: { kcal100G: 50 } };
 
+      // Primer insert
       await api
         .post("/api/my-aliments")
         .set("Authorization", token)
         .send(aliment)
         .expect(201);
 
+      // Segundo insert (duplicado)
       const result = await api
         .post("/api/my-aliments")
         .set("Authorization", token)
         .send(aliment)
-        .expect(400); // Duplicate key error
+        .expect(400);
 
-      expect(result.body.error).toContain(
-        "expected one of fields to be unique",
-      );
+      // CAMBIO AQUÍ: Tu middleware devuelve "The user is already taken" o "The name is already taken"
+      // Usamos una comprobación más genérica que sirva para tu middleware actual
+      expect(result.body.error).toContain("already taken");
     });
   });
 
+  // ======================================================
+  // 3. PUT - Actualizar alimentos
+  // ======================================================
   describe("PUT /api/my-aliments/:id", () => {
     let alimentId;
 
@@ -131,9 +171,8 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
       alimentId = saved._id;
     });
 
-    test("actualiza un campo específico (ej: proteinG)", async () => {
-      // Enviamos camelCase, el controller debe mapear a snake_case
-      const updateData = { proteinG: 5 };
+    test("actualiza un campo específico correctamente", async () => {
+      const updateData = { proteinG: 5 }; // camelCase
 
       const response = await api
         .put(`/api/my-aliments/${alimentId}`)
@@ -141,16 +180,33 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .send(updateData)
         .expect(200);
 
-      // Respuesta API (camelCase)
       expect(response.body.nutritionFacts.proteinG).toBe(5);
-      expect(response.body.nutritionFacts.kcal100G).toBe(130); // No debe cambiar
+      expect(response.body.nutritionFacts.kcal100G).toBe(130); // El resto sigue igual
 
-      // Verificación DB (snake_case)
+      // Verificar persistencia
       const inDb = await UserAliment.findById(alimentId);
       expect(inDb.nutrition_facts.protein_g).toBe(5);
     });
 
-    test("falla con 404 si se intenta actualizar alimento de OTRO usuario", async () => {
+    test("falla con 400 si se envía un campo desconocido (Validación Manual)", async () => {
+      await api
+        .put(`/api/my-aliments/${alimentId}`)
+        .set("Authorization", token)
+        .send({ unknownField: 100 })
+        .expect(400); // Según tu corrección de middleware, ahora devuelve 400
+    });
+
+    test("falla con 400 si el ID es malformado (CastError)", async () => {
+      const malformedId = "12345"; // No es un ObjectId válido
+
+      await api
+        .put(`/api/my-aliments/${malformedId}`)
+        .set("Authorization", token)
+        .send({ proteinG: 10 })
+        .expect(400); // El middleware captura CastError y devuelve 400
+    });
+
+    test("falla con 404 si el alimento existe pero es de OTRO usuario", async () => {
       const otherUser = new mongoose.Types.ObjectId();
       const otherAliment = new UserAliment({
         user: otherUser,
@@ -165,22 +221,11 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .send({ kcal100G: 999 })
         .expect(404);
     });
-
-    test("falla (Validation Error) si se envía un campo desconocido", async () => {
-      await api
-        .put(`/api/my-aliments/${alimentId}`)
-        .set("Authorization", token)
-        .send({ unknownField: 100 })
-        .expect(400); // Tu controller lanza "ValidationError" -> 400 o 500 depende de middleware?
-      // Revisando tu middleware, ValidationError de Joi da 400.
-      // Tu controller lanza `new Error("Invalid field")` con name `ValidationError`.
-      // Esto debería caer en tu middleware default o uno custom.
-      // Vamos a asumir 500 o 400. Dado tu middleware, ValidationError genérico NO Joi da 409...
-      // Espera, tu middleware dice: if (error.isJoi) -> 400, else -> 409.
-      // Así que esperamos 409.
-    });
   });
 
+  // ======================================================
+  // 4. DELETE - Borrar alimentos
+  // ======================================================
   describe("DELETE /api/my-aliments/:id", () => {
     test("elimina el alimento correctamente", async () => {
       const aliment = new UserAliment({
@@ -199,6 +244,13 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
       expect(inDb).toBeNull();
     });
 
+    test("falla con 400 si el ID es malformado", async () => {
+      await api
+        .delete("/api/my-aliments/id-invalido-texto")
+        .set("Authorization", token)
+        .expect(400); // CastError
+    });
+
     test("falla con 404 si intenta borrar alimento ajeno", async () => {
       const otherUser = new mongoose.Types.ObjectId();
       const otherAliment = new UserAliment({
@@ -213,7 +265,20 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .set("Authorization", token)
         .expect(404);
     });
+
+    test("falla con 404 si el alimento no existe", async () => {
+      const validNonExistentId = new mongoose.Types.ObjectId();
+
+      await api
+        .delete(`/api/my-aliments/${validNonExistentId}`)
+        .set("Authorization", token)
+        .expect(404);
+    });
   });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 afterAll(async () => {

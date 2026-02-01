@@ -81,6 +81,7 @@ router.put("/:userAlimentId", async (req, res, next) => {
       { new: true },
     );
 
+    if (!updatedUserAliment) return throwNotFound("Aliment not found");
     updatedUserAliment.nutrition_facts = {
       ...updatedUserAliment.nutrition_facts,
     }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente. No sé si esto de verdad sirve.

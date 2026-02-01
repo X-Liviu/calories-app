@@ -17,6 +17,12 @@ router.post("/:weekId", async (req, res, next) => {
     const week = await Week.findOne({ _id: weekId, user: req.userId });
     if (!week) throwNotFound("Week");
 
+    if (week.days.length >= 7) {
+      const error = new Error("A week cannot have more than 7 days");
+      error.name = "ValidationError";
+      throw error;
+    }
+
     const day = new Day({
       user: req.userId,
       name,

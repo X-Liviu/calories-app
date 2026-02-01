@@ -185,4 +185,45 @@ describe("WeekItem - Days Management (Integration)", () => {
     expect(screen.getByText(mockDayEmpty.name)).toBeInTheDocument();
     expect(dayService.del).not.toHaveBeenCalled();
   });
+
+  it("debe impedir la creación de nuevos días si la semana ya tiene 7 días (Límite alcanzado)", () => {
+    // 1. Crear un array ficticio con 7 días
+    const fullWeekDays = Array.from({ length: 7 }, (_, i) => ({
+      id: `day-${i}`,
+      name: `Day ${i}`,
+      meals: [],
+      weekId: mockWeek1.id,
+    }));
+
+    // 2. Construir manualmente un estado donde la semana objetivo tiene esos 7 días
+    const stateWithFullWeek = {
+      ...mockLoadedState,
+      weeks: {
+        ...mockLoadedState.weeks,
+        data: mockLoadedState.weeks.data.map((w) =>
+          w.id === mockWeek1.id ? { ...w, days: fullWeekDays } : w,
+        ),
+      },
+    };
+
+    // 3. Renderizar el componente con ese estado saturado
+    renderWithProviders(<WeekItem />, {
+      preloadedState: stateWithFullWeek,
+    });
+
+    // 4. Verificaciones de UX (Interfaz Bloqueada)
+
+    // El input debe tener el placeholder especial y estar deshabilitado
+    const input = screen.getByPlaceholderText("Week is full (7/7)");
+    expect(input).toBeInTheDocument();
+    expect(input).toBeDisabled();
+
+    // El botón debe cambiar de texto y estar deshabilitado
+    const submitButton = screen.getByText("Full Week");
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeDisabled();
+
+    // Verificar que aparece el mensaje de advertencia (si lo añadiste en el paso anterior)
+    expect(screen.getByText("Maximum of 7 days reached.")).toBeInTheDocument();
+  });
 });

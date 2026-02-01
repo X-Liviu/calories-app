@@ -14,9 +14,69 @@ const LoginAttempt = require("../models/LoginAttempt");
 
 mongoose.set("strictQuery", false);
 
+const cleanData = async () => {
+  console.log("🧹 Borrando base de datos completa...");
+  await Promise.all([
+    User.deleteMany({}),
+    Week.deleteMany({}),
+    Day.deleteMany({}),
+    Meal.deleteMany({}),
+    MealAliment.deleteMany({}),
+    UserAliment.deleteMany({}),
+    LoginAttempt.deleteMany({}),
+  ]);
+  console.log("✨ Base de datos limpia.");
+};
+
+// --- MANEJADOR DE CTRL + C (SIGINT) ---
+process.on("SIGINT", async () => {
+  console.log("\n\n🛑 Interrupción detectada (Ctrl + C).");
+  console.log("⚠️ Procediendo a borrar todos los datos antes de salir...");
+
+  try {
+    // Si la conexión se cerró, intentamos reconectar (raro, pero preventivo)
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(MONGODB_URI);
+    }
+
+    await cleanData();
+    console.log("👋 Salida limpia realizada.");
+    await mongoose.connection.close();
+    process.exit(0);
+  } catch (err) {
+    console.error("❌ Error al limpiar en la salida:", err);
+    process.exit(1);
+  }
+});
+
 const seedDatabase = async () => {
   try {
-    console.log("🚀 INICIANDO STRESS TEST (Generando 1 año de datos)...");
+    // --- LÓGICA DE ARGUMENTOS ---
+    // Leemos el argumento pasado por consola (índice 2)
+    const args = process.argv.slice(2);
+    let weeksToGenerate = 10; // Valor por defecto si no pasan nada
+
+    if (args.length > 0) {
+      const inputWeeks = parseInt(args[0], 10);
+
+      if (isNaN(inputWeeks) || inputWeeks < 1) {
+        console.error(
+          "❌ Error: El número de semanas debe ser un número entero mayor a 0.",
+        );
+        process.exit(1);
+      }
+
+      if (inputWeeks > 52) {
+        console.warn(
+          "⚠️ AVISO: El máximo permitido es 52 semanas. Se ajustará el valor a 52.",
+        );
+        weeksToGenerate = 52;
+      } else {
+        weeksToGenerate = inputWeeks;
+      }
+    }
+
+    console.log("🚀 INICIANDO POBLACIÓN DE LA BD...");
     const startTime = Date.now();
 
     // 1. Conexión
@@ -412,16 +472,15 @@ const seedDatabase = async () => {
     };
 
     // 5. BUCLE MAGNO (52 SEMANAS)
-    console.log("📆 Generando 52 semanas... Por favor espera.");
+    console.log("📆 Generando 10 semanas... Por favor espera.");
     const currentYear = new Date().getFullYear();
 
-    for (let i = 1; i <= 52; i++) {
-      // Log de progreso cada 10 semanas
-      if (i % 10 === 0) console.log(`   ...procesando semana ${i}/52`);
+    for (let i = 1; i <= weeksToGenerate; i++) {
+      console.log(`   ...procesando semana ${i}/${weeksToGenerate}`);
 
       const week = await Week.create({
         user: user._id,
-        number_week: i, // Semana 1 a 52
+        number_week: i,
         year: currentYear,
       });
 
@@ -431,9 +490,8 @@ const seedDatabase = async () => {
     const duration = (Date.now() - startTime) / 1000;
     console.log("---------------------------------------------------");
     console.log(
-      `✅ STRESS TEST COMPLETADO en ${duration.toFixed(2)} segundos.`,
+      `✅ SEED COMPLETADO: ${weeksToGenerate} semanas generadas en ${duration.toFixed(2)} segundos.`,
     );
-    console.log("📂 Se han generado 52 semanas completas.");
     process.exit(0);
   } catch (error) {
     console.error("❌ Error en el seed:", error);

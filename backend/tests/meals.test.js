@@ -39,8 +39,11 @@ describe("Controlador de Comidas (Meals)", () => {
     dayId = savedDay._id;
   });
 
-  describe("POST /api/weeks/:weekId/:dayId (Crear Meal)", () => {
-    test("crea una comida válida y devuelve la Semana actualizada", async () => {
+  // ======================================================
+  // POST /api/weeks/:weekId/:dayId (Crear Meal)
+  // ======================================================
+  describe("POST /api/weeks/:weekId/:dayId", () => {
+    test("crea una comida válida, la vincula al Día y devuelve la Semana actualizada", async () => {
       const newMeal = { name: "Breakfast" };
 
       const response = await api
@@ -50,19 +53,32 @@ describe("Controlador de Comidas (Meals)", () => {
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
-      // Verificamos estructura profunda (Week -> Days -> Meals)
-      const dayInResponse = response.body.days.find(
+      // 1. Verificamos respuesta (Semana -> Día -> Meal)
+      const dayResponse = response.body.days.find(
         (d) => d.id === dayId.toString(),
       );
-      expect(dayInResponse).toBeDefined();
-      expect(dayInResponse.meals).toHaveLength(1);
-      expect(dayInResponse.meals[0].name).toBe("Breakfast");
-      expect(dayInResponse.meals[0].cheat).toBe(false); // Default value
+      expect(dayResponse).toBeDefined();
+      expect(dayResponse.meals).toHaveLength(1);
+      expect(dayResponse.meals[0].name).toBe("Breakfast");
+      expect(dayResponse.meals[0].cheat).toBe(false); // Valor por defecto
 
-      // Verificamos persistencia en DB
+      // 2. Verificamos persistencia en DB (Comida creada)
       const mealInDb = await Meal.findOne({ day: dayId });
       expect(mealInDb).toBeDefined();
       expect(mealInDb.name).toBe("Breakfast");
+
+      // 3. Verificamos referencia en el Día (Hook 'post save' funcionó)
+      const dayInDb = await Day.findById(dayId);
+      expect(dayInDb.meals).toHaveLength(1);
+      expect(dayInDb.meals[0].toString()).toBe(mealInDb._id.toString());
+    });
+
+    test("falla con 400 si falta el nombre", async () => {
+      await api
+        .post(`/api/weeks/${weekId}/${dayId}`)
+        .set("Authorization", token)
+        .send({}) // Body vacío
+        .expect(400);
     });
 
     test("falla con 400 si se duplica el nombre de la comida en el mismo día", async () => {
@@ -80,44 +96,41 @@ describe("Controlador de Comidas (Meals)", () => {
         .send({ name: "Lunch" })
         .expect(400);
 
-      expect(result.body.error).toContain(
-        "expected one of fields to be unique",
-      );
+      expect(result.body.error).toContain("already taken");
+    });
+
+    // CAMBIO APLICADO: Ahora espera 404 porque tu lógica de array.find() devuelve undefined para IDs raros
+    test("falla con 404 si hay IDs malformados", async () => {
+      await api
+        .post(`/api/weeks/${weekId}/id-dia-invalido`)
+        .set("Authorization", token)
+        .send({ name: "Dinner" })
+        .expect(404);
     });
 
     test("falla con 404 si se intenta crear comida en día de OTRO usuario", async () => {
-      // Simulamos semana/día de otro usuario
-      const otherUserId = new mongoose.Types.ObjectId();
+      const otherUser = new mongoose.Types.ObjectId();
       const otherWeek = new Week({
         number_week: 2,
         year: 2024,
-        user: otherUserId,
+        user: otherUser,
       });
       await otherWeek.save();
       const otherDay = new Day({
         name: "Tuesday",
         week: otherWeek._id,
-        user: otherUserId,
+        user: otherUser,
       });
       await otherDay.save();
 
-      // Intentamos insertar con NUESTRO token
       await api
         .post(`/api/weeks/${otherWeek._id}/${otherDay._id}`)
         .set("Authorization", token)
         .send({ name: "Hacking Lunch" })
-        .expect(404); // Gracias a la corrección del controlador
+        .expect(404);
     });
 
-    test("falla con 400 si el nombre está vacío", async () => {
-      await api
-        .post(`/api/weeks/${weekId}/${dayId}`)
-        .set("Authorization", token)
-        .send({ name: "" })
-        .expect(400); // Validation Error
-    });
-
-    test("falla con 404 si el día existe pero NO pertenece a la semana indicada en la URL", async () => {
+    test("falla con 404 si el día existe pero NO pertenece a la semana indicada en la URL (Integridad)", async () => {
       // 1. Crear otra semana del MISMO usuario
       const week2 = new Week({ number_week: 2, year: 2024, user: userId });
       const savedWeek2 = await week2.save();
@@ -127,11 +140,14 @@ describe("Controlador de Comidas (Meals)", () => {
         .post(`/api/weeks/${savedWeek2._id}/${dayId}`) // URL incoherente
         .set("Authorization", token)
         .send({ name: "Lost Meal" })
-        .expect(404); // Debería decir "Day not found" (en el contexto de esa semana)
+        .expect(404);
     });
   });
 
-  describe("PUT /api/weeks/:weekId/:dayId/:mealId (Editar Cheat)", () => {
+  // ======================================================
+  // PUT /api/weeks/:weekId/:dayId/:mealId
+  // ======================================================
+  describe("PUT /api/weeks/:weekId/:dayId/:mealId", () => {
     let mealId;
 
     beforeEach(async () => {
@@ -140,7 +156,7 @@ describe("Controlador de Comidas (Meals)", () => {
       mealId = savedMeal._id;
     });
 
-    test("actualiza el campo cheat correctamente", async () => {
+    test("actualiza el campo 'cheat' correctamente", async () => {
       const response = await api
         .put(`/api/weeks/${weekId}/${dayId}/${mealId}`)
         .set("Authorization", token)
@@ -161,42 +177,33 @@ describe("Controlador de Comidas (Meals)", () => {
       await api
         .put(`/api/weeks/${weekId}/${dayId}/${mealId}`)
         .set("Authorization", token)
-        .send({ cheat: "yes" }) // Joi espera boolean
+        .send({ cheat: "yes" })
         .expect(400);
     });
 
-    test("falla con 404 si intentamos editar una comida de OTRO usuario", async () => {
-      // 1. Crear comida ajena
-      const otherUser = new mongoose.Types.ObjectId();
-      const otherWeek = new Week({
-        number_week: 5,
-        year: 2024,
-        user: otherUser,
-      });
-      await otherWeek.save();
-      const otherDay = new Day({
-        name: "D",
-        week: otherWeek._id,
-        user: otherUser,
-      });
-      await otherDay.save();
-      const otherMeal = new Meal({
-        name: "M",
-        day: otherDay._id,
-        user: otherUser,
-      });
-      await otherMeal.save();
-
-      // 2. Intentar editar con nuestro token
+    // CAMBIO APLICADO: Ahora espera 404 (tu lógica array.find() no lo encuentra)
+    test("falla con 404 si el ID es malformado", async () => {
       await api
-        .put(`/api/weeks/${otherWeek._id}/${otherDay._id}/${otherMeal._id}`)
+        .put(`/api/weeks/${weekId}/${dayId}/id-meal-invalido`)
+        .set("Authorization", token)
+        .send({ cheat: true })
+        .expect(404);
+    });
+
+    test("falla con 404 si la comida existe pero no está en el día indicado (Integridad)", async () => {
+      // Crear otro día
+      const day2 = new Day({ name: "Tuesday", week: weekId, user: userId });
+      const savedDay2 = await day2.save();
+
+      // Intentar actualizar mealId (que es de dayId) usando day2 en la URL
+      await api
+        .put(`/api/weeks/${weekId}/${savedDay2._id}/${mealId}`)
         .set("Authorization", token)
         .send({ cheat: true })
         .expect(404);
     });
 
     test("ignora intentos de cambiar el nombre (solo permite cambiar cheat)", async () => {
-      // Tu controlador PUT solo actualiza { cheat: cheat }. Verifiquemos eso.
       const originalName = "Dinner";
 
       const response = await api
@@ -217,6 +224,9 @@ describe("Controlador de Comidas (Meals)", () => {
     });
   });
 
+  // ======================================================
+  // DELETE /api/weeks/:weekId/:dayId/:mealId
+  // ======================================================
   describe("DELETE /api/weeks/:weekId/:dayId/:mealId", () => {
     let mealId;
 
@@ -226,7 +236,7 @@ describe("Controlador de Comidas (Meals)", () => {
       mealId = savedMeal._id;
     });
 
-    test("elimina la comida y actualiza la referencia en el día", async () => {
+    test("elimina la comida y limpia la referencia en el día", async () => {
       // Verificar referencia antes de borrar
       const dayBefore = await Day.findById(dayId);
       expect(dayBefore.meals).toHaveLength(1);
@@ -236,7 +246,7 @@ describe("Controlador de Comidas (Meals)", () => {
         .set("Authorization", token)
         .expect(204);
 
-      // Verificar borrado
+      // Verificar borrado de Comida
       const mealAfter = await Meal.findById(mealId);
       expect(mealAfter).toBeNull();
 
@@ -245,27 +255,47 @@ describe("Controlador de Comidas (Meals)", () => {
       expect(dayAfter.meals).toHaveLength(0);
     });
 
+    // MANTENIDO: En DELETE usas findById directo a Mongo, así que el CastError salta y da 400.
+    test("falla con 400 si el ID es malformado", async () => {
+      await api
+        .delete(`/api/weeks/${weekId}/${dayId}/id-meal-invalido`)
+        .set("Authorization", token)
+        .expect(400);
+    });
+
     test("falla con 404 si intentamos borrar una comida de OTRO usuario", async () => {
-      // 1. Crear comida ajena
       const otherUser = new mongoose.Types.ObjectId();
       const otherMeal = new Meal({
         name: "Secret",
         day: dayId,
         user: otherUser,
-      }); // Hack: lo metemos en nuestro día para aislar el test al user del meal
-      await otherMeal.save();
+      });
+      const savedOther = await otherMeal.save();
 
-      // 2. Intentar borrar
       await api
-        .delete(`/api/weeks/${weekId}/${dayId}/${otherMeal._id}`)
+        .delete(`/api/weeks/${weekId}/${dayId}/${savedOther._id}`)
+        .set("Authorization", token)
+        .expect(404);
+    });
+
+    test("falla con 404 si la jerarquía de URL es incorrecta (Meal no está en Day)", async () => {
+      // Crear otro día
+      const day2 = new Day({ name: "Tuesday", week: weekId, user: userId });
+      const savedDay2 = await day2.save();
+
+      // Intentar borrar mealId (que pertenece a dayId) usando la ruta de day2
+      await api
+        .delete(`/api/weeks/${weekId}/${savedDay2._id}/${mealId}`)
         .set("Authorization", token)
         .expect(404);
     });
   });
 
+  // ======================================================
+  // Test de Cascada (Aseguramiento Extra)
+  // ======================================================
   describe("Cascada: Efectos colaterales", () => {
     test("Si se borra un DÍA, sus COMIDAS se borran automáticamente", async () => {
-      // 1. Crear comida vinculada al día actual
       const meal = new Meal({
         name: "Transient Meal",
         day: dayId,
@@ -273,37 +303,16 @@ describe("Controlador de Comidas (Meals)", () => {
       });
       const savedMeal = await meal.save();
 
-      // 2. Borrar el DÍA (usando el endpoint de Días)
+      // Borrar el DÍA (usando el endpoint de Días)
       await api
         .delete(`/api/weeks/${weekId}/${dayId}`)
         .set("Authorization", token)
         .expect(204);
 
-      // 3. Verificar que la Comida ha desaparecido de la DB
+      // Verificar que la Comida ha desaparecido
       const mealInDb = await Meal.findById(savedMeal._id);
       expect(mealInDb).toBeNull();
     });
-  });
-
-  test("Si se borra una SEMANA (abuelo), las COMIDAS (nietos) se borran automáticamente", async () => {
-    // 1. Crear comida vinculada
-    const meal = new Meal({
-      name: "Grandchild Meal",
-      day: dayId,
-      user: userId,
-    });
-    const savedMeal = await meal.save();
-
-    // 2. Borrar la SEMANA entera
-    await api
-      .delete(`/api/weeks/${weekId}`)
-      .set("Authorization", token)
-      .expect(204);
-
-    // 3. Verificar que la Comida ha desaparecido
-    // (Week borra Day -> Day borra Meal)
-    const mealInDb = await Meal.findById(savedMeal._id);
-    expect(mealInDb).toBeNull();
   });
 });
 

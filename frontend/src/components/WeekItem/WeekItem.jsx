@@ -14,10 +14,12 @@ const WeekItem = () => {
   const week = useSelector((state) => selectWeek(state, weekId));
 
   if (!week) return <h1>Loading...</h1>;
+
+  const isWeekFull = week.days && week.days.length >= 7;
   return (
     <>
       <h1>Week {week?.numberWeek}</h1>
-      <DayForm weekId={week?.id} />
+      <DayForm weekId={week?.id} isFull={isWeekFull} />
       <DayList weekId={week?.id} days={week?.days} />
     </>
   );

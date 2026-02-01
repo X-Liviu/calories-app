@@ -2,12 +2,20 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
+
+// Importamos TODOS los modelos involucrados en la jerarquía
 const Week = require("../models/Week");
 const Day = require("../models/Day");
+const Meal = require("../models/Meal");
+const MealAliment = require("../models/MealAliment");
+
 const helper = require("./test_helper");
 
-// Limpiamos la BD antes de cada test
+// Limpieza total de la jerarquía antes de cada test
 beforeEach(async () => {
+  await MealAliment.deleteMany({});
+  await Meal.deleteMany({});
+  await Day.deleteMany({});
   await Week.deleteMany({});
 });
 
@@ -23,7 +31,7 @@ describe("GET /api/weeks", () => {
     const { token } = await helper.getAuthToken();
 
     const response = await api
-      .get("/api/weeks?year=2024") // Añadimos query param ya que el controller lo usa
+      .get("/api/weeks?year=2024")
       .set("Authorization", token)
       .expect(200)
       .expect("Content-Type", /application\/json/);
@@ -34,7 +42,6 @@ describe("GET /api/weeks", () => {
   test("devuelve las semanas correctamente formateadas", async () => {
     const { token, userId } = await helper.getAuthToken();
 
-    // Insertamos una semana directamente en la BD simulando que es de este usuario
     const week = new Week({
       number_week: 15,
       year: 2024,
@@ -48,58 +55,47 @@ describe("GET /api/weeks", () => {
       .expect(200);
 
     expect(response.body).toHaveLength(1);
-    // Verificamos que el toJSON funcionó: number_week -> numberWeek
     expect(response.body[0].numberWeek).toBe(15);
-    // Verificamos que no se devuelve info sensible o interna
+    // Verificamos que no se filtre info interna
     expect(response.body[0].user).toBeUndefined();
     expect(response.body[0]._id).toBeUndefined();
   });
 
   test("no devuelve semanas de otros usuarios (Data Isolation)", async () => {
-    // 1. Crear una semana perteneciente a OTRO usuario
-    const { userId: otherUserId } = await helper.getAuthToken(); // Esto resetea la BD y crea 'testuser'
-    const weekOther = new Week({
-      number_week: 1,
-      year: 2024,
-      user: otherUserId,
-    });
-    await weekOther.save();
+    // 1. Crear semana de usuario A
+    const { userId: userA_Id } = await helper.getAuthToken();
+    const weekA = new Week({ number_week: 1, year: 2024, user: userA_Id });
+    await weekA.save();
 
-    // 2. Crear UN NUEVO usuario y loguearse
-    // (Sobrescribimos user y token del helper manualmente para simular el segundo usuario)
-    const newUser = {
-      name: "Second User",
-      username: "seconduser",
-      email: "second@example.com",
+    // 2. Crear usuario B y loguearse
+    const userB = {
+      name: "User B",
+      username: "userB",
+      email: "b@example.com",
       password: "Password123!",
     };
-    await api.post("/api/users").send(newUser);
-
+    await api.post("/api/users").send(userB);
     const loginRes = await api.post("/api/login").send({
-      email: newUser.email,
-      password: newUser.password,
+      email: userB.email,
+      password: userB.password,
     });
-    const secondUserToken = `Bearer ${loginRes.body.token}`;
+    const tokenB = `Bearer ${loginRes.body.token}`;
 
-    // 3. Pedir semanas con el SEGUNDO usuario
+    // 3. Pedir semanas con usuario B
     const response = await api
       .get("/api/weeks?year=2024")
-      .set("Authorization", secondUserToken)
+      .set("Authorization", tokenB)
       .expect(200);
 
-    // 4. Debe venir vacío (no debe ver la semana del primer usuario)
+    // 4. Debe estar vacío
     expect(response.body).toHaveLength(0);
   });
 });
 
 describe("POST /api/weeks", () => {
-  test("crea una semana válida devuelve 201", async () => {
+  test("crea una semana válida y devuelve 201", async () => {
     const { token } = await helper.getAuthToken();
-
-    const newWeek = {
-      numberWeek: 40,
-      year: 2024,
-    };
+    const newWeek = { numberWeek: 40, year: 2024 };
 
     await api
       .post("/api/weeks")
@@ -113,30 +109,22 @@ describe("POST /api/weeks", () => {
     expect(weeksAtEnd[0].numberWeek).toBe(40);
   });
 
-  test("falla con 400 si faltan campos requeridos (Joi)", async () => {
+  test("falla con 400 si faltan campos requeridos", async () => {
     const { token } = await helper.getAuthToken();
-
-    const newWeek = {
-      // Falta numberWeek
-      year: 2024,
-    };
+    const newWeek = { year: 2024 }; // Falta numberWeek
 
     const response = await api
       .post("/api/weeks")
       .set("Authorization", token)
       .send(newWeek)
-      .expect(400); // validation error
+      .expect(400);
 
     expect(response.body.error).toBeDefined();
   });
 
   test("falla con 400 si el número de semana es inválido (>53)", async () => {
     const { token } = await helper.getAuthToken();
-
-    const newWeek = {
-      numberWeek: 99, // Inválido según weekSchema
-      year: 2024,
-    };
+    const newWeek = { numberWeek: 99, year: 2024 };
 
     await api
       .post("/api/weeks")
@@ -145,84 +133,102 @@ describe("POST /api/weeks", () => {
       .expect(400);
   });
 
-  test("falla con 400 al crear una semana duplicada (unique index)", async () => {
+  test("falla con 400 al crear una semana duplicada (Misma semana y año)", async () => {
     const { token } = await helper.getAuthToken();
     const newWeek = { numberWeek: 1, year: 2024 };
 
-    // Primera inserción: éxito
     await api
       .post("/api/weeks")
       .set("Authorization", token)
       .send(newWeek)
       .expect(201);
 
-    // Segunda inserción (mismos datos): fallo por duplicado
     const result = await api
       .post("/api/weeks")
       .set("Authorization", token)
       .send(newWeek)
-      .expect(400); // Tu middleware captura E11000 duplicate key error
+      .expect(400); // Duplicate key error
 
-    expect(result.body.error).toMatch(/expected one of fields to be unique/i);
+    expect(result.body.error).toContain("already taken");
   });
 });
 
 describe("DELETE /api/weeks/:id", () => {
-  test("elimina una semana y sus días asociados (Cascada)", async () => {
+  // --- TEST DE CASCADA PROFUNDA (NUEVO) ---
+  test("Elimina la semana y TODA su jerarquía (Días -> Comidas -> Alimentos)", async () => {
     const { token, userId } = await helper.getAuthToken();
 
-    // 1. Crear Semana
+    // 1. Crear Jerarquía completa: Week -> Day -> Meal -> MealAliment
+
+    // A. Semana
     const week = new Week({ number_week: 10, year: 2024, user: userId });
     const savedWeek = await week.save();
 
-    // 2. Crear Día asociado a esa semana
-    // (Al guardar el día, tu hook 'post save' actualizará la semana automáticamente)
-    const day = new Day({
-      name: "Monday",
-      week: savedWeek._id,
+    // B. Día
+    const day = new Day({ name: "Monday", week: savedWeek._id, user: userId });
+    const savedDay = await day.save();
+
+    // C. Comida
+    const meal = new Meal({ name: "Lunch", day: savedDay._id, user: userId });
+    const savedMeal = await meal.save();
+
+    // D. Alimento en Comida (Simulado)
+    const mealAliment = new MealAliment({
+      name_snapshot: "Rice",
+      grams: 100,
+      meal: savedMeal._id,
       user: userId,
+      // user_aliment: ... (opcional para este test de borrado si el modelo no lo exige estricto, o crea uno dummy)
     });
-    await day.save();
+    const savedMealAliment = await mealAliment.save();
 
-    // Verificación previa: El día existe en la BD
-    const dayBefore = await Day.findById(day._id);
-    expect(dayBefore).toBeDefined();
-
-    // 3. Ejecutar borrado de la Semana
+    // 2. Ejecutar borrado de la RAIZ (Semana)
     await api
       .delete(`/api/weeks/${savedWeek._id}`)
       .set("Authorization", token)
       .expect(204);
 
-    // 4. Verificaciones Finales
-    const weeksAtEnd = await helper.weeksInDb();
-    expect(weeksAtEnd).toHaveLength(0);
+    // 3. VERIFICACIONES (Todo debe haber desaparecido)
+    const weekCheck = await Week.findById(savedWeek._id);
+    expect(weekCheck).toBeNull();
 
-    // BORRADO EN CASCADA: El día debe haber desaparecido
-    const dayAfter = await Day.findById(day._id);
-    expect(dayAfter).toBeNull();
+    const dayCheck = await Day.findById(savedDay._id);
+    expect(dayCheck).toBeNull(); // El hook de Week borró el Day
+
+    const mealCheck = await Meal.findById(savedMeal._id);
+    expect(mealCheck).toBeNull(); // El hook de Day borró el Meal
+
+    const alimentCheck = await MealAliment.findById(savedMealAliment._id);
+    expect(alimentCheck).toBeNull(); // El hook de Meal borró el MealAliment
   });
 
   test("falla con 404 si se intenta borrar una semana de OTRO usuario", async () => {
     const { token } = await helper.getAuthToken();
 
-    // 1. Creamos una semana simulada de OTRO usuario
-    const otherUserId = new mongoose.Types.ObjectId();
-    const otherWeek = new Week({
-      number_week: 5,
-      year: 2024,
-      user: otherUserId,
-    });
+    const otherUser = new mongoose.Types.ObjectId();
+    const otherWeek = new Week({ number_week: 5, year: 2024, user: otherUser });
     const savedOtherWeek = await otherWeek.save();
 
-    // 2. Intentamos borrarla con nuestro token
     await api
       .delete(`/api/weeks/${savedOtherWeek._id}`)
       .set("Authorization", token)
-      .expect(404); // Requiere el cambio sugerido en el controlador
+      .expect(404);
+  });
+
+  test("falla con 400 si el ID de la semana es inválido (CastError)", async () => {
+    const { token } = await helper.getAuthToken();
+
+    await api
+      .delete("/api/weeks/id-malformado-texto")
+      .set("Authorization", token)
+      .expect(400); // Middleware maneja CastError
   });
 });
 
-afterAll(() => {
-  mongoose.connection.close();
+afterAll(async () => {
+  await mongoose.connection.close();
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
