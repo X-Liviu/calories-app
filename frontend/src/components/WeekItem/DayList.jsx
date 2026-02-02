@@ -55,7 +55,7 @@ const DayList = ({ days, weekId }) => {
           onClose={() => setDayToDelete(null)}
           onConfirm={confirmDeleteDay}
           title="Delete Day"
-          message="¿Are you sure you want to delete this day? All meals and aliments included will be erased. This might take a few seconds."
+          message="Are you sure you want to delete this day? All meals and aliments included will be erased. This might take a few seconds."
           confirmText="Yes, I confirm."
         />
       )}

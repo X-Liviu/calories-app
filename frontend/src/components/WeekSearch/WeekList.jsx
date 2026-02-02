@@ -79,7 +79,7 @@ const WeekList = ({ filter }) => {
           onClose={() => setWeekToDelete(null)}
           onConfirm={confirmDeleteWeek}
           title="Delete Week"
-          message="¿Are you sure you want to delete this week? All days, meals and aliments included will be erased. This might take a few seconds."
+          message="Are you sure you want to delete this week? All days, meals and aliments included will be erased. This might take a few seconds."
           confirmText="Yes, I confirm."
         />
       )}

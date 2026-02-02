@@ -53,7 +53,7 @@ const MealList = ({ meals, weekId, dayId }) => {
           onClose={() => setMealToDelete(null)}
           onConfirm={confirmDeleteMeal}
           title="Delete Meal"
-          message="¿Are you sure you want to delete this meal? All aliments included will be erased. This might take a few seconds."
+          message="Are you sure you want to delete this meal? All aliments included will be erased. This might take a few seconds."
           confirmText="Yes, I confirm."
         />
       )}

@@ -4,23 +4,32 @@ import useDays from "../../hooks/useDays";
 
 import { validateOnlyLetters } from "../../utils/validations";
 
+import AddConfirmationModal from "../AddConfirmationModal";
+
 const DayForm = ({ weekId, isFull }) => {
   const [nameDay, setNameDay] = useState("");
+  const [dayToAdd, setDayToAdd] = useState(null);
   const { create } = useDays();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!validateOnlyLetters(nameDay)) return;
-
-    create({ name: nameDay, weekId }); //Crear día en semana específica. Pasar el weekId es clave.
+    if (dayToAdd) {
+      create(dayToAdd);
+    }
     setNameDay("");
+    setDayToAdd(null);
+  };
+
+  const handleAddClick = (e) => {
+    e.preventDefault();
+    setDayToAdd({ name: nameDay, weekId }); //Crear día en semana específica. Pasar el weekId es clave.
   };
 
   const isValid = validateOnlyLetters(nameDay);
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleAddClick}>
         <input
           className="input"
           onChange={({ target }) => setNameDay(target.value)}
@@ -38,6 +47,15 @@ const DayForm = ({ weekId, isFull }) => {
 
       {/* Opcional: Mensaje de error/info */}
       {isFull && <p style={{ color: "orange" }}>Maximum of 7 days reached.</p>}
+      {dayToAdd && (
+        <AddConfirmationModal
+          onClose={() => setDayToAdd(null)}
+          onConfirm={handleSubmit}
+          title="Add Day"
+          message="Are you sure you want to add this day? You will not be able to change the name of the day later."
+          confirmText="Yes, I confirm."
+        />
+      )}
     </>
   );
 };

@@ -126,9 +126,19 @@ describe("WeekItem - Days Management (Integration)", () => {
     const input = screen.getByPlaceholderText("Name of the day");
     await user.type(input, newDayName);
 
+    // 1. Clic en el botón del formulario (Abre el Modal)
     const submitButton = screen.getByText("Create Day");
     await user.click(submitButton);
 
+    // 2. Verificamos que aparece el modal (buscando el botón de confirmar)
+    // Nota: Asegúrate de que el texto coincida exactamente con la prop 'confirmText' en tu DayForm.
+    // En tu código anterior era "Yes, I confirm." (con punto)
+    const confirmButton = screen.getByText("Yes, I confirm.");
+
+    // 3. Confirmamos la acción en el modal
+    await user.click(confirmButton);
+
+    // 4. Ahora sí verificamos que el servicio se llamó
     expect(dayService.create).toHaveBeenCalledWith({
       name: newDayName,
       weekId: mockWeek1.id,

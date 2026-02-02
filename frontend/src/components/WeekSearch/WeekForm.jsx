@@ -4,23 +4,32 @@ import useWeeks from "../../hooks/useWeeks";
 
 import { validateNumberWeek } from "../../utils/validations";
 
+import AddConfirmationModal from "../AddConfirmationModal";
+
 const WeekForm = ({ year }) => {
   const [numberWeek, setNumberWeek] = useState("");
-  const { create } = useWeeks();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = validateNumberWeek({ numberWeek, year });
-    if (!isValid) return;
+  const [weekToAdd, setWeekToAdd] = useState(null);
 
-    create({ numberWeek, year });
+  const { create } = useWeeks();
+  const handleSubmit = () => {
+    if (!validateNumberWeek({ numberWeek, year })) return;
+    if (weekToAdd) {
+      create(weekToAdd);
+    }
     setNumberWeek("");
+    setWeekToAdd(null);
+  };
+
+  const handleAddClick = (e) => {
+    e.preventDefault();
+    setWeekToAdd({ numberWeek, year });
   };
 
   const isValid = validateNumberWeek({ numberWeek, year });
 
   return (
     <>
-      <form className="week-form" onSubmit={handleSubmit}>
+      <form className="week-form" onSubmit={handleAddClick}>
         <input
           className="input"
           onChange={({ target }) => {
@@ -47,6 +56,16 @@ const WeekForm = ({ year }) => {
           <strong>Note:</strong> A few years have 53 weeks. This week cannot be
           created for {year}.
         </p>
+      )}
+
+      {weekToAdd && (
+        <AddConfirmationModal
+          onClose={() => setWeekToAdd(null)}
+          onConfirm={handleSubmit}
+          title="Add Week"
+          message="Are you sure you want to add this week? You will not be able to change the number of the week later."
+          confirmText="Yes, I confirm."
+        />
       )}
     </>
   );
