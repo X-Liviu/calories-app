@@ -1,6 +1,5 @@
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
-
 import { validateUpdateUserForm } from "../../utils/validations";
 
 const EditProfileModal = ({ user, onClose }) => {
@@ -17,10 +16,8 @@ const EditProfileModal = ({ user, onClose }) => {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Limpiar error al escribir
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: null });
     }
@@ -28,7 +25,6 @@ const EditProfileModal = ({ user, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validation = validateUpdateUserForm(formData);
 
     if (!validation.isValid) {
@@ -41,159 +37,119 @@ const EditProfileModal = ({ user, onClose }) => {
       onClose();
     } catch (exception) {
       console.error(`Error updating profile: ${exception}`);
-      if (
-        exception.response &&
-        exception.response.data &&
-        exception.response.data.error
-      ) {
-        console.error(exception.response.data.error);
-      }
+      // Aquí podrías setear un error general si tuvieras un estado para ello
     }
   };
 
-  const overlayStyle = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  };
-
-  const modalStyle = {
-    backgroundColor: "white",
-    padding: "20px",
-    borderRadius: "8px",
-    width: "350px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    maxHeight: "90vh",
-    overflowY: "auto",
-  };
-
-  const errorStyle = {
-    color: "red",
-    fontSize: "0.8em",
-    marginTop: "-8px",
-    marginBottom: "5px",
-  };
-
   return (
-    <div style={overlayStyle}>
-      <div style={modalStyle}>
+    <div className="modal-overlay">
+      {/* Añadimos animate-enter para que aparezca suavemente */}
+      <div className="modal-box profile-edit animate-enter">
         <h3>Edit Profile</h3>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-        >
-          <label>
-            Name:
+        <form onSubmit={handleSubmit} className="profile-edit-form">
+          {/* Nombre */}
+          <div className="form-group-vertical">
+            <label htmlFor="name">Name</label>
             <input
+              id="name"
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                border: errors.name ? "1px solid red" : "1px solid #ccc",
-              }}
+              className={`input-field ${errors.name ? "input-error" : ""}`}
+              placeholder="Your full name"
             />
-          </label>
-          {errors.name && <span style={errorStyle}>{errors.name}</span>}
+            {errors.name && <span className="text-error">{errors.name}</span>}
+          </div>
 
-          <label>
-            Username:
+          {/* Username */}
+          <div className="form-group-vertical">
+            <label htmlFor="username">Username</label>
             <input
+              id="username"
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                border: errors.username ? "1px solid red" : "1px solid #ccc",
-              }}
+              className={`input-field ${errors.username ? "input-error" : ""}`}
+              placeholder="Choose a username"
             />
-          </label>
-          {errors.username && <span style={errorStyle}>{errors.username}</span>}
+            {errors.username && (
+              <span className="text-error">{errors.username}</span>
+            )}
+          </div>
 
-          <hr style={{ width: "100%", margin: "5px 0" }} />
-          <small>Leave blank to keep current password</small>
+          {/* Separador visual */}
+          <div className="form-group-vertical">
+            <hr className="modal-divider" />
+            <span className="text-hint">
+              Leave blank to keep current password
+            </span>
+          </div>
 
-          <label>
-            Current Password:
+          {/* Contraseña Actual */}
+          <div className="form-group-vertical">
+            <label htmlFor="currentPassword">Current Password</label>
             <input
+              id="currentPassword"
               type="password"
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                border: errors.currentPassword
-                  ? "1px solid red"
-                  : "1px solid #ccc",
-              }}
+              className={`input-field ${
+                errors.currentPassword ? "input-error" : ""
+              }`}
             />
-          </label>
-          {errors.currentPassword && (
-            <span style={errorStyle}>{errors.currentPassword}</span>
-          )}
+            {errors.currentPassword && (
+              <span className="text-error">{errors.currentPassword}</span>
+            )}
+          </div>
 
-          <label>
-            New Password:
+          {/* Nueva Contraseña */}
+          <div className="form-group-vertical">
+            <label htmlFor="newPassword">New Password</label>
             <input
+              id="newPassword"
               type="password"
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                border: errors.newPassword ? "1px solid red" : "1px solid #ccc",
-              }}
+              className={`input-field ${errors.newPassword ? "input-error" : ""}`}
             />
-          </label>
-          {errors.newPassword && (
-            <span style={errorStyle}>{errors.newPassword}</span>
-          )}
+            {errors.newPassword && (
+              <span className="text-error">{errors.newPassword}</span>
+            )}
+          </div>
 
-          <label>
-            Repeat New Password:
+          {/* Repetir Nueva Contraseña */}
+          <div className="form-group-vertical">
+            <label htmlFor="newPasswordRepeated">Repeat New Password</label>
             <input
+              id="newPasswordRepeated"
               type="password"
               name="newPasswordRepeated"
               value={formData.newPasswordRepeated}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                border: errors.newPasswordRepeated
-                  ? "1px solid red"
-                  : "1px solid #ccc",
-              }}
+              className={`input-field ${
+                errors.newPasswordRepeated ? "input-error" : ""
+              }`}
             />
-          </label>
-          {errors.newPasswordRepeated && (
-            <span style={errorStyle}>{errors.newPasswordRepeated}</span>
-          )}
+            {errors.newPasswordRepeated && (
+              <span className="text-error">{errors.newPasswordRepeated}</span>
+            )}
+          </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "10px",
-            }}
-          >
-            <button type="button" onClick={onClose}>
+          {/* Acciones */}
+          <div className="modal-actions">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn btn-secondary"
+            >
               Cancel
             </button>
-            <button
-              type="submit"
-              style={{ backgroundColor: "#4CAF50", color: "white" }}
-            >
+            <button type="submit" className="btn btn-success">
               Save Changes
             </button>
           </div>

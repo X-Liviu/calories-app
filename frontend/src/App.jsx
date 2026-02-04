@@ -1,4 +1,4 @@
-import "./App.css";
+import "./AppNuevo.css";
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import useAuth from "../hooks/useAuth";
 
 import { validateSignUpForm } from "../utils/validations";
@@ -35,7 +34,6 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!isFormValid) return;
 
     await signup({ name, username, email, password });
@@ -51,63 +49,76 @@ const SignUpForm = () => {
 
   return (
     <Toggable buttonLabel="Sign Up">
-      <form onSubmit={handleSubmit}>
-        <input
-          className="input"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <ErrorMessage message={errors.name} />
+      <form onSubmit={handleSubmit} className="form-container">
+        <div>
+          <input
+            className="input-field"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <ErrorMessage message={errors.name} />
+        </div>
 
-        <input
-          className="input"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <ErrorMessage message={errors.username} />
+        <div>
+          <input
+            className="input-field"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <ErrorMessage message={errors.username} />
+        </div>
 
-        <input
-          className="input"
-          placeholder="E-Mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <ErrorMessage message={errors.email} />
+        <div>
+          <input
+            className="input-field"
+            placeholder="E-Mail"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <ErrorMessage message={errors.email} />
+        </div>
 
-        <input
-          className="input"
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div>
+          <input
+            className="input-field"
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
-        <input
-          className="input"
-          placeholder="Repeat Password"
-          type="password"
-          value={passwordRepeated}
-          onChange={(e) => setPasswordRepeated(e.target.value)}
-        />
+        <div>
+          <input
+            className="input-field"
+            placeholder="Repeat Password"
+            type="password"
+            value={passwordRepeated}
+            onChange={(e) => setPasswordRepeated(e.target.value)}
+          />
+          <ErrorMessage message={errors.passwordRepeated} />
+        </div>
 
         <ul className={`password-requirements ${password ? "show" : ""}`}>
           {passwordRules.map((rule) => (
             <li
               key={rule.label}
-              style={{ color: rule.valid ? "#4caf50" : "#f44336" }}
+              className={rule.valid ? "text-success" : "text-error"}
+              style={{ listStyle: "none" }}
             >
               {rule.label}
             </li>
           ))}
         </ul>
 
-        <br />
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`${!isFormValid ? "button-disabled" : "button-enabled"}`}
+          className={`btn btn-primary ${!isFormValid ? "btn-disabled" : ""}`}
+          style={{ marginTop: "var(--space-xs)" }}
         >
           Confirm
         </button>

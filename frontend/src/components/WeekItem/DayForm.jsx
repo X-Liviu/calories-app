@@ -1,9 +1,6 @@
 import { useState } from "react";
-
 import useDays from "../../hooks/useDays";
-
 import { validateOnlyLetters } from "../../utils/validations";
-
 import AddConfirmationModal from "../AddConfirmationModal";
 
 const DayForm = ({ weekId, isFull }) => {
@@ -22,38 +19,49 @@ const DayForm = ({ weekId, isFull }) => {
 
   const handleAddClick = (e) => {
     e.preventDefault();
-    setDayToAdd({ name: nameDay, weekId }); //Crear día en semana específica. Pasar el weekId es clave.
+    setDayToAdd({ name: nameDay, weekId });
   };
 
   const isValid = validateOnlyLetters(nameDay);
 
   return (
     <>
-      <form onSubmit={handleAddClick}>
-        <input
-          className="input"
-          onChange={({ target }) => setNameDay(target.value)}
-          placeholder={isFull ? "Week is full (7/7)" : "Name of the day"}
-          value={nameDay}
-          disabled={isFull} // Input bloqueado
-        />
+      <form onSubmit={handleAddClick} className="week-add-form">
+        <div className="week-input-wrapper">
+          <input
+            className="input-field"
+            onChange={({ target }) => setNameDay(target.value)}
+            placeholder={
+              isFull ? "Week is full (7/7)" : "Name of the day (e.g. Monday)"
+            }
+            value={nameDay}
+            disabled={isFull}
+          />
+        </div>
+
         <button
-          disabled={!isValid || isFull} // Botón bloqueado
-          className={`${!isValid || isFull ? "button-disabled" : "button-enabled"}`}
+          type="submit"
+          disabled={!isValid || isFull}
+          className={`btn btn-primary ${!isValid || isFull ? "btn-disabled" : ""}`}
         >
-          {isFull ? "Full Week" : "Create Day"}
+          {isFull ? "Full" : "Add Day"}
         </button>
       </form>
 
-      {/* Opcional: Mensaje de error/info */}
-      {isFull && <p style={{ color: "orange" }}>Maximum of 7 days reached.</p>}
+      {/* Aviso visual con clase CSS */}
+      {isFull && (
+        <div className="full-week-warning">
+          Maximum of 7 days reached. Delete a day to add a new one.
+        </div>
+      )}
+
       {dayToAdd && (
         <AddConfirmationModal
           onClose={() => setDayToAdd(null)}
           onConfirm={handleSubmit}
           title="Add Day"
-          message="Are you sure you want to add this day? You will not be able to change the name of the day later."
-          confirmText="Yes, I confirm."
+          message={`Create "${nameDay}"? You cannot change the name later.`}
+          confirmText="Yes, Create"
         />
       )}
     </>

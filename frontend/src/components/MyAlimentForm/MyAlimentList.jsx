@@ -1,34 +1,50 @@
 import { useSelector } from "react-redux";
-
 import MyAlimentItemList from "./MyAlimentItemList";
 
 const MyAlimentList = () => {
-  //Cuando se renderiza el MyAlimentForm, se hace un get a /api/my-aliments porque se renderiza App, por eso ya se puede hacer directamente el useSelector.
   const myAliments = useSelector((state) => state.myAliments);
-  console.log(myAliments);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Kcal / 100g</th>
-          <th>Fat g</th>
-          <th>Saturated Fat g</th>
-          <th>Carbs g</th>
-          <th>Sugars g</th>
-          <th>Fiber g</th>
-          <th>Protein g</th>
-          <th>Salt g</th>
-          <th>REMOVE BUTTON</th>
-        </tr>
-      </thead>
-      <tbody>
-        {myAliments.map((al) => (
-          <MyAlimentItemList key={al.id} myAliment={al} />
-        ))}
-      </tbody>
-    </table>
+    // CLASE CSS para el contenedor ancho
+    <div className="catalog-list-container">
+      <h3 className="catalog-list-title">
+        Your Catalog ({myAliments.length} items)
+      </h3>
+
+      <div className="table-responsive-wrapper">
+        <table className="catalog-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Kcal / 100g</th>
+              <th>Fat</th>
+              <th>Sat. Fat</th>
+              <th>Carbs</th>
+              <th>Sugars</th>
+              <th>Fiber</th>
+              <th>Protein</th>
+              <th>Salt</th>
+              {/* CLASE CSS para centrar */}
+              <th className="cell-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {myAliments.map((al) => (
+              <MyAlimentItemList key={al.id} myAliment={al} />
+            ))}
+
+            {myAliments.length === 0 && (
+              <tr>
+                {/* CLASE CSS para mensaje vacío */}
+                <td colSpan="10" className="catalog-empty-message">
+                  No items in catalog yet. Add one above!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 

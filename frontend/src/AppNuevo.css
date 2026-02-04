@@ -1,89 +1,1444 @@
+/* =========================================
+   1. LAYOUT GLOBAL & RESET
+   ========================================= */
 #root {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  align-items: center;
+  min-height: 100vh;
 }
 
-footer {
-  background-color: #666666;
-  color: white;
+/* Contenedor principal para páginas interiores */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-md);
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   2. NAVBAR & NAVIGATION
+   ========================================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--ui-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(42, 8, 0, 0.03);
+}
+
+.navbar-logo a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.navbar-links a {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.navbar-links a:hover {
+  color: var(--primary);
+}
+
+nav[aria-label="breadcrumb"] {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--small);
+  color: var(--text-muted);
+}
+
+/* =========================================
+   3. HOME PAGE (Hero Section)
+   ========================================= */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-lg) var(--space-md);
+  background: linear-gradient(
+    180deg,
+    var(--bg-main) 0%,
+    var(--bg-highlight) 100%
+  );
+}
+
+.hero-section {
   text-align: center;
-  padding: 1rem 0;
+  max-width: 800px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.hero-content h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: var(--space-xs);
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+  font-weight: 300;
+}
+
+.hero-image-wrapper {
+  margin-bottom: var(--space-lg);
+  position: relative;
+  display: inline-block;
+}
+
+.hero-image-wrapper img {
+  max-width: 100%;
+  width: 600px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  border: 4px solid var(--bg-surface);
+  display: block;
+}
+
+.hero-description {
+  max-width: 60ch;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: var(--text-main);
+}
+
+.hero-description strong {
+  color: var(--primary);
+}
+
+/* =========================================
+   4. UI COMPONENTS: BUTTONS
+   ========================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6em 1.4em;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-light) !important;
+  box-shadow: 0 4px 6px rgba(119, 81, 68, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(119, 81, 68, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--ui-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-surface);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-danger {
+  background-color: #bc4749;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #9d3b3d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(188, 71, 73, 0.3);
+}
+
+.btn-success {
+  background-color: #606c38;
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #4b552c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(96, 108, 56, 0.3);
+}
+
+.btn:disabled,
+.btn-disabled {
+  background-color: var(--ui-border);
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================
+   5. UI COMPONENTS: FORMS & INPUTS
+   ========================================= */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Input Genérico */
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(119, 81, 68, 0.1);
+}
+
+.input-field::placeholder {
+  color: #999;
+}
+
+/* Input con Error (Variante de .input-field) */
+.input-field.input-error {
+  border-color: var(--color-danger);
+  background-color: #fff5f5; /* Fondo rojizo muy sutil */
+}
+
+.input-field.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(188, 71, 73, 0.1);
+}
+
+/* Select Personalizado (Faltaba en tu CSS) */
+.select-field {
+  padding: 12px 16px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.select-field:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* =========================================
+   6. DASHBOARD & WEEKS LAYOUT
+   ========================================= */
+.dashboard-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ui-border);
+}
+
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.control-group label {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.search-wrapper {
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.week-add-form {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: flex-start;
   width: 100%;
 }
 
-h1 {
-
+.week-input-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-h2 {
-
+/* Badge de semana actual */
+.current-week-badge {
+  background-color: var(--primary);
+  color: var(--text-light);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  margin-top: var(--space-sm);
+  animation: fadeIn 0.3s ease;
 }
 
-img {
-  height: auto;
-  width: 400px;
-  border-radius: 16px;
+.divider-horizontal {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--ui-border);
+  margin: 0;
 }
 
-.select {
-
-}
-.input {
-
-}
-.invisible-input {
-
-}
-button {
-
+/* Wrapper para que el formulario ocupe el espacio restante */
+.week-form-wrapper {
+  flex-grow: 1;
 }
 
-.button-disabled {}
-.button-enabled {}
-
-
-table {
-
+/* Estilos específicos del formulario de añadir semana */
+.week-add-form {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: flex-start;
+  width: 100%;
 }
 
-tbody {
-
+.week-input-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-tr {
-
+/* =========================================
+   7. WEEK CARDS & GRID
+   ========================================= */
+.weeks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 1000px;
 }
 
-td {
-
+.week-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  position: relative;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
 }
 
-label .checkbox-container {
-
+.week-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--ui-hover);
 }
 
-.checkmark span{
-
+.week-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-sm);
 }
 
-.week-form {
-
+.week-card h3 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--accent);
 }
 
-.error {
-
+.week-card.is-deleting {
+  opacity: 0.7;
+  pointer-events: none; /* Bloquea clics */
 }
 
-.global-error {
+/* Contenedor de las calorías en la tarjeta */
+.week-calories-wrapper {
+  margin-bottom: var(--space-sm);
+}
 
+/* Posición absoluta del botón de borrar */
+.week-card .btn-delete-pos {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Mensaje de estado vacío o búsqueda sin resultados */
+.empty-result-container {
+  margin-top: var(--space-xl);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.week-calories {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  background-color: var(--bg-highlight);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  display: inline-block;
+}
+
+.week-dates {
+  font-size: var(--small);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* Botón de borrar */
+.btn-delete-icon {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  color: var(--ui-border);
+  z-index: 2;
+}
+
+.btn-delete-icon:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.week-card .btn-delete-pos {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.empty-state {
+  margin-top: var(--space-xl);
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+/* =========================================
+   8. TOGGABLE & MODALS
+   ========================================= */
+.toggable-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-sm) 0;
+}
+
+.toggable-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toggable-actions {
+  margin-top: var(--space-sm);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+/* =========================================
+   9. UTILS & STATUS
+   ========================================= */
+.text-error {
+  color: var(--color-danger);
+  font-size: var(--small);
+  margin-top: 4px;
+  text-align: left;
+  font-weight: 500;
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.text-success {
+  color: var(--color-success);
+  font-size: var(--small);
+  margin-top: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .password-requirements {
-  
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+.password-requirements.show {
+  max-height: 200px;
+  opacity: 1;
+  margin: var(--space-sm) 0;
+  padding: var(--space-xs);
+  background-color: var(--bg-main);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ui-border);
+}
+
+.password-requirements li {
+  font-size: var(--small);
+  margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.password-requirements li::before {
+  content: "•";
+  margin-right: 6px;
+  font-weight: bold;
+}
+
+.password-requirements li.text-success::before {
+  content: "✓";
+}
+
+/* =========================================
+   10. MODALS (Shared Styles)
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px); /* Un toque moderno extra */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-box {
+  background-color: var(--bg-surface);
+  padding: var(--space-lg); /* Más espacio interno */
+  border-radius: var(--radius-md);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid var(--ui-border);
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-sm);
+  color: var(--accent);
+}
+
+.modal-box p {
+  color: var(--text-main);
+  margin-bottom: var(--space-md);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md); /* Espacio consistente entre botones */
+  margin-top: var(--space-md);
+}
+
+/* --- MODAL: EDIT PROFILE SPECIFICS --- */
+.modal-box.profile-edit {
+  width: 100%;
+  max-width: 450px; /* Un poco más ancho para respirar */
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: left; /* El contenido interno alineado a la izquierda */
+}
+
+/* Contenedor del formulario con espaciado uniforme */
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Grupos de inputs (Label + Input + Error) */
+.form-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group-vertical label {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+/* Separador sutil */
+.modal-divider {
+  border: 0;
+  border-top: 1px dashed var(--ui-border);
+  margin: var(--space-xs) 0;
+}
+
+/* Nota pequeña */
+.text-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: -4px;
+}
+
+/* =========================================
+   11. LOADERS & ANIMATIONS
+   ========================================= */
+.loader-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--bg-highlight); /* Color base suave */
+  border-bottom-color: var(--primary); /* Color activo girando */
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  margin: var(--space-sm) auto;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estado de carga en el modal */
+.modal-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+/* =========================================
+   12. LOCAL LOADERS & TOOLTIPS
+   ========================================= */
+
+/* --- Overlay de carga solo para la tarjeta --- */
+.card-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: var(--radius-md);
+}
+
+.card-loading-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 8px;
+}
+
+/* Reutilizamos el spinner pequeño */
+.loader-spinner-sm {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--bg-highlight);
+  border-bottom-color: var(--primary);
+  border-radius: 50%;
+  animation: rotation 1s linear infinite;
+}
+
+/* --- Tooltip con Exclamación --- */
+.warning-icon-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #fff3cd; /* Amarillo pastel */
+  color: #856404;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: help;
+  margin-left: 8px;
+  border: 1px solid #ffeeba;
+}
+
+/* El texto del tooltip (oculto por defecto) */
+.warning-tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: #5a3d33; /* Tu marrón oscuro */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Posición encima del icono */
+  left: 50%;
+  margin-left: -110px; /* Centrar */
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.8rem;
+  font-weight: normal;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Flechita del tooltip */
+.warning-tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #5a3d33 transparent transparent transparent;
+}
+
+/* Mostrar al hacer hover */
+.warning-icon-container:hover .warning-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* =========================================
+   13. BREADCRUMBS (Estilos Puros)
+   ========================================= */
+.breadcrumb-nav {
+  display: flex;
+  justify-content: center; /* Centrado horizontal total */
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-xs);
+  width: 100%;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+/* --- ANIMACIÓN EN CASCADA CON NTH-CHILD --- */
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+
+  opacity: 0; /* Invisible al inicio */
+  transform: translateX(-10px);
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Definimos los retrasos en CSS puro (Clean Code) */
+.breadcrumb-item:nth-child(1) {
+  animation-delay: 0s;
+}
+.breadcrumb-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.breadcrumb-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.breadcrumb-item:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.breadcrumb-item:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.breadcrumb-item:nth-child(6) {
+  animation-delay: 0.5s;
+}
+
+/* Enlaces */
+.breadcrumb-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition:
+    color 0.2s,
+    transform 0.2s;
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.breadcrumb-link:hover:not(.active) {
+  color: var(--primary);
+  background-color: rgba(119, 81, 68, 0.05);
+  transform: translateY(-1px);
+}
+
+/* El último elemento (Activo) */
+.breadcrumb-link.active {
+  color: var(--primary);
+  font-weight: 700;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Separador (>) */
+.breadcrumb-separator {
+  margin-left: 8px;
+  color: var(--ui-border);
+  font-size: 0.8rem;
+  font-weight: 300;
+  user-select: none;
+}
+
+/* KEYFRAMES */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =========================================
+   14. PROFILE MENU
+   ========================================= */
+.profile-container {
+  position: relative;
+  display: inline-block;
+  z-index: 200; /* Por encima de otros elementos */
+}
+
+/* El círculo del avatar */
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary); /* Marrón medio */
+  color: var(--text-light); /* Texto blanco/crema */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid var(--bg-surface); /* Anillo blanco alrededor */
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.2s,
+    background-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.profile-avatar:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(119, 81, 68, 0.3);
+}
+
+/* Fondo transparente para cerrar al hacer clic fuera */
+.profile-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  cursor: default;
+}
+
+/* El menú desplegable (Popup) */
+.profile-dropdown {
+  position: absolute;
+  top: 120%; /* Un poco separado del círculo */
+  right: 0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px rgba(42, 8, 0, 0.1); /* Sombra más pronunciada */
+  padding: 8px 0;
+  min-width: 220px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  /* Animación de entrada */
+  transform-origin: top right;
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Información del usuario (Cabecera del menú) */
+.profile-user-info {
+  padding: 12px 16px;
+  background-color: var(--bg-main); /* Fondo sutil diferente */
+  border-bottom: 1px solid var(--ui-border);
+  margin-bottom: 4px;
+}
+
+.profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Clase para el @username (antes era un style inline) */
+.profile-username {
+  display: block;
+  margin-left: 26px; /* Alineado con el texto del nombre */
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Elementos del menú (Botones) */
+.profile-menu-item {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.95rem;
+  font-family: var(--font-main);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.profile-menu-item:hover {
+  background-color: var(--bg-highlight); /* Rosa pastel al pasar ratón */
+  color: var(--primary-dark);
+}
+
+/* Iconos dentro del menú */
+.profile-menu-icon {
+  font-size: 1.2rem;
+  color: var(--ui-border); /* Color base del icono */
+  transition: color 0.2s;
+}
+
+.profile-menu-item:hover .profile-menu-icon {
+  color: var(--primary); /* El icono se colorea al hover */
+}
+
+/* Separador */
+.profile-divider {
+  border: 0;
+  border-top: 1px solid var(--ui-border);
+  margin: 4px 0;
+  width: 100%;
+  opacity: 0.5;
+}
+
+/* Estilos específicos para peligro (Delete) */
+.profile-menu-item.text-danger {
+  color: #bc4749; /* Rojo Tierra */
+}
+
+.profile-menu-item.text-danger:hover {
+  background-color: #fee2e2;
+  color: #a12d2f;
+}
+
+.profile-menu-item.text-danger .profile-menu-icon {
+  color: #bc4749;
+}
+
+/* Animación del Dropdown */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* =========================================
+   15. CATALOG (My Aliments)
+   ========================================= */
+
+/* --- FORMULARIO DE CREACIÓN --- */
+.catalog-form-container {
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ui-border);
+  width: 100%;
+  max-width: 1000px; /* Ancho amplio para que quepan los inputs */
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.catalog-form-header {
+  margin-bottom: var(--space-md);
+  color: var(--accent);
+  text-align: center;
+}
+
+/* Grid para los inputs: Se adapta automáticamente */
+.catalog-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+/* Label pequeño encima del input */
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* El input específico del catálogo */
+.catalog-input {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  transition: border-color 0.2s;
+}
+
+.catalog-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: #fff;
+}
+
+.catalog-form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-md);
+}
+
+/* Contenedor principal de la lista */
+.catalog-list-container {
+  width: 100%;
+  max-width: 1200px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.catalog-list-title {
+  margin-bottom: var(--space-sm);
+  color: var(--accent);
+}
+
+/* --- CLASES DE UTILIDAD PARA LA TABLA --- */
+
+/* Alineación centrada para celdas específicas (acciones) */
+.catalog-table .cell-center {
+  text-align: center;
+}
+
+/* Celda de nombre (necesita padding porque es texto, no input) */
+.catalog-table .cell-name {
+  padding: 12px 16px; /* Restauramos el padding que quitamos en el td general */
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Formulario dentro de la celda (para que ocupe todo el alto) */
+.cell-form {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+/* Mensaje de tabla vacía */
+.catalog-empty-message {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- TABLA RESPONSIVA --- */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto; /* Scroll horizontal si no cabe en la pantalla */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--shadow-soft);
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-surface);
+  min-width: 900px; /* Fuerza ancho mínimo para que no se aplaste */
+}
+
+/* Cabecera */
+.catalog-table thead {
+  background-color: var(--bg-highlight); /* Tu rosa pastel */
+}
+
+.catalog-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap; /* Evita que el texto se rompa feo */
+}
+
+/* Cuerpo */
+.catalog-table td {
+  padding: 0; /* Padding 0 para que el input invisible ocupe toda la celda */
+  border-bottom: 1px solid var(--ui-border);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.catalog-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hover en filas */
+.catalog-table tbody tr:hover {
+  background-color: #faf7f7; /* Un gris/rosa muy muy tenue */
+}
+
+/* --- INPUT INVISIBLE (Editable Cell) --- */
+/* La celda se convierte en input */
+.editable-cell-input {
+  width: 100%;
+  height: 100%;
+  padding: 12px 16px; /* El padding lo tiene el input, no el TD */
+  background-color: transparent;
+  border: 2px solid transparent; /* Borde transparente para reservar espacio */
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  color: inherit;
+  cursor: text;
+  transition: all 0.2s;
+}
+
+/* Cuando haces clic para editar */
+.editable-cell-input:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: var(--primary); /* Se marca el borde */
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* Botón de borrar en la tabla */
+.btn-delete-row {
+  background: transparent;
+  border: none;
+  color: var(--ui-border);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 8px;
+  margin: 0 8px;
+  transition: color 0.2s;
+}
+
+.btn-delete-row:hover {
+  color: #bc4749; /* Rojo */
+}
+
+/* =========================================
+   16. DAY VIEW & LIST
+   ========================================= */
+
+/* Título de la página de detalle de semana */
+.week-detail-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  color: var(--accent);
+}
+
+.week-detail-header h1 {
+  font-size: var(--h1);
+  margin-bottom: var(--space-xs);
+}
+
+/* Reutilizamos .weeks-grid pero podemos crear un alias si queremos ajustes específicos */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(220px, 1fr)
+  ); /* Tarjetas un poco más estrechas */
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 1000px;
+  margin-top: var(--space-md);
+}
+
+/* Tarjeta de Día */
+.day-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.day-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--ui-hover);
+}
+
+/* Título del día (Lunes, Martes...) */
+.day-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: var(--space-sm);
+  text-transform: capitalize;
+}
+
+/* Badge de calorías en la tarjeta */
+.day-card-calories {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background-color: var(--bg-main);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  align-self: flex-start; /* Alinear a la izquierda */
+}
+
+/* IMPORTANTE: Añadir esto para que la X flote en la esquina */
+.day-card .btn-delete-pos {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5; /* Asegura que esté por encima */
+}
+
+/* Opcional: Ajustar el padding derecho del título para que no choque con la X */
+.day-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: var(--space-sm);
+  text-transform: capitalize;
+  padding-right: 24px; /* Espacio extra para la X */
+}
+
+/* Mensaje de alerta (Semana llena) */
+.full-week-warning {
+  color: #d97706; /* Ámbar oscuro */
+  background-color: #fef3c7; /* Ámbar muy suave */
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  margin-top: var(--space-sm);
+  text-align: center;
+  border: 1px solid #fcd34d;
+}
+
+/* Estado de borrado (igual que en Weeks) */
+.day-card.is-deleting {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* =========================================
+   17. MEAL VIEW & LIST
+   ========================================= */
+
+/* Cabecera de la vista de Día (donde se ven las comidas) */
+.day-detail-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  color: var(--accent);
+}
+
+.day-detail-header h1 {
+  font-size: var(--h1);
+  margin-bottom: var(--space-xs);
+  text-transform: capitalize;
+}
+
+/* Grid de Comidas */
+.meals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 1000px;
+  margin-top: var(--space-md);
+}
+
+/* Tarjeta de Comida */
+.meal-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.meal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--ui-hover);
+}
+
+/* Título de la comida (Breakfast, Lunch...) */
+.meal-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: var(--space-sm);
+  padding-right: 24px; /* Espacio para la X */
+}
+
+/* Badge de calorías */
+.meal-card-calories {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
+  background-color: var(--bg-highlight);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  align-self: flex-start;
+}
+
+/* Posicionamiento del botón borrar (Reutilizamos lógica pero aseguramos contexto) */
+.meal-card .btn-delete-pos {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+
+/* Estado borrando */
+.meal-card.is-deleting {
+  opacity: 0.7;
+  pointer-events: none;
 }

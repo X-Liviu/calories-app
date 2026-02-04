@@ -24,7 +24,9 @@ a:hover {
   color: #535bf2;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin: 0.5em 0;
   font-weight: 600;
   line-height: 1.2;
@@ -74,7 +76,6 @@ button:hover {
   color: rgb(135, 135, 184);
 }
 
-
 /* Botón de logout */
 .logout-button {
   margin-bottom: 2rem;
@@ -99,7 +100,9 @@ button:hover {
   border: 1px solid #555;
   font-family: inherit;
   font-size: 1em;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
   background-color: #1f1f1f;
   color: #fff;
 }
@@ -111,7 +114,7 @@ button:hover {
 /* Invisible input */
 .invisible-input {
   background: transparent;
-  border: none;  
+  border: none;
   outline: none;
   box-shadow: none;
   padding: 0;
@@ -189,15 +192,12 @@ table button:hover {
   transform: scale(1.05);
 }
 
-
-
 /* WeekItemList */
 .week-item h2 {
   font-size: 1.4em;
   margin: 0;
   color: #fff;
 }
-
 
 /* Select personalizado */
 .select {
@@ -208,7 +208,10 @@ table button:hover {
   font-family: inherit;
   font-size: 1em;
   cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s,
+    color 0.2s;
   position: relative;
   display: inline-block;
 }
@@ -252,7 +255,9 @@ table button:hover {
 
 .my-aliment-table tbody tr:hover {
   background-color: #467474; /* Hover más suave */
-  transition: transform 0.2s, color 0.2s;
+  transition:
+    transform 0.2s,
+    color 0.2s;
 }
 
 /* Celdas */
@@ -268,7 +273,9 @@ table button:hover {
   border: none;
   font-size: 1.2em;
   cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
+  transition:
+    transform 0.2s,
+    color 0.2s;
   color: #ff5555;
 }
 
@@ -303,7 +310,7 @@ table button:hover {
   align-items: center;
   justify-content: center;
   height: 80vh;
-  text-align: center;  
+  text-align: center;
 }
 
 .not-found-container h1 {
@@ -340,10 +347,10 @@ table button:hover {
 
 /* ------- ERROR GENERAL ------- */
 .error {
-    color: #d73a4a;
-    margin-bottom: 2;
-    font-size: 12;
-  }
+  color: #d73a4a;
+  margin-bottom: 2;
+  font-size: 12;
+}
 
 /* ------- BOTON PODER HACER ENV ------- */
 
@@ -368,7 +375,9 @@ table button:hover {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.3s ease, max-height 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    max-height 0.3s ease;
 }
 
 .password-requirements.show {
@@ -435,7 +444,6 @@ table button:hover {
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
-  
 
 .skeleton-container {
   display: grid;
@@ -449,7 +457,7 @@ table button:hover {
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .skeleton-title,
@@ -469,7 +477,12 @@ table button:hover {
   left: -100%;
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   animation: loading 1.2s infinite;
 }
 
@@ -493,4 +506,225 @@ table button:hover {
 
 .skeleton-line.short {
   width: 80%;
+}
+
+/* ===========================
+   MODALS (Shared Styles)
+   =========================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: var(--color-text-prim);
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+/* Modal específico de edición de perfil (más complejo) */
+.modal-box.profile-edit {
+  width: 350px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.modal-box.profile-edit form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-box.profile-edit label {
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-box.profile-edit input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  /* El borde se maneja con clases de utilidad abajo */
+}
+
+/* Botones específicos de modales */
+.btn-cancel {
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+}
+.btn-cancel:hover {
+  background-color: #d0d0d0;
+}
+
+.btn-danger {
+  padding: 8px 16px;
+  background-color: #d32f2f; /* Red */
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.btn-danger:hover {
+  background-color: #b71c1c;
+}
+
+.btn-success {
+  padding: 8px 16px;
+  background-color: #4caf50; /* Green */
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.btn-success:hover {
+  background-color: #388e3c;
+}
+
+/* ===========================
+   PROFILE MENU
+   =========================== */
+.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.profile-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  cursor: default;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 10px 0;
+  min-width: 200px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.profile-user-info {
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  color: #333;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.profile-divider {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 5px 0;
+  width: 100%;
+}
+
+.profile-menu-item {
+  background: none;
+  border: none;
+  padding: 12px 15px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.text-danger {
+  color: #d32f2f !important;
+}
+
+.text-error {
+  color: #f44336;
+  font-size: 0.8em;
+  margin-top: -8px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.text-warning {
+  color: orange;
+}
+
+.text-green {
+  color: #4caf50;
+}
+
+.border-error {
+  border: 1px solid #f44336 !important;
+}
+
+.border-default {
+  border: 1px solid #ccc;
 }

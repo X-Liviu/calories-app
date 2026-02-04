@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-
 import { selectDayCalories } from "../../redux/selectors/daySelectors";
 
 const DayItemList = ({ day }) => {
@@ -8,9 +7,12 @@ const DayItemList = ({ day }) => {
   );
 
   return (
-    <h3>
-      {day.name} <strong>({totalCalories} kcal)</strong>
-    </h3>
+    <>
+      <div className="day-card-title">{day.name}</div>
+      <div className="day-card-calories">
+        {totalCalories.toLocaleString()} kcal
+      </div>
+    </>
   );
 };
 

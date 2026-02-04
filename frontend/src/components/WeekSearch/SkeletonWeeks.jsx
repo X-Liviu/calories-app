@@ -1,10 +1,14 @@
 const SkeletonWeeks = () => {
   return (
-    <div className="skeleton-container">
+    <div className="weeks-grid">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="skeleton-card">
-          <div className="skeleton-title"></div>
-          <div className="skeleton-line"></div>
+        <div
+          key={i}
+          className="week-card"
+          style={{ height: "140px", cursor: "default" }}
+        >
+          <div className="skeleton-title" style={{ width: "40%" }}></div>
+          <div className="skeleton-line" style={{ marginTop: "20px" }}></div>
           <div className="skeleton-line short"></div>
         </div>
       ))}

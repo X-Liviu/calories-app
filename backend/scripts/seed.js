@@ -471,8 +471,8 @@ const seedDatabase = async () => {
       }
     };
 
-    // 5. BUCLE MAGNO (52 SEMANAS)
-    console.log("📆 Generando 10 semanas... Por favor espera.");
+    // 5. BUCLE MAGNO
+    console.log(`📆 Generando ${weeksToGenerate} semanas... Por favor espera.`);
     const currentYear = new Date().getFullYear();
 
     for (let i = 1; i <= weeksToGenerate; i++) {

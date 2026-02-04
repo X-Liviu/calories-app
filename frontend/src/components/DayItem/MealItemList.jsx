@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-
 import { selectMealCalories } from "../../redux/selectors/mealSelectors";
 
 const MealItemList = ({ meal }) => {
@@ -8,10 +7,12 @@ const MealItemList = ({ meal }) => {
   );
 
   return (
-    <h2>
-      {meal.name}
-      <strong> ({totalCalories} kcal)</strong>
-    </h2>
+    <>
+      <div className="meal-card-title">{meal.name}</div>
+      <div className="meal-card-calories">
+        {totalCalories.toLocaleString()} kcal
+      </div>
+    </>
   );
 };
 

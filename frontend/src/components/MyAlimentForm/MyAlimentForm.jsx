@@ -1,7 +1,5 @@
 import { useState } from "react";
-
 import useMyAliments from "../../hooks/useMyAliments";
-
 import MyAlimentList from "./MyAlimentList";
 
 const INITIAL_STATE = {
@@ -15,20 +13,21 @@ const INITIAL_STATE = {
   proteinG: "",
   saltG: "",
 };
+
 const MyAlimentForm = () => {
   const [newAliment, setNewAliment] = useState(INITIAL_STATE);
   const { create } = useMyAliments();
 
   const labels = {
-    name: "Name",
+    name: "Product Name",
     kcal100G: "Kcal / 100g",
-    fatG: "Grams of fat",
-    saturatedFatG: "Grams of saturated fat",
-    carbsG: "Grams of carbohydrates",
-    sugarG: "Grams of sugar",
-    fiberG: "Grams of fiber",
-    proteinG: "Grams of protein",
-    saltG: "Grams of salt",
+    fatG: "Fat (g)",
+    saturatedFatG: "Sat. Fat (g)",
+    carbsG: "Carbs (g)",
+    sugarG: "Sugars (g)",
+    fiberG: "Fiber (g)",
+    proteinG: "Protein (g)",
+    saltG: "Salt (g)",
   };
 
   const handleSubmit = (e) => {
@@ -52,30 +51,48 @@ const MyAlimentForm = () => {
     create(alimentToCreate);
     setNewAliment(INITIAL_STATE);
   };
-  //Importante hacer el spread primero.
+
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        {Object.keys(newAliment).map((ll) => (
-          <input
-            key={ll}
-            type={ll === "name" ? "text" : "number"}
-            className="input"
-            onChange={({ target }) =>
-              setNewAliment({
-                ...newAliment,
-                [ll]: target.value,
-              })
-            }
-            placeholder={labels[ll]}
-            value={newAliment[ll]}
-          />
-        ))}
-        <br />
-        <button>Create</button>
-      </form>
+    <div className="page-container">
+      {/* 1. EL FORMULARIO */}
+      <div className="catalog-form-container">
+        <h2 className="catalog-form-header">Add New Item to Catalog</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div className="catalog-inputs-grid">
+            {Object.keys(newAliment).map((key) => (
+              <div key={key} className="input-group">
+                <label htmlFor={key}>{labels[key]}</label>
+                <input
+                  id={key}
+                  type={key === "name" ? "text" : "number"}
+                  step="0.1"
+                  className="catalog-input"
+                  onChange={({ target }) =>
+                    setNewAliment({
+                      ...newAliment,
+                      [key]: target.value,
+                    })
+                  }
+                  // CORRECCIÓN AQUÍ: Placeholder condicional
+                  placeholder={key === "name" ? "Ex: Banana" : "0"}
+                  value={newAliment[key]}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="catalog-form-actions">
+            <button type="submit" className="btn btn-primary">
+              Add to Catalog
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* 2. LA LISTA */}
       <MyAlimentList />
-    </>
+    </div>
   );
 };
 

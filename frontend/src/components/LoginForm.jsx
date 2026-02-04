@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import useAuth from "../hooks/useAuth";
 
 import { validateLoginForm } from "../utils/validations";
@@ -25,7 +24,6 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { isValid, errors } = validateLoginForm({ email, password });
     setErrors(errors);
 
@@ -42,29 +40,33 @@ const LoginForm = () => {
 
   return (
     <Toggable buttonLabel="Log In">
-      <form onSubmit={handleSubmit}>
-        <input
-          className="input"
-          placeholder="E-Mail"
-          value={email}
-          onChange={({ target }) => setEmail(target.value)}
-        />
-        <ErrorMessage message={errors.email} />
+      <form onSubmit={handleSubmit} className="form-container">
+        <div className="form-group">
+          <input
+            className="input-field"
+            placeholder="E-Mail"
+            type="email"
+            value={email}
+            onChange={({ target }) => setEmail(target.value)}
+          />
+          <ErrorMessage message={errors.email} />
+        </div>
 
-        <input
-          className="input"
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={({ target }) => setPassword(target.value)}
-        />
-        <ErrorMessage message={errors.password} />
+        <div className="form-group">
+          <input
+            className="input-field"
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
 
-        <br />
         <button
           type="submit"
           disabled={!isValid}
-          className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+          className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
+          style={{ marginTop: "var(--space-xs)" }}
         >
           Confirm
         </button>

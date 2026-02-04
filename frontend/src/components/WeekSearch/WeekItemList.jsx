@@ -1,7 +1,5 @@
 import { useSelector } from "react-redux";
-
 import { selectWeekCalories } from "../../redux/selectors/weekSelectors";
-
 import { daysOfIsoWeek } from "../../utils/days";
 
 const WeekItemList = ({ week }) => {
@@ -9,15 +7,25 @@ const WeekItemList = ({ week }) => {
     selectWeekCalories(state, week.days),
   );
   const { lastSavedYear } = useSelector((state) => state.year);
-  const days = daysOfIsoWeek(week.numberWeek, lastSavedYear, "DDMMYYYY");
+  const days = daysOfIsoWeek(week.numberWeek, lastSavedYear, "DD/MM");
 
   return (
-    <>
-      <h2>
-        Week {week.numberWeek} <strong>({totalCalories} kcal)</strong>
-      </h2>
-      <p>{`(${days[0]} - ${days[6]})`}</p>
-    </>
+    <div>
+      <div className="week-card-header">
+        <h3>Week {week.numberWeek}</h3>
+      </div>
+
+      {/* CLASE CSS en lugar de style inline */}
+      <div className="week-calories-wrapper">
+        <span className="week-calories">
+          {totalCalories.toLocaleString()} kcal
+        </span>
+      </div>
+
+      <p className="week-dates">
+        ({days[0]} - {days[6]})
+      </p>
+    </div>
   );
 };
 

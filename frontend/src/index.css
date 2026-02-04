@@ -1,38 +1,94 @@
-html, body {
-  height: 100%;
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 :root {
-  font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  font-weight: 400;
-  font-size: 16px;
-  --bg-color: #fafafa;
-  --color-text-prim: #333333;
-  --color-text-sec: #666666;
+  /* --- PALETA TIERRA PASTEL (60-30-10) --- */
+  /* 60% Fondos */
+  --bg-main: #fafafa; /* Blanco roto (Fondo general) */
+  --bg-surface: #ffffff; /* Blanco puro (Tarjetas/Nav) */
+  --bg-highlight: #f4dbd8; /* Rosa pastel (Secciones destacadas) */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* 30% Estructura y Bordes */
+  --ui-border: #bea8a7;
+  --ui-hover: #c09891;
+
+  /* 10% Acentos y Acciones */
+  --primary: #775144; /* Marrón medio (Botones/Links) */
+  --primary-dark: #5a3d33; /* Hover botones */
+  --accent: #2a0800; /* Marrón casi negro (Títulos fuertes) */
+
+  /* Textos */
+  --text-main: #2a0800; /* Texto principal */
+  --text-muted: #775144; /* Subtítulos/Párrafos suaves */
+  --text-light: #fafafa; /* Texto sobre botones oscuros */
+
+  /* --- TIPOGRAFÍA (Outfit - Scale 1.250) --- */
+  --font-main: "Outfit", sans-serif;
+
+  --h1: 3.05rem; /* ~48px */
+  --h2: 2.44rem; /* ~39px */
+  --h3: 1.95rem; /* ~31px */
+  --body: 1rem; /* 16px */
+  --small: 0.8rem;
+
+  /* --- ESPACIADO (8px Grid) --- */
+  --space-xs: 0.5rem; /* 8px */
+  --space-sm: 1rem; /* 16px */
+  --space-md: 1.5rem; /* 24px */
+  --space-lg: 3rem; /* 48px */
+
+  /* --- UI UTILS --- */
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --shadow-soft: 0 4px 20px rgba(42, 8, 0, 0.05);
+}
+
+/* Reset básico y configuración global */
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
-  background-color: var(--bg-color);
-  color: var(--color-text-prim);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  font-family: var(--font-main);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* Tipografía Global */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--space-sm) 0;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: var(--h1);
+}
+h2 {
+  font-size: var(--h2);
+}
+h3 {
+  font-size: var(--h3);
+}
+
+p {
+  margin-bottom: var(--space-sm);
+  color: var(--text-main); /* Por defecto */
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
 }

@@ -1,6 +1,6 @@
 const ErrorMessage = ({ message }) => {
   if (!message) return null;
-  return <p className="error">{message}</p>;
+  return <span className="text-error">{message}</span>;
 };
 
 export default ErrorMessage;

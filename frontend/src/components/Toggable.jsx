@@ -2,8 +2,6 @@ import { useImperativeHandle, forwardRef, useState } from "react";
 
 const Toggable = forwardRef(({ children, buttonLabel }, ref) => {
   const [visible, setVisible] = useState(false);
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -16,19 +14,33 @@ const Toggable = forwardRef(({ children, buttonLabel }, ref) => {
   });
 
   return (
-    <div>
-      <div style={hideWhenVisible}>
-        <button type="button" onClick={toggleVisibility}>
+    <div className="toggable-wrapper">
+      {!visible && (
+        <button
+          type="button"
+          onClick={toggleVisibility}
+          className="btn btn-primary"
+        >
           {buttonLabel}
         </button>
-      </div>
-      <div style={showWhenVisible}>
-        {children}
-        <br />
-        <button type="button" onClick={toggleVisibility}>
-          Cancel
-        </button>
-      </div>
+      )}
+
+      {visible && (
+        <div className="toggable-content fade-in">
+          {children}
+
+          <div className="toggable-actions">
+            <button
+              type="button"
+              onClick={toggleVisibility}
+              className="btn btn-secondary"
+              style={{ width: "100%" }} // Opcional: Para que tenga el ancho del input
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 });
