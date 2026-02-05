@@ -54,6 +54,7 @@ const SignUpForm = () => {
           <input
             className="input-field"
             placeholder="Name"
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -64,6 +65,7 @@ const SignUpForm = () => {
           <input
             className="input-field"
             placeholder="Username"
+            type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -102,23 +104,23 @@ const SignUpForm = () => {
           <ErrorMessage message={errors.passwordRepeated} />
         </div>
 
+        {/* CLASE CSS gestiona la visibilidad y el estilo de lista */}
         <ul className={`password-requirements ${password ? "show" : ""}`}>
           {passwordRules.map((rule) => (
             <li
               key={rule.label}
               className={rule.valid ? "text-success" : "text-error"}
-              style={{ listStyle: "none" }}
             >
               {rule.label}
             </li>
           ))}
         </ul>
 
+        {/* SIN STYLE INLINE: El gap del form-container gestiona el espacio */}
         <button
           type="submit"
           disabled={!isFormValid}
           className={`btn btn-primary ${!isFormValid ? "btn-disabled" : ""}`}
-          style={{ marginTop: "var(--space-xs)" }}
         >
           Confirm
         </button>

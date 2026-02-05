@@ -121,7 +121,6 @@ export const validateLoginForm = ({ email, password }) => {
 
 export const validateNumberWeek = ({ numberWeek, year }) => {
   const maxWeeks = weeksPerYear(year);
-  console.log(year);
   numberWeek = Number(numberWeek);
   if (isNaN(numberWeek) || numberWeek < 1 || numberWeek > maxWeeks)
     return false;
@@ -197,5 +196,15 @@ const validatePassword = (password) => {
   if (!/\d/.test(password)) return "Password must contain at least one number";
   if (!/[\W_]/.test(password))
     return "Password must contain at least one symbol";
+  return null;
+};
+
+export const validateDecimalInput = (value) => {
+  const normalizedValue = value.replace(",", ".");
+
+  if (/^\d*\.?\d*$/.test(normalizedValue)) {
+    return normalizedValue;
+  }
+
   return null;
 };

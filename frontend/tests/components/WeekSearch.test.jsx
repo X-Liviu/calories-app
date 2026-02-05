@@ -7,10 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 
 // Componentes
 import WeekSearch from "../../src/components/WeekSearch/WeekSearch.jsx";
-// Importamos WeekForm directamente para testearlo unitariamente si fuera necesario,
-// aunque en este test de integración se renderiza dentro de WeekSearch (salvo cuando estaba mockeado).
-// NOTA: Para integrar ambos tests, VAMOS A QUITAR EL MOCK DE WeekForm que tenías antes,
-// para que el test de integración pruebe el componente REAL y podamos testear la creación también.
 
 // Reducers reales
 import userReducer from "../../src/redux/reducers/userReducer.js";
@@ -33,7 +29,7 @@ vi.mock("../../src/hooks/useYearManager", () => ({
 
 // Mockeamos useWeeks completo (create y del)
 const mockDel = vi.fn();
-const mockCreate = vi.fn(); // Nuevo mock para create
+const mockCreate = vi.fn();
 vi.mock("../../src/hooks/useWeeks", () => ({
   default: () => ({
     del: mockDel,
@@ -66,12 +62,10 @@ const renderWithRedux = (component, preloadedState = mockLoadedState) => {
 };
 
 describe("<WeekSearch /> Full Integration", () => {
-  // Limpieza de mocks antes de cada test
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  // Limpieza extra por si acaso
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -108,26 +102,8 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    // Buscamos el input de búsqueda. Como hay dos inputs (Search y Create),
-    // necesitamos distinguirlos.
-    // El input de búsqueda está dentro de un form que dice "Search your number of the week:"
-    // Una forma robusta es buscar por el valor inicial (vacío) o por su posición,
-    // pero dado tu componente, el de búsqueda es el SEGUNDO form o podemos buscar por placeholder si tuviera.
-    // En tu código WeekSearch.jsx, el input de búsqueda NO tiene placeholder.
-    // El input de creación tiene placeholder="Week (1 - 53)".
-
-    // Estrategia: Obtener todos los textbox y filtrar el que NO tiene placeholder
-    const inputs = screen.getAllByRole("textbox");
-    const searchInput = inputs.find((input) => !input.placeholder);
-
-    // Si no lo encuentras así, puedes añadir un placeholder o label en el código fuente.
-    // Asumiremos que es el segundo textbox si el primero es el de creación (depende del orden de renderizado).
-    // Viendo tu código: <WeekForm /> va ANTES que el input de búsqueda?
-    // En WeekSearch.jsx:
-    // 1. Select
-    // 2. Form Search (INPUT SEARCH)
-    // 3. WeekForm (INPUT CREATE)
-    // Así que el searchInput debería ser el PRIMERO.
+    // ACTUALIZACIÓN: Ahora buscamos por el nuevo placeholder específico
+    const searchInput = screen.getByPlaceholderText("Search week number...");
 
     // Verificamos inicial
     expect(screen.getByText(/Week 10/i)).toBeInTheDocument();
@@ -143,12 +119,10 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    // Identificamos el input de búsqueda (el que no tiene placeholder)
-    const inputs = screen.getAllByRole("textbox");
-    const searchInput = inputs.find((input) => !input.placeholder);
+    const searchInput = screen.getByPlaceholderText("Search week number...");
 
     await user.type(searchInput, "50");
-    expect(screen.getByText(/Week 50/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Week 50/i)).not.toBeInTheDocument(); // Aseguramos que no se renderiza como tarjeta
     expect(screen.getByText(/was not found/i)).toBeInTheDocument();
   });
 
@@ -156,8 +130,7 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const inputs = screen.getAllByRole("textbox");
-    const searchInput = inputs.find((input) => !input.placeholder);
+    const searchInput = screen.getByPlaceholderText("Search week number...");
 
     await user.type(searchInput, "abc");
     expect(searchInput).toHaveValue("");
@@ -168,54 +141,54 @@ describe("<WeekSearch /> Full Integration", () => {
 
   // --- TESTS DE CREACIÓN (WeekForm) ---
 
-  it("el botón 'Create' del formulario debe estar deshabilitado inicialmente", () => {
+  it("el botón 'Add' del formulario debe estar deshabilitado inicialmente", () => {
     renderWithRedux(<WeekSearch />);
-    // El botón Create está dentro de WeekForm
-    const createButton = screen.getByRole("button", { name: /create/i });
-    expect(createButton).toBeDisabled();
+    // El botón se llama "Add" en el componente actualizado
+    const addButton = screen.getByRole("button", { name: /add/i });
+    expect(addButton).toBeDisabled();
   });
 
   it("el input de creación valida números entre 1 y 53", async () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const createInput = screen.getByPlaceholderText("Week (1 - 53)");
-    const createButton = screen.getByRole("button", { name: /create/i });
+    // ACTUALIZACIÓN: Nuevo placeholder en WeekForm
+    const createInput = screen.getByPlaceholderText("New Week (1 - 53)");
+    const addButton = screen.getByRole("button", { name: /add/i });
 
     await user.type(createInput, "abc");
     expect(createInput).toHaveValue("");
 
     await user.type(createInput, "15");
-    expect(createButton).not.toBeDisabled();
+    expect(addButton).not.toBeDisabled();
   });
 
   it("debe abrir el modal de CREACIÓN y llamar a create SOLO al confirmar", async () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const createInput = screen.getByPlaceholderText("Week (1 - 53)");
+    const createInput = screen.getByPlaceholderText("New Week (1 - 53)");
     await user.type(createInput, "25");
 
-    // 1. Clic en Create
-    const createBtn = screen.getByRole("button", { name: /create/i });
-    await user.click(createBtn);
+    // 1. Clic en Add
+    const addButton = screen.getByRole("button", { name: /add/i });
+    await user.click(addButton);
 
     // 2. Verificar que create NO se ha llamado todavía
     expect(mockCreate).not.toHaveBeenCalled();
 
-    // 3. Verificar modal
-    expect(screen.getByText("Add Week")).toBeInTheDocument();
+    // 3. Verificar modal (Título actualizado a "Create Week")
+    expect(screen.getByText("Create Week")).toBeInTheDocument();
     expect(
-      screen.getByText(/Are you sure you want to add this week/i),
+      screen.getByText(/Create Week 25 for year 2023?/i),
     ).toBeInTheDocument();
 
-    // 4. Confirmar
-    const confirmBtn = screen.getByRole("button", { name: "Yes, I confirm." });
+    // 4. Confirmar (Botón actualizado a "Yes, Create")
+    const confirmBtn = screen.getByRole("button", { name: "Yes, Create" });
     await user.click(confirmBtn);
 
     // 5. Verificar llamada
     expect(mockCreate).toHaveBeenCalledTimes(1);
-    // El año viene del estado global (mockLoadedState tiene 2023)
     expect(mockCreate).toHaveBeenCalledWith({
       numberWeek: 25,
       year: 2023,
@@ -224,7 +197,7 @@ describe("<WeekSearch /> Full Integration", () => {
     // 6. Verificar limpieza
     await waitFor(() => {
       expect(createInput).toHaveValue("");
-      expect(screen.queryByText("Add Week")).not.toBeInTheDocument();
+      expect(screen.queryByText("Create Week")).not.toBeInTheDocument();
     });
   });
 
@@ -232,17 +205,18 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const createInput = screen.getByPlaceholderText("Week (1 - 53)");
+    const createInput = screen.getByPlaceholderText("New Week (1 - 53)");
     await user.type(createInput, "30");
 
-    await user.click(screen.getByRole("button", { name: /create/i }));
+    await user.click(screen.getByRole("button", { name: /add/i }));
 
-    // Cancelar
-    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    // Cancelar (El botón suele ser el secundario o tener texto Cancel)
+    // Buscamos por texto "Cancel" que suele estar en los modales genéricos
+    const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await user.click(cancelBtn);
 
     expect(mockCreate).not.toHaveBeenCalled();
-    expect(screen.queryByText("Add Week")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create Week")).not.toBeInTheDocument();
     // El input mantiene valor
     expect(createInput).toHaveValue("30");
   });
@@ -253,13 +227,15 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const deleteButtons = screen.getAllByText("❌");
+    // Buscamos los botones de borrado por su título accesible
+    const deleteButtons = screen.getAllByTitle("Delete week");
     await user.click(deleteButtons[0]);
 
     expect(screen.getByText("Delete Week")).toBeInTheDocument();
     expect(mockDel).not.toHaveBeenCalled();
 
-    const confirmBtn = screen.getByRole("button", { name: /Yes, I confirm/i });
+    // Confirmar (Botón actualizado a "Yes, Delete")
+    const confirmBtn = screen.getByRole("button", { name: "Yes, Delete" });
     await user.click(confirmBtn);
 
     expect(mockDel).toHaveBeenCalledTimes(1);
@@ -270,10 +246,10 @@ describe("<WeekSearch /> Full Integration", () => {
     const user = userEvent.setup();
     renderWithRedux(<WeekSearch />);
 
-    const deleteButtons = screen.getAllByText("❌");
+    const deleteButtons = screen.getAllByTitle("Delete week");
     await user.click(deleteButtons[0]);
 
-    const cancelBtn = screen.getByRole("button", { name: /Cancel/i });
+    const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await user.click(cancelBtn);
 
     expect(screen.queryByText("Delete Week")).not.toBeInTheDocument();
@@ -284,7 +260,8 @@ describe("<WeekSearch /> Full Integration", () => {
 
   it("debe mostrar correctamente el recuento total de calorías de la semana", () => {
     renderWithRedux(<WeekSearch />);
-    // Semana 12 en fixture tiene 550 kcal
+    // Semana 12 en fixture tiene 550 kcal.
+    // Al quitar toLocaleString(), el formato es simple "550 kcal".
     expect(screen.getByText(/Week 12/i)).toBeInTheDocument();
     expect(screen.getByText(/550 kcal/i)).toBeInTheDocument();
   });

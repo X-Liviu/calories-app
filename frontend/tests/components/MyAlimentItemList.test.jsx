@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MyAlimentItemList from "../../src/components/MyAlimentForm/MyAlimentItemList";
@@ -48,99 +48,89 @@ describe("MyAlimentItemList Component", () => {
   it("debe mostrar los valores iniciales correctamente", () => {
     renderComponent();
     expect(screen.getByText("Pollo")).toBeInTheDocument();
-
-    // Al ser input type="number", JSDOM devuelve el valor como número
-    expect(screen.getByDisplayValue(100)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(20)).toBeInTheDocument();
+    expect(screen.getByDisplayValue("100")).toBeInTheDocument();
   });
 
-  it("debe renderizar inputs con type='number' (Solución 1)", () => {
+  it("debe renderizar inputs con type='text' e inputMode='decimal'", () => {
     renderComponent();
-    const kcalInput = screen.getByDisplayValue(100);
-    // Verificamos que añadiste type="number" en tu JSX
-    expect(kcalInput).toHaveAttribute("type", "number");
+    const kcalInput = screen.getByDisplayValue("100");
+    expect(kcalInput).toHaveAttribute("type", "text");
+    expect(kcalInput).toHaveAttribute("inputMode", "decimal");
   });
 
   it("debe llamar a 'update' al presionar ENTER", async () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const kcalInput = screen.getByDisplayValue(100);
+    const kcalInput = screen.getByDisplayValue("100");
 
-    // 1. Usuario hace click y borra
+    // 1. Activar y editar
     await user.click(kcalInput);
     await user.clear(kcalInput);
-
-    // 2. Usuario escribe
     await user.type(kcalInput, "150");
 
-    fireEvent.submit(kcalInput.closest("form"));
+    // 2. Pulsar Enter para enviar el formulario
+    await user.keyboard("{Enter}");
 
-    // 3. Esperamos a que la actualización ocurra
-    await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledTimes(1);
-    });
-
+    // 3. Verificar llamada a update
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledWith({
       id: "123",
       kcal100G: 150,
     });
   });
 
-  it("NO debe guardar y debe resetear el valor al hacer click fuera (Blur)", async () => {
+  it("mantiene el valor editado al hacer blur pero NO guarda en BD", async () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const kcalInput = screen.getByDisplayValue(100);
+    const kcalInput = screen.getByDisplayValue("100");
 
+    // 1. Editar valor
     await user.click(kcalInput);
     await user.clear(kcalInput);
-    await user.type(kcalInput, "999");
+    await user.type(kcalInput, "250");
 
-    // Click fuera (en el body)
+    // 2. Hacer click fuera (body) para disparar onBlur
     await user.click(document.body);
 
+    // 3. Verificar que NO se llamó a update (solo se llama con Enter)
     expect(mockUpdate).not.toHaveBeenCalled();
 
-    // El valor visual vuelve a ser 100 (número)
-    expect(kcalInput).toHaveValue(100);
+    // 4. El valor visual se mantiene actualizado en el estado local
+    expect(kcalInput).toHaveValue("250");
   });
 
-  it("no debe permitir escribir letras (bloqueado por type='number')", async () => {
+  it("no debe permitir escribir letras", async () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const proteinInput = screen.getByDisplayValue(20);
+    const proteinInput = screen.getByDisplayValue("20");
     await user.click(proteinInput);
 
-    // Intentamos escribir "abc"
+    // Intentamos escribir letras
     await user.type(proteinInput, "abc");
 
-    // El valor sigue siendo 20 (número), las letras se ignoraron
-    expect(proteinInput).toHaveValue(20);
+    // El valor no debe cambiar
+    expect(proteinInput).toHaveValue("20");
   });
 
-  it("debe manejar correctamente números decimales", async () => {
+  it("debe manejar correctamente números decimales al guardar", async () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const fatInput = screen.getByDisplayValue(5);
+    const fatInput = screen.getByDisplayValue("5");
 
     await user.click(fatInput);
     await user.clear(fatInput);
+    await user.type(fatInput, "5.5");
 
-    // Usamos paste para evitar problemas de configuración regional con el punto decimal
-    await user.paste("5.5");
+    // Enviamos con Enter
+    await user.keyboard("{Enter}");
 
-    // Forzamos el submit de nuevo por la limitación de JSDOM
-    fireEvent.submit(fatInput.closest("form"));
-
-    // SOLUCIÓN: Envolvemos el expect en waitFor
-    await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: "123",
-        fatG: 5.5,
-      });
+    expect(mockUpdate).toHaveBeenCalledWith({
+      id: "123",
+      fatG: 5.5,
     });
   });
 
@@ -148,7 +138,7 @@ describe("MyAlimentItemList Component", () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const deleteBtn = screen.getByText("❌");
+    const deleteBtn = screen.getByTitle("Delete Item");
     await user.click(deleteBtn);
 
     expect(mockDel).toHaveBeenCalledTimes(1);
@@ -159,7 +149,7 @@ describe("MyAlimentItemList Component", () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const kcalInput = screen.getByDisplayValue(100);
+    const kcalInput = screen.getByDisplayValue("100");
 
     // Inicio: Solo lectura
     expect(kcalInput).toHaveAttribute("readonly");

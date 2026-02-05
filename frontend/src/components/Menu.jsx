@@ -26,7 +26,7 @@ const Menu = () => {
             <Link to="/login" className="nav-link">
               Login
             </Link>
-            <Link to="/signup" className="btn-primary">
+            <Link to="/signup" className="btn btn-primary">
               Sign Up
             </Link>
           </>

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, afterEach } from "vitest";
 import { Provider } from "react-redux";
@@ -76,8 +76,9 @@ describe("MealItem - Aliments Management (Integration)", () => {
     expect(screen.getByText(mockMeal1.name)).toBeInTheDocument(); // Almuerzo
 
     // Alimento existente (Arroz)
-    // AlimentItemList muestra: "Arroz (X g): Y kcal"
-    expect(screen.getByText(/Arroz/)).toBeInTheDocument();
+    expect(screen.getByText("Arroz")).toBeInTheDocument();
+
+    // Verificamos las calorías. Al quitar toLocaleString, es "200 kcal"
     expect(screen.getByText(/200 kcal/)).toBeInTheDocument();
   });
 
@@ -90,11 +91,13 @@ describe("MealItem - Aliments Management (Integration)", () => {
 
     renderWithProviders(<MealItem />);
 
-    // Buscamos los inputs
-    const nameInput = screen.getByPlaceholderText("name");
-    const gramsInput = screen.getByPlaceholderText("grams (optional)");
-    const kcalInput = screen.getByPlaceholderText("total kcal");
-    const submitBtn = screen.getByText("Add Custom Aliment");
+    // ACTUALIZACIÓN: Nuevos placeholders del AlimentForm
+    const nameInput = screen.getByPlaceholderText("Aliment Name");
+    const gramsInput = screen.getByPlaceholderText("Grams (Optional)");
+    const kcalInput = screen.getByPlaceholderText("Total Kcal");
+    const submitBtn = screen.getByRole("button", {
+      name: /add custom aliment/i,
+    });
 
     // Llenamos el formulario
     await user.type(nameInput, newAliment.name);
@@ -109,8 +112,7 @@ describe("MealItem - Aliments Management (Integration)", () => {
     expect(alimentService.create).toHaveBeenCalledWith({
       name: newAliment.name,
       grams: 150,
-      // CORRECCIÓN AQUÍ: Convertimos a Number porque tu componente lo hace
-      customKcal: Number(newAliment.kcal),
+      customKcal: Number(newAliment.kcal), // El componente lo convierte a Number
       weekId: WEEK_ID,
       dayId: DAY_ID,
       mealId: MEAL_ID,
@@ -129,11 +131,14 @@ describe("MealItem - Aliments Management (Integration)", () => {
     renderWithProviders(<MealItem />);
 
     // 1. Buscamos el Select y el Input de gramos del catálogo
+    // El select se puede buscar por role combobox
     const select = screen.getByRole("combobox");
-    const gramsInput = screen.getByPlaceholderText(
-      "Grams of the aliment eaten",
-    );
-    const addBtn = screen.getByText("Add Aliment From Catalog");
+
+    // ACTUALIZACIÓN: Nuevo placeholder en AlimentCatalogSelectorForm
+    const gramsInput = screen.getByPlaceholderText("Grams eaten (e.g. 100)");
+
+    // ACTUALIZACIÓN: Nuevo texto del botón
+    const addBtn = screen.getByRole("button", { name: /add from catalog/i });
 
     // 2. Seleccionamos "Aguacate" (del fixture mockCatalogAliment)
     await user.selectOptions(select, mockCatalogAliment.name);
@@ -141,15 +146,17 @@ describe("MealItem - Aliments Management (Integration)", () => {
     // 3. Escribimos gramos
     await user.type(gramsInput, grams);
 
-    // 4. Enviamos
-    expect(addBtn).toBeEnabled();
+    // 4. Enviamos (CORREGIDO: Usamos waitFor para esperar a que el estado se actualice)
+    await waitFor(() => {
+      expect(addBtn).toBeEnabled();
+    });
+
     await user.click(addBtn);
 
     // 5. Verificamos llamada
-    // IMPORTANTE: Aquí se pasa 'userAliment' con el ID del catálogo
     expect(alimentService.create).toHaveBeenCalledWith({
       name: mockCatalogAliment.name,
-      grams: 100, // Número
+      grams: 100, // Se convierte a Number
       weekId: WEEK_ID,
       dayId: DAY_ID,
       mealId: MEAL_ID,
@@ -163,9 +170,9 @@ describe("MealItem - Aliments Management (Integration)", () => {
 
     renderWithProviders(<MealItem />);
 
-    // Buscamos el botón de borrar del Arroz
-    // Nota: Como puede haber varios alimentos, usamos getAllByText y cogemos el primero
-    const deleteButtons = screen.getAllByText("❌");
+    // ACTUALIZACIÓN: Buscamos por title="Delete Aliment" ya que el icono es visual
+    const deleteButtons = screen.getAllByTitle("Delete Aliment");
+    // Borramos el primer alimento (Arroz)
     await user.click(deleteButtons[0]);
 
     // En tu componente AlimentItemList NO hay modal, llama directo a 'del'
@@ -183,7 +190,7 @@ describe("MealItem - Aliments Management (Integration)", () => {
 
     renderWithProviders(<MealItem />);
 
-    // Buscamos el checkbox (está dentro de un label .checkbox-container)
+    // Buscamos el checkbox (está dentro de un label .switch-label)
     const checkbox = screen.getByRole("checkbox");
 
     // Estado inicial (según mockMeal1 false)

@@ -3,6 +3,7 @@ import {
   validateSignUpForm,
   validateLoginForm,
   evaluatePasswordRules,
+  validateDecimalInput,
 } from "../../src/utils/validations";
 
 describe("Validations Logic", () => {
@@ -44,8 +45,6 @@ describe("Validations Logic", () => {
         password: "Pass123!",
         passwordRepeated: "Pass123!",
       });
-      // Si tu regex de nombre soporta tildes, esto debe ser true
-      // Si falla, ¡acabas de descubrir un bug en tu regex!
       expect(result.errors.name).toBeUndefined();
     });
 
@@ -87,6 +86,39 @@ describe("Validations Logic", () => {
 
       expect(uppercaseRule).toBeDefined();
       expect(uppercaseRule.valid).toBe(false);
+    });
+  });
+
+  describe("validateDecimalInput", () => {
+    it("debe permitir números enteros y devolverlos como string", () => {
+      expect(validateDecimalInput("123")).toBe("123");
+    });
+
+    it("debe reemplazar automáticamente la coma por un punto", () => {
+      expect(validateDecimalInput("12,5")).toBe("12.5");
+    });
+
+    it("debe permitir decimales escritos con punto directamente", () => {
+      expect(validateDecimalInput("10.99")).toBe("10.99");
+    });
+
+    it("debe permitir string vacío (para borrar el input)", () => {
+      expect(validateDecimalInput("")).toBe("");
+    });
+
+    it("debe devolver null si contiene letras", () => {
+      expect(validateDecimalInput("12a")).toBeNull();
+      expect(validateDecimalInput("abc")).toBeNull();
+    });
+
+    it("debe devolver null si hay múltiples puntos o formato inválido", () => {
+      expect(validateDecimalInput("12.5.5")).toBeNull();
+      expect(validateDecimalInput("12..5")).toBeNull();
+    });
+
+    it("debe permitir empezar o terminar con punto (comportamiento estándar mientras se escribe)", () => {
+      expect(validateDecimalInput(".5")).toBe(".5");
+      expect(validateDecimalInput("12.")).toBe("12.");
     });
   });
 });

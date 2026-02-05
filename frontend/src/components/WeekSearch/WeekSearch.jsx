@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { MdSearch } from "react-icons/md";
+
 import useYearManager from "../../hooks/useYearManager";
 import { weekToday } from "../../utils/days";
 import WeekList from "./WeekList";
@@ -38,9 +40,11 @@ const WeekSearch = () => {
             </select>
           </div>
 
+          {/* 2. Wrapper con el icono y el input modificado */}
           <div className="search-wrapper">
+            <MdSearch className="search-icon" />
             <input
-              className="input-field"
+              className="input-field input-with-icon"
               placeholder="Search week number..."
               value={search}
               onChange={({ target }) => {

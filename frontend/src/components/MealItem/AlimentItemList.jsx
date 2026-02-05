@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
-
 import useAliments from "../../hooks/useAliments";
-
 import Toggable from "../Toggable";
 
 const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
@@ -10,20 +8,8 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
   const { del, update } = useAliments();
   const togglableRef = useRef();
 
-  const labels = {
-    fatG: "Fats",
-    saturatedFatG: "Saturated Fats",
-    carbsG: "Carbohydrates",
-    sugarG: "Sugars",
-    fiberG: "Fiber",
-    proteinG: "Protein",
-    saltG: "Salt",
-  };
-
   const calculate100g = (nutritionFactGrams) => {
-    //De momento me sirve, igual lo cambio en un futuro
     if (nutritionFactGrams === undefined) return "?";
-
     const result = (nutritionFactGrams * aliment.grams) / 100;
     return Math.round(result * 100) / 100;
   };
@@ -38,76 +24,126 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
       grams: Number(editGrams),
     });
     setEditGrams("");
-    togglableRef.current.toggleVisibility();
+    if (togglableRef.current) togglableRef.current.toggleVisibility();
   };
 
-  //Uso labels como fuente de verdad.
-  const nutritionFactKeys = Object.keys(labels).filter(
-    (key) => aliment.userAliment?.nutritionFacts?.[key] !== undefined,
-  );
+  const labels = {
+    fatG: "Fats",
+    saturatedFatG: "Sat. Fats",
+    carbsG: "Carbs",
+    sugarG: "Sugars",
+    fiberG: "Fiber",
+    proteinG: "Protein",
+    saltG: "Salt",
+  };
+
+  const isManual = !!aliment.customKcal;
+  const isCatalogItem = !!aliment.userAliment;
+  const isDeletedFromCatalog = !isManual && !isCatalogItem;
+
+  const displayKcal = isManual
+    ? aliment.customKcal
+    : isCatalogItem
+      ? calculate100g(aliment.userAliment.nutritionFacts.kcal100G)
+      : "???";
+
+  const displayName = aliment.nameSnapshot || aliment.name || "Unknown Aliment";
+
+  const nutritionFactKeys = Object.keys(labels);
 
   return (
-    <>
-      <td>
-        <h2>
-          {!aliment.userAliment && aliment.customKcal && "⚠️"}{" "}
-          {!aliment.userAliment && !aliment.customKcal && "❗"}{" "}
-          {aliment.nameSnapshot} ({aliment.grams} g):{" "}
-          {!aliment.customKcal
-            ? calculate100g(aliment.userAliment?.nutritionFacts.kcal100G)
-            : aliment.customKcal}{" "}
-          kcal
-        </h2>
-        {visible /*&& aliment.userAliment*/ && (
-          <table>
-            <tbody>
-              {nutritionFactKeys.map((ntr) => (
-                <tr key={ntr}>
-                  <td>{labels[ntr]}:</td>
-                  <td>
-                    {calculate100g(aliment.userAliment.nutritionFacts[ntr])} g
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </td>
-      <td>
-        {aliment.userAliment && (
-          <button onClick={() => setVisible(!visible)}>ℹ️</button>
-        )}
-      </td>
-      <td>
-        {aliment.userAliment && (
-          <Toggable ref={togglableRef} buttonLabel="✏️">
-            <form onSubmit={handleSubmit}>
+    <div className="aliment-card">
+      <div className="aliment-header">
+        <div className="aliment-info">
+          <div className="aliment-name">{displayName}</div>
+
+          <div className="aliment-meta">
+            {!isManual && <span>{aliment.grams}g</span>}
+
+            {isManual && (
+              <span
+                className="status-icon status-warning"
+                title="Added manually (Custom Kcal)"
+              >
+                ⚠️ Custom Aliment
+              </span>
+            )}
+
+            {isDeletedFromCatalog && (
+              <span
+                className="status-icon status-danger"
+                title="Item deleted from catalog. Data unavailable."
+              >
+                ❗ Deleted Data
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="aliment-actions">
+          {isCatalogItem && (
+            <button
+              className="btn-icon-action"
+              onClick={() => setVisible(!visible)}
+              title="View Nutrition Facts"
+            >
+              ℹ️
+            </button>
+          )}
+
+          <button
+            className="btn-icon-action btn-icon-danger"
+            onClick={() =>
+              del({ weekId, dayId, mealId, mealAlimentId: aliment.id })
+            }
+            title="Delete Aliment"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div className="aliment-stats-row">
+        <span className="aliment-kcal-badge">{displayKcal} kcal</span>
+      </div>
+
+      {isCatalogItem && (
+        <div className="aliment-edit-wrapper">
+          <Toggable ref={togglableRef} buttonLabel="Edit Grams">
+            <form onSubmit={handleSubmit} className="aliment-edit-form">
               <input
-                className="input"
+                className="input-field"
                 onChange={({ target }) => setEditGrams(target.value)}
                 value={editGrams}
-                placeholder="grams of aliment"
+                placeholder="New grams"
+                type="number"
               />
-              <button>✅</button>
+              <button
+                className="btn btn-primary"
+                style={{ padding: "6px 10px" }}
+              >
+                ✅
+              </button>
             </form>
           </Toggable>
-        )}
-      </td>
-      <td>
-        <button
-          onClick={() =>
-            del({
-              weekId,
-              dayId,
-              mealId,
-              mealAlimentId: aliment.id,
-            })
-          }
-        >
-          ❌
-        </button>
-      </td>
-    </>
+        </div>
+      )}
+
+      {visible && isCatalogItem && (
+        <div className="nutrition-details">
+          <div className="nutrition-grid-compact">
+            {nutritionFactKeys.map((ntr) => (
+              <div key={ntr} className="nutrition-item">
+                <span>{labels[ntr]}:</span>
+                <span>
+                  {calculate100g(aliment.userAliment.nutritionFacts[ntr])}g
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

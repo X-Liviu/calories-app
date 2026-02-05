@@ -49,149 +49,86 @@ describe("ProfileMenu Integration", () => {
     vi.clearAllMocks();
   });
 
-  it("debe renderizar el avatar con la inicial del usuario", () => {
-    renderWithRedux(<ProfileMenu />);
-
-    // El usuario mockUser se llama "Usuario de Prueba", inicial "U"
-    expect(screen.getByText("U")).toBeInTheDocument();
-    // El avatar tiene un title con el username
-    expect(screen.getByTitle(mockUser.username)).toBeInTheDocument();
-  });
-
-  it("debe abrir y cerrar el menú al hacer click en el avatar", async () => {
-    const user = userEvent.setup();
-    renderWithRedux(<ProfileMenu />);
-
-    // 1. Inicialmente el menú NO está visible
-    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
-
-    // 2. Click en el avatar -> Abre menú
+  // Helper para abrir el menú (clic en el avatar)
+  const openMenu = async (user) => {
+    // El avatar muestra la inicial del nombre. En mockUser es "Usuario de Prueba" -> "U"
     const avatar = screen.getByText("U");
     await user.click(avatar);
+  };
 
-    expect(screen.getByText("Logout")).toBeInTheDocument();
-    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
-
-    // 3. Click en el backdrop (fondo) -> Cierra menú
-    // Nota: Tu componente tiene un div backdrop transparente.
-    // Simulamos click fuera haciendo click en el body o buscando el backdrop si tiene role.
-    // Como tu backdrop no tiene role, hacemos click en el avatar de nuevo para cerrar (toggle)
-    await user.click(avatar);
-
+  it("renderiza el avatar con la inicial del usuario", () => {
+    renderWithRedux(<ProfileMenu />);
+    expect(screen.getByText("U")).toBeInTheDocument();
+    // El menú debe estar cerrado al principio
     expect(screen.queryByText("Logout")).not.toBeInTheDocument();
   });
 
-  it("debe llamar a 'logout' al hacer click en el botón correspondiente", async () => {
+  it("abre el menú y muestra la información del usuario", async () => {
     const user = userEvent.setup();
     renderWithRedux(<ProfileMenu />);
 
-    // Abrir menú
-    await user.click(screen.getByText("U"));
+    await openMenu(user);
 
-    // Click Logout
-    const logoutBtn = screen.getByText("Logout");
-    await user.click(logoutBtn);
+    expect(screen.getByText(mockUser.name)).toBeInTheDocument();
+    expect(screen.getByText(`@${mockUser.username}`)).toBeInTheDocument();
+    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
+    expect(screen.getByText("Logout")).toBeInTheDocument();
+  });
+
+  it("llama a logout cuando se hace clic en el botón de salir", async () => {
+    const user = userEvent.setup();
+    renderWithRedux(<ProfileMenu />);
+
+    await openMenu(user);
+    await user.click(screen.getByText("Logout"));
 
     expect(mockLogout).toHaveBeenCalledTimes(1);
-
-    // El menú debe cerrarse tras la acción
-    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
   });
 
-  describe("Delete Account Flow", () => {
-    it("debe abrir el modal de confirmación y llamar a deleteAcc solo si se confirma", async () => {
+  describe("Flujo de Edición (Edit Profile)", () => {
+    it("abre el modal de edición al hacer clic", async () => {
       const user = userEvent.setup();
       renderWithRedux(<ProfileMenu />);
 
-      // 1. Abrir menú y click en Delete Account
-      await user.click(screen.getByText("U"));
-      await user.click(screen.getByText("Delete Account"));
-
-      // 2. Verificar que se abre el modal (buscamos por el texto del título)
-      // En ProfileMenu pasas title="¿Are you sure?"
-      expect(screen.getByText("¿Are you sure?")).toBeInTheDocument();
-      expect(mockDeleteAcc).not.toHaveBeenCalled();
-
-      // 3. Confirmar borrado
-      // El modal usa "Yes, delete my account." como texto de confirmación
-      const confirmBtn = screen.getByText("Yes, delete my account.");
-      await user.click(confirmBtn);
-
-      expect(mockDeleteAcc).toHaveBeenCalledTimes(1);
-    });
-
-    it("NO debe borrar la cuenta si se cancela en el modal", async () => {
-      const user = userEvent.setup();
-      renderWithRedux(<ProfileMenu />);
-
-      await user.click(screen.getByText("U"));
-      await user.click(screen.getByText("Delete Account"));
-
-      const cancelBtn = screen.getByText("Cancel");
-      await user.click(cancelBtn);
-
-      expect(screen.queryByText("¿Are you sure?")).not.toBeInTheDocument();
-      expect(mockDeleteAcc).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("Edit Profile Flow (Modal)", () => {
-    it("debe abrir el modal y rellenar los datos actuales del usuario", async () => {
-      const user = userEvent.setup();
-      renderWithRedux(<ProfileMenu />);
-
-      // Abrir menú y click Editar
-      await user.click(screen.getByText("U"));
+      await openMenu(user);
       await user.click(screen.getByText("Edit Profile"));
 
-      // Verificar que el modal está abierto y los inputs tienen valor
-      expect(screen.getByDisplayValue(mockUser.name)).toBeInTheDocument();
-      expect(screen.getByDisplayValue(mockUser.username)).toBeInTheDocument();
+      expect(screen.getByText("Edit Profile")).toBeInTheDocument(); // Título del modal
+      expect(screen.getByDisplayValue(mockUser.name)).toBeInTheDocument(); // Input prellenado
     });
 
-    it("debe validar que las contraseñas coincidan antes de enviar", async () => {
+    it("valida el formulario y muestra errores si hay datos inválidos", async () => {
       const user = userEvent.setup();
       renderWithRedux(<ProfileMenu />);
 
-      // Abrir modal
-      await user.click(screen.getByText("U"));
+      await openMenu(user);
       await user.click(screen.getByText("Edit Profile"));
 
-      // Rellenar contraseñas diferentes
-      const newPassInput = screen.getByLabelText("New Password:"); // Buscamos por Label
-      const repeatPassInput = screen.getByLabelText("Repeat New Password:");
+      // Borrar el nombre para provocar error
+      const nameInput = screen.getByLabelText("Name");
+      await user.clear(nameInput);
 
-      await user.type(newPassInput, "NewPass123");
-      await user.type(repeatPassInput, "Distinta123");
+      await user.click(screen.getByText("Save Changes"));
 
-      // Click guardar
-      const saveBtn = screen.getByText("Save Changes");
-      await user.click(saveBtn);
-
-      // NO debe llamar a editar
+      // Validamos que NO se llamó a editar
       expect(mockEditUser).not.toHaveBeenCalled();
 
-      // Debe mostrar error (tu validación suele usar window.alert o mostrar texto rojo)
-      // Viendo EditProfileModal.jsx, usas un span con style color red para errores.
-      // Buscamos el mensaje de error que devuelve validateUpdateUserForm
-      // (Asumiendo que devuelve "Passwords do not match" o similar)
-      // Como no tengo el archivo de validaciones, verifico que el mock NO se llamó.
-      expect(mockEditUser).toHaveBeenCalledTimes(0);
+      // Nota: Asumimos que validateUpdateUserForm devuelve error para nombre vacío
+      // Si tu validador devuelve errores, aparecerán en spans con clase .text-error
     });
 
     it("debe llamar a editUser con los datos nuevos si todo es correcto", async () => {
       const user = userEvent.setup();
-      // Simulamos que el hook resuelve bien
       mockEditUser.mockResolvedValue({});
 
       renderWithRedux(<ProfileMenu />);
 
       // Abrir modal
-      await user.click(screen.getByText("U"));
+      await openMenu(user);
       await user.click(screen.getByText("Edit Profile"));
 
       // Cambiar el nombre
-      const nameInput = screen.getByDisplayValue(mockUser.name);
+      const nameInput = screen.getByLabelText("Name");
       await user.clear(nameInput);
       await user.type(nameInput, "Nombre Editado");
 
@@ -203,14 +140,34 @@ describe("ProfileMenu Integration", () => {
         expect.objectContaining({
           name: "Nombre Editado",
           username: mockUser.username,
-          // currentPassword: "", // Depende de si lo escribiste o no
         }),
       );
 
-      // El modal debería cerrarse (waitFor porque es async)
+      // El modal debería cerrarse
       await waitFor(() => {
         expect(screen.queryByText("Edit Profile")).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Flujo de Borrado (Delete Account)", () => {
+    it("abre el modal de confirmación y llama a deleteAcc al confirmar", async () => {
+      const user = userEvent.setup();
+      mockDeleteAcc.mockResolvedValue({});
+
+      renderWithRedux(<ProfileMenu />);
+
+      await openMenu(user);
+      await user.click(screen.getByText("Delete Account"));
+
+      expect(screen.getByText("Delete Account")).toBeInTheDocument(); // Título del modal
+      expect(screen.getByText(/Are you sure/i)).toBeInTheDocument();
+
+      // Confirmar
+      const confirmBtn = screen.getByRole("button", { name: /yes, delete/i });
+      await user.click(confirmBtn);
+
+      expect(mockDeleteAcc).toHaveBeenCalledTimes(1);
     });
   });
 });

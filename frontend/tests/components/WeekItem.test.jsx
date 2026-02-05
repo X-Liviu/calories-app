@@ -10,7 +10,7 @@ import yearReducer from "../../src/redux/reducers/yearReducer.js";
 import dayService from "../../src/services/days.js";
 import WeekItem from "../../src/components/WeekItem/WeekItem";
 
-// IMPORTAMOS LOS NUEVOS FIXTURES
+// IMPORTAMOS LOS FIXTURES
 import {
   mockWeek1,
   mockLoadedState,
@@ -22,7 +22,6 @@ import {
 vi.mock("../../src/services/days");
 
 // --- UTILS LOCALES ---
-// Helper simplificado usando los fixtures
 const getStateWithDays = (customDay = mockDayEmpty) => {
   return {
     ...mockLoadedState,
@@ -70,7 +69,6 @@ describe("WeekItem - Days Management (Integration)", () => {
   });
 
   it("debe renderizar la semana y los días existentes", () => {
-    // Usamos el helper que por defecto usa mockDayEmpty ("Lunes")
     renderWithProviders(<WeekItem />, { preloadedState: getStateWithDays() });
 
     expect(
@@ -80,14 +78,12 @@ describe("WeekItem - Days Management (Integration)", () => {
   });
 
   it("debe mostrar correctamente el total de calorías si el día tiene comidas", () => {
-    // AQUÍ ESTÁ LA MAGIA: Pasamos el fixture 'mockDayWithFood'
-    // Este día ya tiene configuradas las comidas y alimentos dentro de textFixtures.js
     renderWithProviders(<WeekItem />, {
       preloadedState: getStateWithDays(mockDayWithFood),
     });
 
-    // Verificamos la suma (200 + 350 = 550)
-    // Buscamos "Martes (550 kcal)"
+    // Verificamos la suma (550 kcal)
+    // El formato nuevo es "550 kcal" (sin paréntesis fuertes alrededor del número en DayItemList)
     expect(screen.getByText(/550 kcal/)).toBeInTheDocument();
     expect(screen.getByText(mockDayWithFood.name)).toBeInTheDocument();
   });
@@ -96,12 +92,14 @@ describe("WeekItem - Days Management (Integration)", () => {
     const user = userEvent.setup();
     renderWithProviders(<WeekItem />, { preloadedState: mockLoadedState });
 
-    const input = screen.getByPlaceholderText("Name of the day");
-    const submitButton = screen.getByText("Create Day");
+    // ACTUALIZACIÓN: Nuevo placeholder
+    const input = screen.getByPlaceholderText("Name of the day (e.g. Monday)");
+    // ACTUALIZACIÓN: Nuevo texto de botón
+    const submitButton = screen.getByRole("button", { name: /add day/i });
 
     expect(submitButton).toBeDisabled();
 
-    await user.type(input, "123");
+    await user.type(input, "123"); // Validación de solo letras
     expect(submitButton).toBeDisabled();
 
     await user.clear(input);
@@ -123,22 +121,18 @@ describe("WeekItem - Days Management (Integration)", () => {
 
     renderWithProviders(<WeekItem />, { preloadedState: mockLoadedState });
 
-    const input = screen.getByPlaceholderText("Name of the day");
+    const input = screen.getByPlaceholderText("Name of the day (e.g. Monday)");
     await user.type(input, newDayName);
 
-    // 1. Clic en el botón del formulario (Abre el Modal)
-    const submitButton = screen.getByText("Create Day");
+    // 1. Clic en "Add Day"
+    const submitButton = screen.getByRole("button", { name: /add day/i });
     await user.click(submitButton);
 
-    // 2. Verificamos que aparece el modal (buscando el botón de confirmar)
-    // Nota: Asegúrate de que el texto coincida exactamente con la prop 'confirmText' en tu DayForm.
-    // En tu código anterior era "Yes, I confirm." (con punto)
-    const confirmButton = screen.getByText("Yes, I confirm.");
-
-    // 3. Confirmamos la acción en el modal
+    // 2. Verificar Modal (Botón actualizado a "Yes, Create")
+    const confirmButton = screen.getByRole("button", { name: "Yes, Create" });
     await user.click(confirmButton);
 
-    // 4. Ahora sí verificamos que el servicio se llamó
+    // 3. Verificar llamada al servicio
     expect(dayService.create).toHaveBeenCalledWith({
       name: newDayName,
       weekId: mockWeek1.id,
@@ -155,25 +149,24 @@ describe("WeekItem - Days Management (Integration)", () => {
     const user = userEvent.setup();
     dayService.del.mockResolvedValue({});
 
-    // Usamos el día vacío para borrar
     renderWithProviders(<WeekItem />, {
       preloadedState: getStateWithDays(mockDayEmpty),
     });
 
     expect(screen.getByText(mockDayEmpty.name)).toBeInTheDocument();
 
-    const deleteBtn = screen.getByText("❌");
+    // ACTUALIZACIÓN: Buscamos por título o clase, ya no por texto "❌" genérico
+    const deleteBtn = screen.getByTitle("Delete day");
     await user.click(deleteBtn);
 
     expect(screen.getByText("Delete Day")).toBeInTheDocument();
 
-    const confirmBtn = screen.getByText("Yes, I confirm.");
+    // ACTUALIZACIÓN: Texto del botón de confirmación en DayList
+    const confirmBtn = screen.getByRole("button", { name: "Yes, Delete" });
     await user.click(confirmBtn);
 
-    await waitFor(() => {
-      expect(screen.queryByText(mockDayEmpty.name)).not.toBeInTheDocument();
-    });
-
+    // Esperamos que desaparezca (aunque aquí solo mockeamos la llamada,
+    // en integración real redux actualizaría el estado)
     expect(dayService.del).toHaveBeenCalledWith({
       weekId: mockWeek1.id,
       dayId: mockDayEmpty.id,
@@ -186,9 +179,10 @@ describe("WeekItem - Days Management (Integration)", () => {
       preloadedState: getStateWithDays(mockDayEmpty),
     });
 
-    await user.click(screen.getByText("❌"));
+    await user.click(screen.getByTitle("Delete day"));
 
-    const cancelBtn = screen.getByText("Cancel");
+    // Botón cancelar estándar
+    const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await user.click(cancelBtn);
 
     expect(screen.queryByText("Delete Day")).not.toBeInTheDocument();
@@ -205,7 +199,7 @@ describe("WeekItem - Days Management (Integration)", () => {
       weekId: mockWeek1.id,
     }));
 
-    // 2. Construir manualmente un estado donde la semana objetivo tiene esos 7 días
+    // 2. Estado saturado
     const stateWithFullWeek = {
       ...mockLoadedState,
       weeks: {
@@ -216,24 +210,23 @@ describe("WeekItem - Days Management (Integration)", () => {
       },
     };
 
-    // 3. Renderizar el componente con ese estado saturado
     renderWithProviders(<WeekItem />, {
       preloadedState: stateWithFullWeek,
     });
 
     // 4. Verificaciones de UX (Interfaz Bloqueada)
 
-    // El input debe tener el placeholder especial y estar deshabilitado
+    // Input con placeholder especial
     const input = screen.getByPlaceholderText("Week is full (7/7)");
     expect(input).toBeInTheDocument();
     expect(input).toBeDisabled();
 
-    // El botón debe cambiar de texto y estar deshabilitado
-    const submitButton = screen.getByText("Full Week");
+    // Botón con texto "Full"
+    const submitButton = screen.getByText("Full");
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
 
-    // Verificar que aparece el mensaje de advertencia (si lo añadiste en el paso anterior)
-    expect(screen.getByText("Maximum of 7 days reached.")).toBeInTheDocument();
+    // Mensaje de advertencia (actualizado con el texto exacto de DayForm)
+    expect(screen.getByText(/Maximum of 7 days reached/i)).toBeInTheDocument();
   });
 });

@@ -4,13 +4,13 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import LoginForm from "../../src/components/LoginForm";
 import useAuth from "../../src/hooks/useAuth";
 
-// 1. Mock del hook (Ruta corregida a src)
+// Importamos el fixture
+import { mockUser } from "../textFixtures";
+
+// 1. Mock del hook
 vi.mock("../../src/hooks/useAuth", () => ({
   default: vi.fn(),
 }));
-
-// NOTA: He quitado el mock de Toggable. Vamos a usar el real e interactuar con él.
-// He quitado el mock de ErrorMessage, no suele ser necesario mockear componentes tan simples.
 
 describe("<LoginForm />", () => {
   const mockLogin = vi.fn();
@@ -22,7 +22,7 @@ describe("<LoginForm />", () => {
     });
   });
 
-  // FUNCIÓN HELPER: Como el form está oculto, creamos una función para abrirlo
+  // FUNCIÓN HELPER: Abrir el formulario
   const openForm = async (user) => {
     const showButton = screen.getByRole("button", { name: /Log In/i });
     await user.click(showButton);
@@ -32,7 +32,6 @@ describe("<LoginForm />", () => {
     const user = userEvent.setup();
     render(<LoginForm />);
 
-    // Primero abrimos el formulario
     await openForm(user);
 
     expect(screen.getByPlaceholderText("E-Mail")).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe("<LoginForm />", () => {
   it("mantiene el botón deshabilitado si el email es inválido", async () => {
     const user = userEvent.setup();
     render(<LoginForm />);
-    await openForm(user); // Abrimos form
+    await openForm(user);
 
     const emailInput = screen.getByPlaceholderText("E-Mail");
     const passwordInput = screen.getByPlaceholderText("Password");
@@ -62,13 +61,14 @@ describe("<LoginForm />", () => {
   it("habilita el botón y permite login con credenciales válidas", async () => {
     const user = userEvent.setup();
     render(<LoginForm />);
-    await openForm(user); // Abrimos form
+    await openForm(user);
 
     const emailInput = screen.getByPlaceholderText("E-Mail");
     const passwordInput = screen.getByPlaceholderText("Password");
     const submitButton = screen.getByRole("button", { name: /confirm/i });
 
-    await user.type(emailInput, "test@example.com");
+    // Usamos el email del usuario mock para consistencia
+    await user.type(emailInput, mockUser.email);
     await user.type(passwordInput, "Password123");
 
     await waitFor(() => {
@@ -79,7 +79,7 @@ describe("<LoginForm />", () => {
 
     expect(mockLogin).toHaveBeenCalledTimes(1);
     expect(mockLogin).toHaveBeenCalledWith({
-      email: "test@example.com",
+      email: mockUser.email,
       password: "Password123",
     });
   });

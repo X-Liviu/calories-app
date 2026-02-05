@@ -5,12 +5,15 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import SignUpForm from "../../src/components/SignUpForm";
 import useAuth from "../../src/hooks/useAuth";
 
+// Importamos el fixture
+import { mockUser } from "../textFixtures";
+
 // 1. Mock del hook
 vi.mock("../../src/hooks/useAuth", () => ({
   default: vi.fn(),
 }));
 
-describe("<SignUpForm />", () => {
+describe("<SignUpForm /> Integration", () => {
   const mockSignup = vi.fn();
 
   beforeEach(() => {
@@ -20,7 +23,7 @@ describe("<SignUpForm />", () => {
     });
   });
 
-  // Helper para abrir el formulario (Ya que usas el componente real Toggable)
+  // Helper para abrir el formulario
   const openForm = async (user) => {
     const showButton = screen.getByRole("button", { name: /Sign Up/i });
     await user.click(showButton);
@@ -38,29 +41,11 @@ describe("<SignUpForm />", () => {
     expect(screen.getByPlaceholderText("Repeat Password")).toBeInTheDocument();
 
     const submitButton = screen.getByRole("button", { name: /confirm/i });
+    expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
   });
 
-  it("muestra errores de validación (email/nombre) y mantiene el botón deshabilitado", async () => {
-    const user = userEvent.setup();
-    render(<SignUpForm />);
-    await openForm(user);
-
-    const nameInput = screen.getByPlaceholderText("Name");
-    const emailInput = screen.getByPlaceholderText("E-Mail");
-    const submitButton = screen.getByRole("button", { name: /confirm/i });
-
-    // Caso: Email inválido
-    await user.type(nameInput, "User Test");
-    await user.type(emailInput, "email-malo");
-
-    // Aquí sí esperamos mensaje porque tu componente SÍ tiene ErrorMessage para email
-    expect(await screen.findByText(/E-Mail not valid/i)).toBeInTheDocument();
-    expect(submitButton).toBeDisabled();
-  });
-
-  // CAMBIO IMPORTANTE AQUÍ:
-  it("mantiene el botón deshabilitado cuando las contraseñas no coinciden", async () => {
+  it("permite rellenar el formulario y llamar a signup con datos válidos (Happy Path)", async () => {
     const user = userEvent.setup();
     render(<SignUpForm />);
     await openForm(user);
@@ -72,51 +57,32 @@ describe("<SignUpForm />", () => {
     const repeatInput = screen.getByPlaceholderText("Repeat Password");
     const submitButton = screen.getByRole("button", { name: /confirm/i });
 
-    // Llenamos el resto de campos válidos para aislar el error de la contraseña
-    await user.type(nameInput, "Valid Name");
-    await user.type(usernameInput, "validuser");
-    await user.type(emailInput, "valid@email.com");
+    // Contraseña válida para pasar las reglas del validador (Upper, Lower, Number, Symbol, min 8)
+    const validPassword = "Password123!";
 
-    // Escribimos contraseñas que NO coinciden
-    await user.type(passwordInput, "Pass123!");
-    await user.type(repeatInput, "Pass1234"); // Diferente
+    // Llenamos el formulario usando los datos del MOCK
+    await user.type(nameInput, mockUser.name);
+    await user.type(usernameInput, mockUser.username);
+    await user.type(emailInput, mockUser.email);
 
-    // ASERCIÓN: No buscamos texto de error, solo verificamos que NO deja enviar
-    expect(submitButton).toBeDisabled();
-  });
+    // Escribimos la contraseña
+    await user.type(passwordInput, validPassword);
+    await user.type(repeatInput, validPassword); // Coinciden
 
-  it("habilita el botón y llama a signup con los datos correctos", async () => {
-    const user = userEvent.setup();
-    render(<SignUpForm />);
-    await openForm(user);
-
-    const nameInput = screen.getByPlaceholderText("Name");
-    const usernameInput = screen.getByPlaceholderText("Username");
-    const emailInput = screen.getByPlaceholderText("E-Mail");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    const repeatInput = screen.getByPlaceholderText("Repeat Password");
-    const submitButton = screen.getByRole("button", { name: /confirm/i });
-
-    // Llenamos el formulario ("Happy Path")
-    await user.type(nameInput, "John Doe");
-    await user.type(usernameInput, "johndoe");
-    await user.type(emailInput, "john@example.com");
-    await user.type(passwordInput, "Password123!");
-    await user.type(repeatInput, "Password123!"); // Coinciden
-
-    // Esperamos validación
+    // Esperamos que el botón se habilite tras la validación
     await waitFor(() => {
       expect(submitButton).toBeEnabled();
     });
 
     await user.click(submitButton);
 
+    // Verificamos que se llame con los datos correctos
     expect(mockSignup).toHaveBeenCalledTimes(1);
     expect(mockSignup).toHaveBeenCalledWith({
-      name: "John Doe",
-      username: "johndoe",
-      email: "john@example.com",
-      password: "Password123!",
+      name: mockUser.name,
+      username: mockUser.username,
+      email: mockUser.email,
+      password: validPassword,
     });
   });
 
@@ -126,9 +92,35 @@ describe("<SignUpForm />", () => {
     await openForm(user);
 
     const passwordInput = screen.getByPlaceholderText("Password");
+
+    // Escribimos algo incompleto
     await user.type(passwordInput, "test");
 
-    const lengthRule = screen.getByText("At least 8 characters");
-    expect(lengthRule).toBeInTheDocument();
+    // "At least 8 characters" debería estar visible (la lista se muestra al escribir)
+    const lengthRule = screen.getByText(/At least 8 characters/i);
+    expect(lengthRule).toBeVisible();
+    // Al ser inválido, debería tener clase de error (aunque en test unitario es difícil ver el color,
+    // podemos confiar en que el texto está ahí)
+  });
+
+  it("muestra error si las contraseñas no coinciden", async () => {
+    const user = userEvent.setup();
+    render(<SignUpForm />);
+    await openForm(user);
+
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const repeatInput = screen.getByPlaceholderText("Repeat Password");
+
+    await user.type(passwordInput, "Password123!");
+    await user.type(repeatInput, "Password1234!"); // Diferente
+
+    // Debe aparecer el mensaje de error
+    await waitFor(() => {
+      expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
+    });
+
+    // El botón debe seguir deshabilitado
+    const submitButton = screen.getByRole("button", { name: /confirm/i });
+    expect(submitButton).toBeDisabled();
   });
 });

@@ -37,7 +37,6 @@ const EditProfileModal = ({ user, onClose }) => {
       onClose();
     } catch (exception) {
       console.error(`Error updating profile: ${exception}`);
-      // Aquí podrías setear un error general si tuvieras un estado para ello
     }
   };
 
@@ -58,12 +57,12 @@ const EditProfileModal = ({ user, onClose }) => {
               value={formData.name}
               onChange={handleChange}
               className={`input-field ${errors.name ? "input-error" : ""}`}
-              placeholder="Your full name"
             />
+            {/* CORREGIDO: Clase CSS en lugar de style inline */}
             {errors.name && <span className="text-error">{errors.name}</span>}
           </div>
 
-          {/* Username */}
+          {/* Usuario (Deshabilitado o editable según lógica, aquí editable) */}
           <div className="form-group-vertical">
             <label htmlFor="username">Username</label>
             <input
@@ -73,22 +72,18 @@ const EditProfileModal = ({ user, onClose }) => {
               value={formData.username}
               onChange={handleChange}
               className={`input-field ${errors.username ? "input-error" : ""}`}
-              placeholder="Choose a username"
             />
             {errors.username && (
               <span className="text-error">{errors.username}</span>
             )}
           </div>
 
-          {/* Separador visual */}
-          <div className="form-group-vertical">
-            <hr className="modal-divider" />
-            <span className="text-hint">
-              Leave blank to keep current password
-            </span>
-          </div>
+          <hr className="modal-divider" />
+          <p className="text-hint">
+            Leave passwords blank to keep current one.
+          </p>
 
-          {/* Contraseña Actual */}
+          {/* Contraseña Actual (Requerida para cambios sensibles) */}
           <div className="form-group-vertical">
             <label htmlFor="currentPassword">Current Password</label>
             <input

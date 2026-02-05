@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useMyAliments from "../../hooks/useMyAliments";
 import MyAlimentList from "./MyAlimentList";
+import { validateDecimalInput } from "../../utils/validations";
 
 const INITIAL_STATE = {
   name: "",
@@ -52,9 +53,21 @@ const MyAlimentForm = () => {
     setNewAliment(INITIAL_STATE);
   };
 
+  const handleInputChange = (target, key) => {
+    const value = target.value;
+
+    if (key === "name") {
+      setNewAliment({ ...newAliment, [key]: value });
+    } else {
+      const validatedValue = validateDecimalInput(value);
+      if (validatedValue !== null) {
+        setNewAliment({ ...newAliment, [key]: validatedValue });
+      }
+    }
+  };
+
   return (
     <div className="page-container">
-      {/* 1. EL FORMULARIO */}
       <div className="catalog-form-container">
         <h2 className="catalog-form-header">Add New Item to Catalog</h2>
 
@@ -65,18 +78,13 @@ const MyAlimentForm = () => {
                 <label htmlFor={key}>{labels[key]}</label>
                 <input
                   id={key}
-                  type={key === "name" ? "text" : "number"}
-                  step="0.1"
+                  type="text"
+                  inputMode={key === "name" ? "text" : "decimal"}
                   className="catalog-input"
-                  onChange={({ target }) =>
-                    setNewAliment({
-                      ...newAliment,
-                      [key]: target.value,
-                    })
-                  }
-                  // CORRECCIÓN AQUÍ: Placeholder condicional
+                  onChange={({ target }) => handleInputChange(target, key)}
                   placeholder={key === "name" ? "Ex: Banana" : "0"}
                   value={newAliment[key]}
+                  autoComplete="off"
                 />
               </div>
             ))}
@@ -90,7 +98,6 @@ const MyAlimentForm = () => {
         </form>
       </div>
 
-      {/* 2. LA LISTA */}
       <MyAlimentList />
     </div>
   );

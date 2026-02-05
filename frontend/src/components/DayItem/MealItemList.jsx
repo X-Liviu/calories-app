@@ -9,9 +9,7 @@ const MealItemList = ({ meal }) => {
   return (
     <>
       <div className="meal-card-title">{meal.name}</div>
-      <div className="meal-card-calories">
-        {totalCalories.toLocaleString()} kcal
-      </div>
+      <div className="meal-card-calories">{totalCalories} kcal</div>
     </>
   );
 };

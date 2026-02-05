@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-
 import useAliments from "../../hooks/useAliments";
 import useMyAliments from "../../hooks/useMyAliments";
-
 import { validateOnlyNumbers } from "../../utils/validations";
 
 const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
+  // Aseguramos carga de catálogo
   let myAliments = useSelector((state) => state.myAliments);
   if (!myAliments) useMyAliments.get();
   myAliments = useSelector((state) => state.myAliments);
@@ -14,38 +13,29 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
   const [grams, setGrams] = useState("");
   const { create } = useAliments();
 
-  //Filtros para el select
   const availableAliments = myAliments.filter(
     (myAl) => !aliments.some((a) => a.nameSnapshot === myAl.name),
   );
 
   if (myAliments.length === 0) {
-    return (
-      <div>
-        <p>No aliments in your catalog.</p>
-      </div>
-    );
+    return <p className="text-muted">No aliments in your catalog yet.</p>;
   }
 
   if (availableAliments.length === 0) {
     return (
-      <div>
-        <p>
-          No more aliments from catalog can be added.
-          <br />
-          You can add one to the catalog or add one with the form above.
-        </p>
+      <div className="text-muted">
+        <p>All catalog items are already in this meal.</p>
       </div>
     );
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const selectElement = e.target.previousSibling; // el select justo antes del form
-    const selectedObject = availableAliments[selectElement.selectedIndex]; // usar lista filtrada
+    // Acceso al select mediante DOM (aunque sería mejor controlled input, mantenemos lógica original por ahora)
+    const selectElement = document.getElementById("catalog-select");
+    const selectedObject = availableAliments[selectElement.selectedIndex];
 
-    const isValid = validateOnlyNumbers(grams);
-    if (!isValid) return;
+    if (!validateOnlyNumbers(grams)) return;
 
     create({
       name: selectedObject.name,
@@ -55,41 +45,61 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
       mealId,
       userAliment: selectedObject.id,
     });
+    setGrams("");
   };
 
   const isValid = validateOnlyNumbers(grams);
 
   return (
-    <>
-      <select className="select">
-        {availableAliments.map((a) => (
-          <option key={a.id} value={a.name}>
-            {a.name}
-          </option>
-        ))}
-      </select>
+    <div className="form-container">
+      <div style={{ marginBottom: "1rem" }}>
+        <label
+          style={{
+            display: "block",
+            marginBottom: "4px",
+            fontSize: "0.9rem",
+            fontWeight: "600",
+            color: "var(--accent)",
+          }}
+        >
+          Select Item:
+        </label>
+        <select
+          id="catalog-select"
+          className="select-field"
+          style={{ width: "100%" }}
+        >
+          {availableAliments.map((a) => (
+            <option key={a.id} value={a.name}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <input
-          className="input"
+          className="input-field"
           value={grams}
-          placeholder="Grams of the aliment eaten"
+          placeholder="Grams eaten (e.g. 100)"
           onChange={({ target }) => {
-            if (target.value.trim() === "") {
+            if (target.value === "") {
               setGrams("");
               return;
             }
             !isNaN(Number(target.value)) && setGrams(Number(target.value));
           }}
         />
+
         <button
           disabled={!isValid}
-          className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+          className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
+          style={{ marginTop: "1rem", width: "100%" }}
         >
-          Add Aliment From Catalog
+          Add from Catalog
         </button>
       </form>
-    </>
+    </div>
   );
 };
 

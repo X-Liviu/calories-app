@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useMyAliments from "../../hooks/useMyAliments";
+import { validateDecimalInput } from "../../utils/validations";
 
 const MyAlimentItemList = ({ myAliment }) => {
   const { del, update } = useMyAliments();
@@ -17,16 +18,20 @@ const MyAlimentItemList = ({ myAliment }) => {
   };
 
   const handleChange = (key, value) => {
-    setEditableValues({
-      ...editableValues,
-      [key]: value,
-    });
+    const validatedValue = validateDecimalInput(value);
+    if (validatedValue !== null) {
+      setEditableValues({
+        ...editableValues,
+        [key]: validatedValue,
+      });
+    }
   };
 
   const handleBlur = (key) => {
+    const val = Number(editableValues[key]);
     setEditableValues({
       ...editableValues,
-      [key]: myAliment.nutritionFacts[key],
+      [key]: isNaN(val) ? 0 : val,
     });
     setActiveInput(null);
   };
@@ -35,16 +40,14 @@ const MyAlimentItemList = ({ myAliment }) => {
 
   return (
     <tr>
-      {/* CLASE CSS para el nombre (padding y bold) */}
       <td className="cell-name">{myAliment.name}</td>
 
       {nutritionKeys.map((key) => (
         <td key={key}>
-          {/* CLASE CSS para el formulario (height 100%) */}
           <form onSubmit={(e) => handleSubmit(e, key)} className="cell-form">
             <input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               className="editable-cell-input"
               value={editableValues[key]}
               onChange={(e) => handleChange(key, e.target.value)}
@@ -52,12 +55,12 @@ const MyAlimentItemList = ({ myAliment }) => {
               onBlur={() => handleBlur(key)}
               readOnly={activeInput !== key}
               title="Click to edit"
+              autoComplete="off"
             />
           </form>
         </td>
       ))}
 
-      {/* CLASE CSS para centrar acciones */}
       <td className="cell-center">
         <button
           className="btn-delete-row"

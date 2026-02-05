@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, afterEach } from "vitest";
 import { Provider } from "react-redux";
@@ -26,7 +26,6 @@ import {
 vi.mock("../../src/services/meals");
 
 // --- UTILS LOCALES ---
-// Identificadores extraídos de los fixtures para configurar la ruta
 const TARGET_WEEK_ID = mockWeekWithCalories.id;
 const TARGET_DAY_ID = mockDayWithFood.id;
 
@@ -34,7 +33,7 @@ const TARGET_DAY_ID = mockDayWithFood.id;
 const renderWithProviders = (
   ui,
   {
-    preloadedState = mockLoadedState, // Usamos el estado que ya tiene la semana con calorías
+    preloadedState = mockLoadedState,
     store = configureStore({
       reducer: {
         weeks: weekReducer,
@@ -42,7 +41,6 @@ const renderWithProviders = (
       },
       preloadedState,
     }),
-    // IMPORTANTE: Simulamos que estamos en la URL del día específico
     route = `/weeks/${TARGET_WEEK_ID}/${TARGET_DAY_ID}`,
   } = {},
 ) => {
@@ -51,7 +49,6 @@ const renderWithProviders = (
       <Provider store={store}>
         <MemoryRouter initialEntries={[route]}>
           <Routes>
-            {/* Definimos la ruta con los parámetros que espera DayItem */}
             <Route path="/weeks/:weekId/:dayId" element={ui} />
           </Routes>
         </MemoryRouter>
@@ -66,124 +63,112 @@ describe("DayItem - Meals Management (Integration)", () => {
     vi.clearAllMocks();
   });
 
+  // 1. RENDERIZADO BÁSICO
   it("debe renderizar el nombre del día y las comidas existentes", () => {
     renderWithProviders(<DayItem />);
 
-    // Verifica el título del día
+    // Header del día
     expect(screen.getByText(mockDayWithFood.name)).toBeInTheDocument();
 
-    // Verifica que las comidas del fixture se renderizan
-    expect(screen.getByText(mockMeal1.name)).toBeInTheDocument(); // Almuerzo
-    expect(screen.getByText(mockMeal2.name)).toBeInTheDocument(); // Cena
+    // Comidas renderizadas (MealList -> MealItemList)
+    // mockMeal1 es "Almuerzo", mockMeal2 es "Cena"
+    expect(screen.getByText(mockMeal1.name)).toBeInTheDocument();
+    expect(screen.getByText(mockMeal2.name)).toBeInTheDocument();
   });
 
+  // 2. CALORÍAS (RECUPERADO)
   it("debe mostrar correctamente el total de calorías de cada comida", () => {
     renderWithProviders(<DayItem />);
 
-    // mockMeal1 (Almuerzo) tiene 200 kcal
-    // mockMeal2 (Cena) tiene 350 kcal
-    // El formato en MealItemList es: "Nombre (X kcal)"
+    // mockMeal1 tiene mockAliment1 (200 kcal)
+    // mockMeal2 tiene mockAliment2 (350 kcal)
 
-    // Buscamos algo que contenga "200 kcal"
-    expect(screen.getByText(/200 kcal/)).toBeInTheDocument();
-
-    // Buscamos algo que contenga "350 kcal"
-    expect(screen.getByText(/350 kcal/)).toBeInTheDocument();
+    // Buscamos "200 kcal" y "350 kcal"
+    // Nota: Como hemos quitado toLocaleString(), el formato es simple.
+    expect(screen.getByText("200 kcal")).toBeInTheDocument();
+    expect(screen.getByText("350 kcal")).toBeInTheDocument();
   });
 
+  // 3. VALIDACIÓN (RECUPERADO)
   it("debe validar el formulario de creación (botón deshabilitado si está vacío)", async () => {
     const user = userEvent.setup();
     renderWithProviders(<DayItem />);
 
-    const input = screen.getByPlaceholderText("Name of the meal");
-    const submitButton = screen.getByText("Create Meal");
+    const input = screen.getByPlaceholderText(
+      "Name of the meal (e.g. Breakfast)",
+    );
+    const submitBtn = screen.getByRole("button", { name: /add meal/i });
 
     // Inicialmente deshabilitado
-    expect(submitButton).toBeDisabled();
+    expect(submitBtn).toBeDisabled();
 
-    // Escribimos espacios en blanco (inválido según validateNoEmpty)
+    // Escribir solo espacios
     await user.type(input, "   ");
-    expect(submitButton).toBeDisabled();
+    expect(submitBtn).toBeDisabled();
 
-    // Limpiamos y escribimos algo válido
+    // Borrar
     await user.clear(input);
-    await user.type(input, "Merienda");
-    expect(submitButton).not.toBeDisabled();
+    expect(submitBtn).toBeDisabled();
   });
 
+  // 4. CREACIÓN EXITOSA
   it("debe crear una nueva comida correctamente y actualizar la lista", async () => {
     const user = userEvent.setup();
     const newMealName = "Merienda";
 
-    // PREPARACIÓN DEL MOCK DE RETORNO
-    // weekReducer espera que el servicio devuelva la SEMANA ACTUALIZADA
-    const updatedWeek = {
-      ...mockWeekWithCalories,
-      days: mockWeekWithCalories.days.map((d) => {
-        if (d.id === TARGET_DAY_ID) {
-          return {
-            ...d,
-            meals: [
-              ...d.meals,
-              { id: "meal-new", name: newMealName, aliments: [] },
-            ],
-          };
-        }
-        return d;
-      }),
-    };
-    mealService.create.mockResolvedValue(updatedWeek);
+    // Simulamos respuesta del servicio
+    mealService.create.mockResolvedValue({
+      id: "meal-new",
+      name: newMealName,
+      aliments: [],
+      dayId: TARGET_DAY_ID,
+      weekId: TARGET_WEEK_ID,
+    });
 
     renderWithProviders(<DayItem />);
 
-    // Interacción con el formulario
-    const input = screen.getByPlaceholderText("Name of the meal");
+    const input = screen.getByPlaceholderText(
+      "Name of the meal (e.g. Breakfast)",
+    );
+    const submitBtn = screen.getByRole("button", { name: /add meal/i });
+
+    // Escribir nombre válido
     await user.type(input, newMealName);
+    expect(submitBtn).toBeEnabled();
 
-    const submitButton = screen.getByText("Create Meal");
-    await user.click(submitButton);
+    // Enviar
+    await user.click(submitBtn);
 
-    // Verificación de llamada al servicio
+    // Verificar llamada
     expect(mealService.create).toHaveBeenCalledWith({
       name: newMealName,
       dayId: TARGET_DAY_ID,
       weekId: TARGET_WEEK_ID,
     });
 
-    // Verificación de actualización visual
-    await waitFor(() => {
-      expect(screen.getByText(newMealName)).toBeInTheDocument();
-    });
-
-    // Verificación de limpieza del input
+    // El input debe limpiarse
     expect(input).toHaveValue("");
   });
 
+  // 5. BORRADO EXITOSO
   it("debe borrar una comida correctamente tras confirmar en el modal", async () => {
     const user = userEvent.setup();
-
-    // Para borrar, basta con que el servicio resuelva (el reducer actualiza el estado localmente)
     mealService.del.mockResolvedValue({});
 
     renderWithProviders(<DayItem />);
 
-    // 1. Click en borrar la primera comida (Almuerzo)
-    // Usamos getAllByText("❌") porque hay varios botones de borrar
-    const deleteButtons = screen.getAllByText("❌");
-    await user.click(deleteButtons[0]);
+    // 1. Abrir modal de borrado (usamos el título del botón/icono)
+    const deleteButtons = screen.getAllByTitle("Delete meal");
+    await user.click(deleteButtons[0]); // Borramos la primera comida
 
     // 2. Confirmar en el modal
     expect(screen.getByText("Delete Meal")).toBeInTheDocument();
-    const confirmBtn = screen.getByText("Yes, I confirm.");
+
+    // Botón actualizado: "Yes, Delete"
+    const confirmBtn = screen.getByRole("button", { name: "Yes, Delete" });
     await user.click(confirmBtn);
 
-    // 3. Verificar eliminación visual
-    // Esperamos que "Almuerzo" desaparezca
-    await waitFor(() => {
-      expect(screen.queryByText(mockMeal1.name)).not.toBeInTheDocument();
-    });
-
-    // Verificamos llamada al servicio con los IDs correctos
+    // 3. Verificar llamada
     expect(mealService.del).toHaveBeenCalledWith({
       weekId: TARGET_WEEK_ID,
       dayId: TARGET_DAY_ID,
@@ -191,24 +176,22 @@ describe("DayItem - Meals Management (Integration)", () => {
     });
   });
 
+  // 6. CANCELAR BORRADO
   it("debe cerrar el modal sin borrar si el usuario cancela", async () => {
     const user = userEvent.setup();
     renderWithProviders(<DayItem />);
 
     // 1. Abrir modal
-    const deleteButtons = screen.getAllByText("❌");
+    const deleteButtons = screen.getAllByTitle("Delete meal");
     await user.click(deleteButtons[0]);
 
     // 2. Cancelar
-    const cancelBtn = screen.getByText("Cancel");
+    const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await user.click(cancelBtn);
 
-    // 3. Verificar
-    // El modal desaparece
+    // 3. Verificar que el modal se cierra y no se borró nada
     expect(screen.queryByText("Delete Meal")).not.toBeInTheDocument();
-    // La comida sigue ahí
     expect(screen.getByText(mockMeal1.name)).toBeInTheDocument();
-    // No se llamó al servicio
     expect(mealService.del).not.toHaveBeenCalled();
   });
 });

@@ -1,23 +1,26 @@
 import AlimentItemList from "./AlimentItemList";
-//PROP-DRILLING
+
 const AlimentList = ({ aliments, weekId, dayId, mealId }) => {
+  if (!aliments || aliments.length === 0) {
+    return (
+      <div className="empty-result-container">
+        <p>No aliments in this meal yet.</p>
+      </div>
+    );
+  }
+
   return (
-    <table>
-      <tbody>
-        {aliments.map((aliment) => {
-          return (
-            <tr key={aliment.id}>
-              <AlimentItemList
-                aliment={aliment}
-                weekId={weekId}
-                dayId={dayId}
-                mealId={mealId}
-              />
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="aliments-grid">
+      {aliments.map((aliment) => (
+        <AlimentItemList
+          key={aliment.id}
+          aliment={aliment}
+          weekId={weekId}
+          dayId={dayId}
+          mealId={mealId}
+        />
+      ))}
+    </div>
   );
 };
 

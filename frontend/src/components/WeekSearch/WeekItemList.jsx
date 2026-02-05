@@ -17,9 +17,7 @@ const WeekItemList = ({ week }) => {
 
       {/* CLASE CSS en lugar de style inline */}
       <div className="week-calories-wrapper">
-        <span className="week-calories">
-          {totalCalories.toLocaleString()} kcal
-        </span>
+        <span className="week-calories">{totalCalories} kcal</span>
       </div>
 
       <p className="week-dates">

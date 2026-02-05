@@ -10,7 +10,6 @@
   min-height: 100vh;
 }
 
-/* Contenedor principal para páginas interiores */
 .page-container {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,6 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -252,17 +250,17 @@ nav[aria-label="breadcrumb"] {
   color: #999;
 }
 
-/* Input con Error (Variante de .input-field) */
+/* Input con Error */
 .input-field.input-error {
   border-color: var(--color-danger);
-  background-color: #fff5f5; /* Fondo rojizo muy sutil */
+  background-color: #fff5f5;
 }
 
 .input-field.input-error:focus {
   box-shadow: 0 0 0 3px rgba(188, 71, 73, 0.1);
 }
 
-/* Select Personalizado (Faltaba en tu CSS) */
+/* Select Personalizado */
 .select-field {
   padding: 12px 16px;
   background-color: var(--bg-surface);
@@ -315,10 +313,32 @@ nav[aria-label="breadcrumb"] {
   font-weight: 600;
   color: var(--accent);
 }
-
 .search-wrapper {
   flex-grow: 1;
   max-width: 300px;
+  position: relative; /* CLAVE: Para contener el icono absoluto */
+}
+
+/* Estilo del icono de lupa */
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%); /* Centrado vertical perfecto */
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  pointer-events: none; /* Permite hacer clic en el input "a través" del icono */
+  transition: color 0.2s;
+}
+
+/* Cuando el input tiene foco, coloreamos el icono */
+.search-wrapper:focus-within .search-icon {
+  color: var(--primary);
+}
+
+/* Modificador para el input que lleva icono */
+.input-field.input-with-icon {
+  padding-left: 40px; /* Espacio reservado para el icono */
 }
 
 .week-add-form {
@@ -355,20 +375,6 @@ nav[aria-label="breadcrumb"] {
 /* Wrapper para que el formulario ocupe el espacio restante */
 .week-form-wrapper {
   flex-grow: 1;
-}
-
-/* Estilos específicos del formulario de añadir semana */
-.week-add-form {
-  display: flex;
-  gap: var(--space-xs);
-  align-items: flex-start;
-  width: 100%;
-}
-
-.week-input-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 /* =========================================
@@ -419,26 +425,11 @@ nav[aria-label="breadcrumb"] {
 
 .week-card.is-deleting {
   opacity: 0.7;
-  pointer-events: none; /* Bloquea clics */
+  pointer-events: none;
 }
 
-/* Contenedor de las calorías en la tarjeta */
 .week-calories-wrapper {
   margin-bottom: var(--space-sm);
-}
-
-/* Posición absoluta del botón de borrar */
-.week-card .btn-delete-pos {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-/* Mensaje de estado vacío o búsqueda sin resultados */
-.empty-result-container {
-  margin-top: var(--space-xl);
-  color: var(--text-muted);
-  text-align: center;
 }
 
 .week-calories {
@@ -481,6 +472,7 @@ nav[aria-label="breadcrumb"] {
   right: 8px;
 }
 
+.empty-result-container,
 .empty-state {
   margin-top: var(--space-xl);
   color: var(--text-muted);
@@ -585,18 +577,18 @@ nav[aria-label="breadcrumb"] {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(2px); /* Un toque moderno extra */
+  backdrop-filter: blur(2px);
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal-box {
   background-color: var(--bg-surface);
-  padding: var(--space-lg); /* Más espacio interno */
+  padding: var(--space-lg);
   border-radius: var(--radius-md);
   width: 90%;
   max-width: 400px;
@@ -619,27 +611,25 @@ nav[aria-label="breadcrumb"] {
 .modal-actions {
   display: flex;
   justify-content: center;
-  gap: var(--space-md); /* Espacio consistente entre botones */
+  gap: var(--space-md);
   margin-top: var(--space-md);
 }
 
 /* --- MODAL: EDIT PROFILE SPECIFICS --- */
 .modal-box.profile-edit {
   width: 100%;
-  max-width: 450px; /* Un poco más ancho para respirar */
+  max-width: 450px;
   max-height: 90vh;
   overflow-y: auto;
-  text-align: left; /* El contenido interno alineado a la izquierda */
+  text-align: left;
 }
 
-/* Contenedor del formulario con espaciado uniforme */
 .profile-edit-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-/* Grupos de inputs (Label + Input + Error) */
 .form-group-vertical {
   display: flex;
   flex-direction: column;
@@ -652,14 +642,12 @@ nav[aria-label="breadcrumb"] {
   font-size: 0.95rem;
 }
 
-/* Separador sutil */
 .modal-divider {
   border: 0;
   border-top: 1px dashed var(--ui-border);
   margin: var(--space-xs) 0;
 }
 
-/* Nota pequeña */
 .text-hint {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -673,13 +661,30 @@ nav[aria-label="breadcrumb"] {
 .loader-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--bg-highlight); /* Color base suave */
-  border-bottom-color: var(--primary); /* Color activo girando */
+  border: 4px solid var(--bg-highlight);
+  border-bottom-color: var(--primary);
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
   margin: var(--space-sm) auto;
+}
+
+.page-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60vh; /* Ocupa el 60% de la altura de la pantalla */
+  animation: fadeIn 0.3s ease-out;
+}
+
+.page-loading-container h2 {
+  margin-top: var(--space-md);
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 @keyframes rotation {
@@ -691,7 +696,6 @@ nav[aria-label="breadcrumb"] {
   }
 }
 
-/* Estado de carga en el modal */
 .modal-loading-container {
   display: flex;
   flex-direction: column;
@@ -703,8 +707,6 @@ nav[aria-label="breadcrumb"] {
 /* =========================================
    12. LOCAL LOADERS & TOOLTIPS
    ========================================= */
-
-/* --- Overlay de carga solo para la tarjeta --- */
 .card-loading-overlay {
   position: absolute;
   top: 0;
@@ -728,7 +730,6 @@ nav[aria-label="breadcrumb"] {
   margin-top: 8px;
 }
 
-/* Reutilizamos el spinner pequeño */
 .loader-spinner-sm {
   width: 24px;
   height: 24px;
@@ -738,7 +739,6 @@ nav[aria-label="breadcrumb"] {
   animation: rotation 1s linear infinite;
 }
 
-/* --- Tooltip con Exclamación --- */
 .warning-icon-container {
   position: relative;
   display: inline-flex;
@@ -747,7 +747,7 @@ nav[aria-label="breadcrumb"] {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #fff3cd; /* Amarillo pastel */
+  background-color: #fff3cd;
   color: #856404;
   font-weight: bold;
   font-size: 14px;
@@ -756,20 +756,19 @@ nav[aria-label="breadcrumb"] {
   border: 1px solid #ffeeba;
 }
 
-/* El texto del tooltip (oculto por defecto) */
 .warning-tooltip-text {
   visibility: hidden;
   width: 220px;
-  background-color: #5a3d33; /* Tu marrón oscuro */
+  background-color: #5a3d33;
   color: #fff;
   text-align: center;
   border-radius: 6px;
   padding: 8px;
   position: absolute;
   z-index: 1;
-  bottom: 125%; /* Posición encima del icono */
+  bottom: 125%;
   left: 50%;
-  margin-left: -110px; /* Centrar */
+  margin-left: -110px;
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 0.8rem;
@@ -777,7 +776,6 @@ nav[aria-label="breadcrumb"] {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Flechita del tooltip */
 .warning-tooltip-text::after {
   content: "";
   position: absolute;
@@ -789,18 +787,17 @@ nav[aria-label="breadcrumb"] {
   border-color: #5a3d33 transparent transparent transparent;
 }
 
-/* Mostrar al hacer hover */
 .warning-icon-container:hover .warning-tooltip-text {
   visibility: visible;
   opacity: 1;
 }
 
 /* =========================================
-   13. BREADCRUMBS (Estilos Puros)
+   13. BREADCRUMBS
    ========================================= */
 .breadcrumb-nav {
   display: flex;
-  justify-content: center; /* Centrado horizontal total */
+  justify-content: center;
   align-items: center;
   padding: var(--space-sm) var(--space-md);
   margin-top: var(--space-xs);
@@ -818,19 +815,16 @@ nav[aria-label="breadcrumb"] {
   justify-content: center;
 }
 
-/* --- ANIMACIÓN EN CASCADA CON NTH-CHILD --- */
 .breadcrumb-item {
   display: flex;
   align-items: center;
   font-size: 0.9rem;
   color: var(--text-muted);
-
-  opacity: 0; /* Invisible al inicio */
+  opacity: 0;
   transform: translateX(-10px);
   animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Definimos los retrasos en CSS puro (Clean Code) */
 .breadcrumb-item:nth-child(1) {
   animation-delay: 0s;
 }
@@ -850,7 +844,6 @@ nav[aria-label="breadcrumb"] {
   animation-delay: 0.5s;
 }
 
-/* Enlaces */
 .breadcrumb-link {
   color: var(--text-muted);
   text-decoration: none;
@@ -869,7 +862,6 @@ nav[aria-label="breadcrumb"] {
   transform: translateY(-1px);
 }
 
-/* El último elemento (Activo) */
 .breadcrumb-link.active {
   color: var(--primary);
   font-weight: 700;
@@ -877,7 +869,6 @@ nav[aria-label="breadcrumb"] {
   pointer-events: none;
 }
 
-/* Separador (>) */
 .breadcrumb-separator {
   margin-left: 8px;
   color: var(--ui-border);
@@ -886,7 +877,6 @@ nav[aria-label="breadcrumb"] {
   user-select: none;
 }
 
-/* KEYFRAMES */
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -904,16 +894,15 @@ nav[aria-label="breadcrumb"] {
 .profile-container {
   position: relative;
   display: inline-block;
-  z-index: 200; /* Por encima de otros elementos */
+  z-index: 200;
 }
 
-/* El círculo del avatar */
 .profile-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--primary); /* Marrón medio */
-  color: var(--text-light); /* Texto blanco/crema */
+  background-color: var(--primary);
+  color: var(--text-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -921,7 +910,7 @@ nav[aria-label="breadcrumb"] {
   font-size: 1.1rem;
   cursor: pointer;
   user-select: none;
-  border: 2px solid var(--bg-surface); /* Anillo blanco alrededor */
+  border: 2px solid var(--bg-surface);
   box-shadow: var(--shadow-soft);
   transition:
     transform 0.2s,
@@ -935,7 +924,6 @@ nav[aria-label="breadcrumb"] {
   box-shadow: 0 4px 12px rgba(119, 81, 68, 0.3);
 }
 
-/* Fondo transparente para cerrar al hacer clic fuera */
 .profile-backdrop {
   position: fixed;
   top: 0;
@@ -946,31 +934,27 @@ nav[aria-label="breadcrumb"] {
   cursor: default;
 }
 
-/* El menú desplegable (Popup) */
 .profile-dropdown {
   position: absolute;
-  top: 120%; /* Un poco separado del círculo */
+  top: 120%;
   right: 0;
   background-color: var(--bg-surface);
   border: 1px solid var(--ui-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px rgba(42, 8, 0, 0.1); /* Sombra más pronunciada */
+  box-shadow: 0 10px 25px rgba(42, 8, 0, 0.1);
   padding: 8px 0;
   min-width: 220px;
   z-index: 100;
   display: flex;
   flex-direction: column;
   text-align: left;
-
-  /* Animación de entrada */
   transform-origin: top right;
   animation: scaleIn 0.2s ease-out;
 }
 
-/* Información del usuario (Cabecera del menú) */
 .profile-user-info {
   padding: 12px 16px;
-  background-color: var(--bg-main); /* Fondo sutil diferente */
+  background-color: var(--bg-main);
   border-bottom: 1px solid var(--ui-border);
   margin-bottom: 4px;
 }
@@ -984,15 +968,13 @@ nav[aria-label="breadcrumb"] {
   font-size: 0.95rem;
 }
 
-/* Clase para el @username (antes era un style inline) */
 .profile-username {
   display: block;
-  margin-left: 26px; /* Alineado con el texto del nombre */
+  margin-left: 26px;
   font-size: 0.8rem;
   color: var(--text-muted);
 }
 
-/* Elementos del menú (Botones) */
 .profile-menu-item {
   background: none;
   border: none;
@@ -1012,22 +994,20 @@ nav[aria-label="breadcrumb"] {
 }
 
 .profile-menu-item:hover {
-  background-color: var(--bg-highlight); /* Rosa pastel al pasar ratón */
+  background-color: var(--bg-highlight);
   color: var(--primary-dark);
 }
 
-/* Iconos dentro del menú */
 .profile-menu-icon {
   font-size: 1.2rem;
-  color: var(--ui-border); /* Color base del icono */
+  color: var(--ui-border);
   transition: color 0.2s;
 }
 
 .profile-menu-item:hover .profile-menu-icon {
-  color: var(--primary); /* El icono se colorea al hover */
+  color: var(--primary);
 }
 
-/* Separador */
 .profile-divider {
   border: 0;
   border-top: 1px solid var(--ui-border);
@@ -1036,9 +1016,8 @@ nav[aria-label="breadcrumb"] {
   opacity: 0.5;
 }
 
-/* Estilos específicos para peligro (Delete) */
 .profile-menu-item.text-danger {
-  color: #bc4749; /* Rojo Tierra */
+  color: #bc4749;
 }
 
 .profile-menu-item.text-danger:hover {
@@ -1050,7 +1029,6 @@ nav[aria-label="breadcrumb"] {
   color: #bc4749;
 }
 
-/* Animación del Dropdown */
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -1065,15 +1043,13 @@ nav[aria-label="breadcrumb"] {
 /* =========================================
    15. CATALOG (My Aliments)
    ========================================= */
-
-/* --- FORMULARIO DE CREACIÓN --- */
 .catalog-form-container {
   background-color: var(--bg-surface);
   padding: var(--space-md);
   border-radius: var(--radius-md);
   border: 1px solid var(--ui-border);
   width: 100%;
-  max-width: 1000px; /* Ancho amplio para que quepan los inputs */
+  max-width: 1000px;
   margin-bottom: var(--space-lg);
   box-shadow: var(--shadow-soft);
 }
@@ -1084,7 +1060,6 @@ nav[aria-label="breadcrumb"] {
   text-align: center;
 }
 
-/* Grid para los inputs: Se adapta automáticamente */
 .catalog-inputs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1092,7 +1067,6 @@ nav[aria-label="breadcrumb"] {
   margin-bottom: var(--space-md);
 }
 
-/* Label pequeño encima del input */
 .input-group label {
   display: block;
   font-size: 0.85rem;
@@ -1101,7 +1075,6 @@ nav[aria-label="breadcrumb"] {
   margin-bottom: 4px;
 }
 
-/* El input específico del catálogo */
 .catalog-input {
   width: 100%;
   padding: 10px;
@@ -1124,7 +1097,6 @@ nav[aria-label="breadcrumb"] {
   margin-top: var(--space-md);
 }
 
-/* Contenedor principal de la lista */
 .catalog-list-container {
   width: 100%;
   max-width: 1200px;
@@ -1136,39 +1108,10 @@ nav[aria-label="breadcrumb"] {
   color: var(--accent);
 }
 
-/* --- CLASES DE UTILIDAD PARA LA TABLA --- */
-
-/* Alineación centrada para celdas específicas (acciones) */
-.catalog-table .cell-center {
-  text-align: center;
-}
-
-/* Celda de nombre (necesita padding porque es texto, no input) */
-.catalog-table .cell-name {
-  padding: 12px 16px; /* Restauramos el padding que quitamos en el td general */
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-/* Formulario dentro de la celda (para que ocupe todo el alto) */
-.cell-form {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-}
-
-/* Mensaje de tabla vacía */
-.catalog-empty-message {
-  text-align: center;
-  padding: var(--space-xl);
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* --- TABLA RESPONSIVA --- */
+/* Tabla */
 .table-responsive-wrapper {
   width: 100%;
-  overflow-x: auto; /* Scroll horizontal si no cabe en la pantalla */
+  overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--ui-border);
   box-shadow: var(--shadow-soft);
@@ -1178,12 +1121,11 @@ nav[aria-label="breadcrumb"] {
   width: 100%;
   border-collapse: collapse;
   background-color: var(--bg-surface);
-  min-width: 900px; /* Fuerza ancho mínimo para que no se aplaste */
+  min-width: 900px;
 }
 
-/* Cabecera */
 .catalog-table thead {
-  background-color: var(--bg-highlight); /* Tu rosa pastel */
+  background-color: var(--bg-highlight);
 }
 
 .catalog-table th {
@@ -1192,12 +1134,11 @@ nav[aria-label="breadcrumb"] {
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--accent);
-  white-space: nowrap; /* Evita que el texto se rompa feo */
+  white-space: nowrap;
 }
 
-/* Cuerpo */
 .catalog-table td {
-  padding: 0; /* Padding 0 para que el input invisible ocupe toda la celda */
+  padding: 0;
   border-bottom: 1px solid var(--ui-border);
   color: var(--text-main);
   vertical-align: middle;
@@ -1207,19 +1148,36 @@ nav[aria-label="breadcrumb"] {
   border-bottom: none;
 }
 
-/* Hover en filas */
 .catalog-table tbody tr:hover {
-  background-color: #faf7f7; /* Un gris/rosa muy muy tenue */
+  background-color: #faf7f7;
 }
 
-/* --- INPUT INVISIBLE (Editable Cell) --- */
-/* La celda se convierte en input */
+.catalog-table .cell-center {
+  text-align: center;
+}
+.catalog-table .cell-name {
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.cell-form {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+.catalog-empty-message {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .editable-cell-input {
   width: 100%;
   height: 100%;
-  padding: 12px 16px; /* El padding lo tiene el input, no el TD */
+  padding: 12px 16px;
   background-color: transparent;
-  border: 2px solid transparent; /* Borde transparente para reservar espacio */
+  border: 2px solid transparent;
   font-family: var(--font-main);
   font-size: 0.95rem;
   color: inherit;
@@ -1227,16 +1185,14 @@ nav[aria-label="breadcrumb"] {
   transition: all 0.2s;
 }
 
-/* Cuando haces clic para editar */
 .editable-cell-input:focus {
   outline: none;
   background-color: #fff;
-  border-color: var(--primary); /* Se marca el borde */
+  border-color: var(--primary);
   color: var(--primary-dark);
   font-weight: 600;
 }
 
-/* Botón de borrar en la tabla */
 .btn-delete-row {
   background: transparent;
   border: none;
@@ -1249,14 +1205,12 @@ nav[aria-label="breadcrumb"] {
 }
 
 .btn-delete-row:hover {
-  color: #bc4749; /* Rojo */
+  color: #bc4749;
 }
 
 /* =========================================
    16. DAY VIEW & LIST
    ========================================= */
-
-/* Título de la página de detalle de semana */
 .week-detail-header {
   text-align: center;
   margin-bottom: var(--space-lg);
@@ -1268,20 +1222,15 @@ nav[aria-label="breadcrumb"] {
   margin-bottom: var(--space-xs);
 }
 
-/* Reutilizamos .weeks-grid pero podemos crear un alias si queremos ajustes específicos */
 .days-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(220px, 1fr)
-  ); /* Tarjetas un poco más estrechas */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--space-md);
   width: 100%;
   max-width: 1000px;
   margin-top: var(--space-md);
 }
 
-/* Tarjeta de Día */
 .day-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--ui-border);
@@ -1304,47 +1253,35 @@ nav[aria-label="breadcrumb"] {
   border-color: var(--ui-hover);
 }
 
-/* Título del día (Lunes, Martes...) */
 .day-card-title {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: var(--space-sm);
   text-transform: capitalize;
+  padding-right: 24px;
 }
 
-/* Badge de calorías en la tarjeta */
 .day-card-calories {
   font-size: 0.9rem;
-  color: var(--text-muted);
-  background-color: var(--bg-main);
+  color: var(--primary);
+  font-weight: 600;
+  background-color: var(--bg-highlight);
   padding: 4px 8px;
   border-radius: var(--radius-md);
-  align-self: flex-start; /* Alinear a la izquierda */
+  align-self: flex-start;
 }
 
-/* IMPORTANTE: Añadir esto para que la X flote en la esquina */
 .day-card .btn-delete-pos {
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 5; /* Asegura que esté por encima */
+  z-index: 5;
 }
 
-/* Opcional: Ajustar el padding derecho del título para que no choque con la X */
-.day-card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: var(--space-sm);
-  text-transform: capitalize;
-  padding-right: 24px; /* Espacio extra para la X */
-}
-
-/* Mensaje de alerta (Semana llena) */
 .full-week-warning {
-  color: #d97706; /* Ámbar oscuro */
-  background-color: #fef3c7; /* Ámbar muy suave */
+  color: #d97706;
+  background-color: #fef3c7;
   padding: 8px 12px;
   border-radius: var(--radius-md);
   font-size: 0.9rem;
@@ -1353,7 +1290,6 @@ nav[aria-label="breadcrumb"] {
   border: 1px solid #fcd34d;
 }
 
-/* Estado de borrado (igual que en Weeks) */
 .day-card.is-deleting {
   opacity: 0.7;
   pointer-events: none;
@@ -1362,8 +1298,6 @@ nav[aria-label="breadcrumb"] {
 /* =========================================
    17. MEAL VIEW & LIST
    ========================================= */
-
-/* Cabecera de la vista de Día (donde se ven las comidas) */
 .day-detail-header {
   text-align: center;
   margin-bottom: var(--space-lg);
@@ -1376,7 +1310,6 @@ nav[aria-label="breadcrumb"] {
   text-transform: capitalize;
 }
 
-/* Grid de Comidas */
 .meals-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1386,7 +1319,6 @@ nav[aria-label="breadcrumb"] {
   margin-top: var(--space-md);
 }
 
-/* Tarjeta de Comida */
 .meal-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--ui-border);
@@ -1409,16 +1341,14 @@ nav[aria-label="breadcrumb"] {
   border-color: var(--ui-hover);
 }
 
-/* Título de la comida (Breakfast, Lunch...) */
 .meal-card-title {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: var(--space-sm);
-  padding-right: 24px; /* Espacio para la X */
+  padding-right: 24px;
 }
 
-/* Badge de calorías */
 .meal-card-calories {
   font-size: 0.9rem;
   color: var(--primary);
@@ -1429,7 +1359,6 @@ nav[aria-label="breadcrumb"] {
   align-self: flex-start;
 }
 
-/* Posicionamiento del botón borrar (Reutilizamos lógica pero aseguramos contexto) */
 .meal-card .btn-delete-pos {
   position: absolute;
   top: 8px;
@@ -1437,8 +1366,568 @@ nav[aria-label="breadcrumb"] {
   z-index: 5;
 }
 
-/* Estado borrando */
 .meal-card.is-deleting {
   opacity: 0.7;
   pointer-events: none;
+}
+
+/* =========================================
+   18. ALIMENT VIEW & LIST
+   ========================================= */
+.meal-detail-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.meal-detail-header h1 {
+  font-size: var(--h1);
+  margin: 0;
+  color: var(--accent);
+  text-transform: capitalize;
+}
+
+/* --- SWITCH --- */
+.switch-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-slider {
+  width: 50px;
+  height: 26px;
+  background-color: var(--ui-border);
+  border-radius: 30px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.switch-slider::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-input:checked + .switch-slider {
+  background-color: var(--primary);
+}
+.switch-input:checked + .switch-slider::after {
+  transform: translateX(24px);
+}
+
+/* --- GRID --- */
+.aliments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: var(--space-xl);
+  align-items: start;
+}
+
+/* --- TARJETA DE ALIMENTO --- */
+.aliment-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.aliment-card:hover {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+
+.aliment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--space-md);
+}
+
+.aliment-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.aliment-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.aliment-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aliment-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-icon-action {
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-action:hover {
+  background-color: var(--bg-main);
+  color: var(--primary);
+  border-color: var(--ui-border);
+}
+
+.btn-icon-danger:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+.aliment-stats-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.aliment-kcal-badge {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
+  background-color: var(--bg-highlight);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+}
+
+/* --- ESTADOS DE AVISO --- */
+.status-icon {
+  font-size: 1rem;
+  cursor: help;
+}
+
+.status-warning {
+  color: #d97706;
+}
+.status-danger {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+/* --- FORMULARIO EDICIÓN DENTRO DE CARD --- */
+.aliment-edit-wrapper {
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--bg-main);
+}
+
+.aliment-edit-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.aliment-edit-form .input-field {
+  padding: 6px 12px;
+}
+
+/* --- INFO NUTRICIONAL --- */
+.nutrition-details {
+  margin-top: var(--space-xs);
+  padding: var(--space-sm);
+  background-color: var(--bg-main);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.nutrition-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.nutrition-item {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+}
+
+.nutrition-item span:last-child {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* --- WRAPPER DE FORMULARIOS AÑADIR --- */
+.forms-split-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: 1200px;
+  margin-top: var(--space-lg);
+}
+
+.form-panel {
+  flex: 1;
+  min-width: 300px;
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ui-border);
+}
+
+.form-panel h3 {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+  color: var(--accent);
+  border-bottom: 2px solid var(--bg-highlight);
+  padding-bottom: 8px;
+}
+
+/* =========================================
+   19. MODERN HOME / LANDING PAGE
+   ========================================= */
+
+/* --- CONTENEDOR PRINCIPAL (Relativo para contener los blobs absolutos) --- */
+.landing-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh; /* Ocupa toda la pantalla */
+  overflow: hidden; /* Cortar los blobs que se salgan */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+}
+
+/* --- BLOBS DE FONDO (Manchas de color decorativas) --- */
+.decorative-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  z-index: 0;
+  animation: floatBlob 10s ease-in-out infinite;
+}
+
+.blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background-color: var(--bg-highlight); /* Rosa pastel */
+}
+
+.blob-2 {
+  bottom: 10%;
+  right: -5%;
+  width: 400px;
+  height: 400px;
+  background-color: #eaddcf; /* Un tono tierra muy suave */
+  animation-delay: -5s;
+}
+
+/* --- HERO SECTION (La parte principal) --- */
+.landing-hero {
+  position: relative;
+  z-index: 1; /* Encima de los blobs */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas: Texto | Imagen */
+  align-items: center;
+  gap: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  min-height: 80vh;
+}
+
+/* Columna de Texto */
+.hero-text-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: slideUpFade 0.8s ease-out forwards;
+}
+
+.hero-badge {
+  display: inline-block;
+  background-color: rgba(119, 81, 68, 0.1); /* Primary con transparencia */
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  border: 1px solid rgba(119, 81, 68, 0.2);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 6vw, 4.5rem); /* Tipografía responsiva enorme */
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+  color: var(--accent);
+}
+
+/* Efecto de texto con degradado */
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle-modern {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+  max-width: 50ch;
+  line-height: 1.6;
+}
+
+/* Grupo de botones */
+.hero-cta-group {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.btn-lg {
+  padding: 0.8em 2em;
+  font-size: 1.1rem;
+}
+
+/* Columna de Imagen */
+.hero-visuals {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* Marco de la imagen con estilo */
+.hero-image-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(42, 8, 0, 0.15); /* Sombra elegante */
+  transform: perspective(1000px) rotateY(-5deg); /* Ligero efecto 3D */
+  transition: transform 0.3s ease;
+  background-color: var(--bg-surface);
+  border: 4px solid var(--bg-surface);
+}
+
+.hero-image-frame:hover {
+  transform: perspective(1000px) rotateY(0deg) translateY(-10px);
+}
+
+.hero-image-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Tarjeta flotante decorativa sobre la imagen */
+.floating-card {
+  position: absolute;
+  bottom: 40px;
+  left: -20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--bg-highlight);
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+.floating-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-highlight);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.floating-text span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.floating-text strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+/* --- FEATURES SECTION (Sección de características) --- */
+.features-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+}
+
+.features-title {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-sm);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.feature-card {
+  background-color: var(--bg-surface);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--ui-border);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+  text-align: left;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(119, 81, 68, 0.1);
+  border-color: var(--primary);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md);
+  display: inline-block;
+  background-color: var(--bg-main);
+  padding: 15px;
+  border-radius: 50%;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-sm);
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* --- ANIMACIONES KEYFRAMES --- */
+@keyframes floatBlob {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(20px, 40px);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatCard {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-xl);
+  }
+
+  .hero-text-content {
+    align-items: center;
+  }
+
+  .hero-subtitle-modern {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-image-frame {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .floating-card {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -20px;
+    width: max-content;
+    animation: none; /* Desactivar flotación compleja en móvil */
+  }
 }

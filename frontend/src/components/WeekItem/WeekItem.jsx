@@ -6,10 +6,16 @@ import DayForm from "./DayForm";
 
 const WeekItem = () => {
   const { weekId } = useParams();
-  //Como necesito la week para imprimir el número de la semana, recupero con un useSelector desde aquí para poder hacer eso. En WeekSearch, en cambio, ya no hago el useSelector de todas las semanas ahí, si no que se hace en WeekList. (09/09/25)
   const week = useSelector((state) => selectWeek(state, weekId));
 
-  if (!week) return <h2 className="empty-state">Loading week data...</h2>;
+  if (!week) {
+    return (
+      <div className="page-loading-container">
+        <div className="loader-spinner"></div>
+        <h2>Loading week data...</h2>
+      </div>
+    );
+  }
 
   const isWeekFull = week.days && week.days.length >= 7;
 
@@ -17,7 +23,7 @@ const WeekItem = () => {
     <div className="page-container">
       <div className="week-detail-header">
         <h1>Week {week.numberWeek}</h1>
-        <p className="text-muted">Manage your daily meals</p>
+        <p className="text-muted">Manage your days for this week</p>
       </div>
 
       <div className="dashboard-controls">

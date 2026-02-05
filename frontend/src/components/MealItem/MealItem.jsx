@@ -1,10 +1,7 @@
 import { useRef } from "react";
 import { useSelector } from "react-redux";
-
 import { useParams } from "react-router-dom";
-
 import useMeals from "../../hooks/useMeals";
-
 import { selectMeal } from "../../redux/selectors/mealSelectors";
 import { selectUpdatedAliments } from "../../redux/selectors/myAlimentSelectors";
 
@@ -15,53 +12,53 @@ import AlimentCatalogSelectorForm from "./AlimentCatalogSelectorForm";
 const MealItem = () => {
   const { weekId, dayId, mealId } = useParams();
   const meal = useSelector((state) => selectMeal(state, weekId, dayId, mealId));
-
   const { update } = useMeals();
 
   const alimentsAvailable = useSelector((state) =>
     selectUpdatedAliments(state, meal?.aliments),
   );
 
-  const updatingRef = useRef(false); //Uso necesario para impedir hacer peticiones constantes.
+  const updatingRef = useRef(false);
 
-  if (!meal) return <h1>Loading...</h1>;
-
-  //Solución anterior que sólo revisaba si cambiaban los alimentos, no los valores nutricionales. Ahora se usa un custom selector que se encarga también de eso.
-
-  /*const alimentsAvailable = meal.aliments.map((aliment) => {
-    const updatedUserAliment = myAliments.find(
-      (a) => a.id === aliment.userAliment?.id,
+  if (!meal) {
+    return (
+      <div className="page-loading-container">
+        <div className="loader-spinner"></div>
+        <h2>Loading meal...</h2>
+      </div>
     );
-    return updatedUserAliment
-      ? { ...aliment, userAliment: updatedUserAliment }
-      : { ...aliment, userAliment: null };
-  }); */
+  }
+
+  const handleCheatChange = async (e) => {
+    if (updatingRef.current) return;
+    const newValue = e.target.checked;
+
+    if (newValue !== meal.cheat) {
+      updatingRef.current = true;
+      try {
+        await update({ weekId, dayId, mealId, cheat: newValue });
+      } finally {
+        updatingRef.current = false;
+      }
+    }
+  };
 
   return (
-    <>
-      <h1>
-        {meal.name}{" "}
-        <label className="checkbox-container">
+    <div className="page-container">
+      <div className="meal-detail-header">
+        <h1>{meal.name}</h1>
+
+        <label className="switch-label">
           <input
             type="checkbox"
+            className="switch-input"
             checked={meal.cheat}
-            onChange={async ({ target }) => {
-              if (updatingRef.current) return;
-
-              const newValue = target.checked;
-              if (newValue !== meal.cheat) {
-                updatingRef.current = true;
-                try {
-                  await update({ weekId, dayId, mealId, cheat: newValue });
-                } finally {
-                  updatingRef.current = false;
-                }
-              }
-            }}
+            onChange={handleCheatChange}
           />
-          <span className="checkmark"></span>
+          <span className="switch-slider"></span>
+          <span>{meal.cheat ? "Cheat Meal Active" : "Mark as Cheat Meal"}</span>
         </label>
-      </h1>
+      </div>
 
       <AlimentList
         aliments={alimentsAvailable}
@@ -69,15 +66,24 @@ const MealItem = () => {
         dayId={dayId}
         mealId={mealId}
       />
-      <AlimentForm weekId={weekId} dayId={dayId} mealId={mealId} />
-      <AlimentCatalogSelectorForm
-        aliments={alimentsAvailable}
-        weekId={weekId}
-        dayId={dayId}
-        mealId={mealId}
-      />
-      <h2>{meal.cheat && "This is marked as a Cheat Meal. Enjoy! 🍔"}</h2>
-    </>
+
+      <div className="forms-split-container">
+        <div className="form-panel">
+          <h3>Add from Catalog</h3>
+          <AlimentCatalogSelectorForm
+            aliments={alimentsAvailable}
+            weekId={weekId}
+            dayId={dayId}
+            mealId={mealId}
+          />
+        </div>
+
+        <div className="form-panel">
+          <h3>Add Custom Aliment</h3>
+          <AlimentForm weekId={weekId} dayId={dayId} mealId={mealId} />
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,7 +1,5 @@
 import { useState } from "react";
-
 import useAliments from "../../hooks/useAliments";
-
 import { validateCustomAliment } from "../../utils/validations";
 
 const AlimentForm = ({ weekId, dayId, mealId }) => {
@@ -10,19 +8,15 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
   const [totalKcalAliment, setTotalKcalAliment] = useState("");
 
   const { create } = useAliments();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const isValid = validateCustomAliment({
-      nameAliment,
-      gramsAliment,
-      totalKcalAliment,
-    });
-    if (!isValid) return;
+    if (!validateCustomAliment({ nameAliment, gramsAliment, totalKcalAliment }))
+      return;
 
     create({
       name: nameAliment,
-      grams: Number(gramsAliment), //Se convierte a number, por si queda "" porque se deja vacío, entonces se convierte a 0.
+      grams: Number(gramsAliment),
       customKcal: totalKcalAliment,
       weekId,
       dayId,
@@ -40,44 +34,44 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form-container">
       <input
-        className="input"
-        placeholder="name"
+        className="input-field"
+        placeholder="Aliment Name"
         value={nameAliment}
         onChange={({ target }) => setNameAliment(target.value)}
       />
       <input
-        className="input"
-        placeholder="grams (optional)"
+        className="input-field"
+        placeholder="Grams (Optional)"
         value={gramsAliment}
         onChange={({ target }) => {
-          if (target.value.trim() === "") {
+          if (target.value === "") {
             setGramsAliment("");
             return;
           }
-          target.value.length <= 5 &&
-            !isNaN(Number(target.value)) &&
-            setGramsAliment(Number(target.value));
+          !isNaN(Number(target.value)) && setGramsAliment(Number(target.value));
         }}
       />
       <input
-        className="input"
-        placeholder="total kcal"
+        className="input-field"
+        placeholder="Total Kcal"
         value={totalKcalAliment}
         onChange={({ target }) => {
-          if (target.value.trim() === "") {
+          if (target.value === "") {
             setTotalKcalAliment("");
             return;
           }
-          target.value.length <= 5 &&
-            !isNaN(Number(target.value)) &&
+          !isNaN(Number(target.value)) &&
             setTotalKcalAliment(Number(target.value));
         }}
       />
+
       <button
+        type="submit"
         disabled={!isValid}
-        className={`${!isValid ? "button-disabled" : "button-enabled"}`}
+        className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
+        style={{ marginTop: "1rem", width: "100%" }}
       >
         Add Custom Aliment
       </button>

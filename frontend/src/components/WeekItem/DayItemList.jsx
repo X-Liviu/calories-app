@@ -9,9 +9,7 @@ const DayItemList = ({ day }) => {
   return (
     <>
       <div className="day-card-title">{day.name}</div>
-      <div className="day-card-calories">
-        {totalCalories.toLocaleString()} kcal
-      </div>
+      <div className="day-card-calories">{totalCalories} kcal</div>
     </>
   );
 };

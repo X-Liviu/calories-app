@@ -66,7 +66,6 @@ const LoginForm = () => {
           type="submit"
           disabled={!isValid}
           className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
-          style={{ marginTop: "var(--space-xs)" }}
         >
           Confirm
         </button>

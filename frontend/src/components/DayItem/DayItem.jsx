@@ -8,22 +8,26 @@ const DayItem = () => {
   const { weekId, dayId } = useParams();
   const day = useSelector((state) => selectDay(state, weekId, dayId));
 
-  if (!day) return <h2 className="empty-state">Loading day data...</h2>;
+  if (!day) {
+    return (
+      <div className="page-loading-container">
+        <div className="loader-spinner"></div>
+        <h2>Loading day data...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
-      {/* Cabecera del Día */}
       <div className="day-detail-header">
         <h1>{day.name}</h1>
         <p className="text-muted">Manage your meals for this day</p>
       </div>
 
-      {/* Formulario de añadir comida */}
       <div className="dashboard-controls">
         <MealForm weekId={weekId} dayId={dayId} />
       </div>
 
-      {/* Lista de Comidas */}
       <MealList meals={day.meals} weekId={weekId} dayId={dayId} />
     </div>
   );
