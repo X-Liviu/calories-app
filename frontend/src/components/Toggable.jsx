@@ -34,7 +34,6 @@ const Toggable = forwardRef(({ children, buttonLabel }, ref) => {
               type="button"
               onClick={toggleVisibility}
               className="btn btn-secondary"
-              style={{ width: "100%" }} // Opcional: Para que tenga el ancho del input
             >
               Cancel
             </button>

@@ -9,10 +9,24 @@ const Day = require("../models/Day");
 const helper = require("./test_helper");
 
 beforeEach(async () => {
+  // 1. Limpieza de datos de negocio (Usuarios, Alimentos, etc.)
   await User.deleteMany({});
   await UserAliment.deleteMany({});
   await Week.deleteMany({});
   await Day.deleteMany({});
+
+  // 2. LIMPIEZA DE RATE LIMITER (El "Reset" inteligente)
+  // Intentamos borrar la colección específica de bloqueos.
+  // Usamos un try/catch por si es la primera vez y la colección no existe aún.
+  try {
+    // El nombre 'login_fail_email' viene de tu archivo middleware.js (keyPrefix)
+    await mongoose.connection.collection("login_fail_email").drop();
+  } catch (error) {
+    // Si falla porque no existe (code 26), no pasa nada, seguimos.
+    if (error.code !== 26) {
+      console.log("Error limpiando rate limits:", error.message);
+    }
+  }
 });
 
 describe("Register /api/users", () => {
@@ -56,7 +70,6 @@ describe("Register /api/users", () => {
 
     const result = await api.post("/api/users").send(duplicateUser).expect(400);
 
-    // ACTUALIZADO: Nuevo mensaje del middleware
     expect(result.body.error).toContain("is already taken");
   });
 
@@ -69,7 +82,6 @@ describe("Register /api/users", () => {
       .send(duplicateEmailUser)
       .expect(400);
 
-    // ACTUALIZADO: Nuevo mensaje del middleware
     expect(result.body.error).toContain("is already taken");
   });
 });
@@ -103,6 +115,51 @@ describe("Login /api/login", () => {
       .send({ email: "test@example.com", password: "WrongPassword123!" })
       .expect(401);
     expect(result.body.error).toBe("invalid username or password");
+  });
+});
+
+// --- NUEVA SECCIÓN DE SEGURIDAD ---
+// auth.test.js - Sección Security corregida
+
+describe("Security & Rate Limiting (DoS Protection)", () => {
+  // Test para la Capa 2: Bloqueo por Email
+  test("fails with 429 if specific EMAIL exceeds retry limit (Brute Force on User)", async () => {
+    await helper.getAuthToken();
+    const targetEmail = "test@example.com";
+
+    // 2. Consumimos los 5 intentos
+    for (let i = 0; i < 5; i++) {
+      await api
+        .post("/api/login")
+        // CAMBIO AQUÍ: "WrongPassword1!" cumple tu Regex (tiene num y char especial)
+        // pero es incorrecta para el usuario.
+        .send({ email: targetEmail, password: "WrongPassword1!" })
+        .expect(401);
+    }
+
+    // 3. El intento número 6 debe ser bloqueado
+    const response = await api
+      .post("/api/login")
+      .send({ email: targetEmail, password: "WrongPassword1!" })
+      .expect(429);
+
+    expect(response.body.error).toContain("failed attempts for this email");
+  });
+
+  // Test para la Capa 1: Bloqueo por IP
+  test("fails with 429 if IP exceeds retry limit (DoS Attack)", async () => {
+    let responseStatus = 0;
+
+    for (let i = 0; i < 30; i++) {
+      const response = await api
+        .post("/api/login")
+        .send({ email: `random${i}@test.com`, password: "ValidPatternPass1!" });
+
+      responseStatus = response.status;
+
+      if (responseStatus === 429) break;
+    }
+    expect(responseStatus).toBe(429);
   });
 });
 
@@ -170,7 +227,6 @@ describe("User Management & Cascade Delete", () => {
       .send(updates)
       .expect(400);
 
-    // ACTUALIZADO: Nuevo mensaje
     expect(result.body.error).toContain("is already taken");
   });
 
@@ -213,5 +269,11 @@ describe("User Management & Cascade Delete", () => {
 });
 
 afterAll(async () => {
+  try {
+    await mongoose.connection.collection("login_fail_email").drop();
+  } catch (e) {
+    console.error(e);
+  }
+
   await mongoose.connection.close();
 });

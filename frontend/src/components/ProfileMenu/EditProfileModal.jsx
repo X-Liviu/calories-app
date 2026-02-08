@@ -58,7 +58,6 @@ const EditProfileModal = ({ user, onClose }) => {
               onChange={handleChange}
               className={`input-field ${errors.name ? "input-error" : ""}`}
             />
-            {/* CORREGIDO: Clase CSS en lugar de style inline */}
             {errors.name && <span className="text-error">{errors.name}</span>}
           </div>
 

@@ -4,9 +4,11 @@
     "start": "node index.js",
     "start:test": "NODE_ENV=test node index.js",
     "dev": "nodemon index.js",
+    "dev:test": "cross-env NODE_ENV=test nodemon index.js",
     "devDocker": "nodemon index.js --legacy-watch -- --host 0.0.0.0",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "seed": "node scripts/seed.js"
+    "seed:dev": "node scripts/seed.js",
+    "seed:test": "cross-env NODE_ENV=test node scripts/seed.js"
   },
   "license": "ISC",
   "description": "",
@@ -15,10 +17,12 @@
     "cors": "2.8.5",
     "dotenv": "17.2.1",
     "express": "5.1.0",
+    "express-rate-limit": "8.2.1",
     "joi": "18.0.1",
     "jsonwebtoken": "9.0.2",
     "mongodb": "6.18.0",
-    "mongoose": "8.18.0"
+    "mongoose": "8.18.0",
+    "rate-limiter-flexible": "9.1.1"
   },
   "devDependencies": {
     "cross-env": "10.0.0",

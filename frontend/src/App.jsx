@@ -15,12 +15,13 @@ import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 import PrivateRoute from "./components/PrivateRoute";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
-import MyAlimentForm from "./components/MyAlimentForm/MyAlimentForm"; //Igual cambiarle el nombre no estaría mal.
+import MyAlimentForm from "./components/MyAlimentForm/MyAlimentForm";
 import WeekSearch from "./components/WeekSearch/WeekSearch";
 import WeekItem from "./components/WeekItem/WeekItem";
 import DayItem from "./components/DayItem/DayItem";
 import MealItem from "./components/MealItem/MealItem";
 import NotFound from "./components/NotFound";
+import Footer from "./components/Footer";
 
 const App = () => {
   useAuthInitAndSync();
@@ -41,23 +42,29 @@ const App = () => {
   return (
     <>
       <BreadcrumbListener />
-      <Breadcrumb />
-      <Menu />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route element={<RedirectIfAuthenticated />}>
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignUpForm />} />
-        </Route>
-        <Route element={<PrivateRoute />}>
-          <Route path="/my-aliments" element={<MyAlimentForm />} />
-          <Route path="/weeks" element={<WeekSearch />} />
-          <Route path="/weeks/:weekId/" element={<WeekItem />} />
-          <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />
-          <Route path="/weeks/:weekId/:dayId/:mealId" element={<MealItem />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="main-content">
+        <Breadcrumb />
+        <Menu />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route element={<RedirectIfAuthenticated />}>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/signup" element={<SignUpForm />} />
+          </Route>
+          <Route element={<PrivateRoute />}>
+            <Route path="/my-aliments" element={<MyAlimentForm />} />
+            <Route path="/weeks" element={<WeekSearch />} />
+            <Route path="/weeks/:weekId/" element={<WeekItem />} />
+            <Route path="/weeks/:weekId/:dayId" element={<DayItem />} />
+            <Route
+              path="/weeks/:weekId/:dayId/:mealId"
+              element={<MealItem />}
+            />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      <Footer />
     </>
   );
 };

@@ -70,8 +70,7 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
       <button
         type="submit"
         disabled={!isValid}
-        className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
-        style={{ marginTop: "1rem", width: "100%" }}
+        className={`btn btn-primary btn-submit-block ${!isValid ? "btn-disabled" : ""}`}
       >
         Add Custom Aliment
       </button>

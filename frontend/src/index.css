@@ -33,6 +33,7 @@
   --space-sm: 1rem; /* 16px */
   --space-md: 1.5rem; /* 24px */
   --space-lg: 3rem; /* 48px */
+  --space-xl: 5rem; /* 80px */
 
   /* --- UI UTILS --- */
   --radius-md: 12px;
@@ -91,4 +92,11 @@ a {
 
 a:hover {
   color: var(--primary-dark);
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
 }

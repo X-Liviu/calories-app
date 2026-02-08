@@ -1,5 +1,3 @@
-import React from "react";
-
 const DeleteConfirmationModal = ({
   onClose,
   onConfirm,
@@ -11,17 +9,9 @@ const DeleteConfirmationModal = ({
   return (
     <div className="modal-overlay">
       <div className="modal-box">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "1rem",
-          }}
-        >
-          <h3 style={{ margin: 0 }}>{title}</h3>
+        <div className="modal-header">
+          <h3>{title}</h3>
 
-          {/* ICONO DE EXCLAMACIÓN CON TOOLTIP */}
           <div className="warning-icon-container">
             !
             <span className="warning-tooltip-text">

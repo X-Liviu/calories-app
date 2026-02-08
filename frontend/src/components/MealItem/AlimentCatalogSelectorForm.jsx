@@ -5,7 +5,6 @@ import useMyAliments from "../../hooks/useMyAliments";
 import { validateOnlyNumbers } from "../../utils/validations";
 
 const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
-  // Aseguramos carga de catálogo
   let myAliments = useSelector((state) => state.myAliments);
   if (!myAliments) useMyAliments.get();
   myAliments = useSelector((state) => state.myAliments);
@@ -31,7 +30,6 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Acceso al select mediante DOM (aunque sería mejor controlled input, mantenemos lógica original por ahora)
     const selectElement = document.getElementById("catalog-select");
     const selectedObject = availableAliments[selectElement.selectedIndex];
 
@@ -52,23 +50,12 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
   return (
     <div className="form-container">
-      <div style={{ marginBottom: "1rem" }}>
-        <label
-          style={{
-            display: "block",
-            marginBottom: "4px",
-            fontSize: "0.9rem",
-            fontWeight: "600",
-            color: "var(--accent)",
-          }}
-        >
+      <div className="selector-wrapper">
+        <label htmlFor="catalog-select" className="selector-label">
           Select Item:
         </label>
-        <select
-          id="catalog-select"
-          className="select-field"
-          style={{ width: "100%" }}
-        >
+
+        <select id="catalog-select" className="select-field select-full">
           {availableAliments.map((a) => (
             <option key={a.id} value={a.name}>
               {a.name}
@@ -93,8 +80,7 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
 
         <button
           disabled={!isValid}
-          className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
-          style={{ marginTop: "1rem", width: "100%" }}
+          className={`btn btn-primary btn-submit-block ${!isValid ? "btn-disabled" : ""}`}
         >
           Add from Catalog
         </button>

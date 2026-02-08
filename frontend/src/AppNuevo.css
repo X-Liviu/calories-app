@@ -10,6 +10,13 @@
   min-height: 100vh;
 }
 
+.main-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -211,6 +218,11 @@ nav[aria-label="breadcrumb"] {
   opacity: 0.7;
   transform: none !important;
   box-shadow: none !important;
+}
+
+.btn-compact {
+  padding: 6px 10px;
+  line-height: 1;
 }
 
 /* =========================================
@@ -455,7 +467,7 @@ nav[aria-label="breadcrumb"] {
   font-size: 1.2rem;
   cursor: pointer;
   padding: 4px;
-  border-radius: 50%;
+  border-radius: 20%;
   transition: background 0.2s;
   color: var(--ui-border);
   z-index: 2;
@@ -586,6 +598,18 @@ nav[aria-label="breadcrumb"] {
   animation: fadeIn 0.2s ease-out;
 }
 
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem; /* O var(--space-md) si prefieres usar tus variables */
+}
+
+/* Sobrescribimos el margen del h3 solo cuando está dentro del header para alinearlo con el icono */
+.modal-header h3 {
+  margin: 0;
+}
+
 .modal-box {
   background-color: var(--bg-surface);
   padding: var(--space-lg);
@@ -702,6 +726,57 @@ nav[aria-label="breadcrumb"] {
   align-items: center;
   justify-content: center;
   padding: var(--space-md);
+}
+
+/* =========================================
+   11b. SKELETON LOADERS
+   ========================================= */
+.skeleton-week-card {
+  height: 140px;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  /* Hereda estilos de .week-card si se aplica la clase, 
+     pero aquí definimos comportamientos específicos del skeleton */
+}
+
+/* Animación de pulso básica para todos los elementos skeleton */
+.skeleton-pulse {
+  background-color: var(--ui-border); /* Color base grisáceo */
+  border-radius: var(--radius-sm);
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 40%; /* Ancho movido aquí desde el inline style */
+  margin-bottom: 1rem;
+}
+
+.skeleton-line {
+  height: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.spacer {
+  margin-top: 20px; /* Margen movido aquí desde el inline style */
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 /* =========================================
@@ -1218,7 +1293,6 @@ nav[aria-label="breadcrumb"] {
 }
 
 .week-detail-header h1 {
-  font-size: var(--h1);
   margin-bottom: var(--space-xs);
 }
 
@@ -1305,7 +1379,6 @@ nav[aria-label="breadcrumb"] {
 }
 
 .day-detail-header h1 {
-  font-size: var(--h1);
   margin-bottom: var(--space-xs);
   text-transform: capitalize;
 }
@@ -1384,7 +1457,6 @@ nav[aria-label="breadcrumb"] {
 }
 
 .meal-detail-header h1 {
-  font-size: var(--h1);
   margin: 0;
   color: var(--accent);
   text-transform: capitalize;
@@ -1521,12 +1593,6 @@ nav[aria-label="breadcrumb"] {
   border-color: var(--ui-border);
 }
 
-.btn-icon-danger:hover {
-  background-color: #fee2e2;
-  color: #ef4444;
-  border-color: #fca5a5;
-}
-
 .aliment-stats-row {
   display: flex;
   align-items: center;
@@ -1625,6 +1691,28 @@ nav[aria-label="breadcrumb"] {
   color: var(--accent);
   border-bottom: 2px solid var(--bg-highlight);
   padding-bottom: 8px;
+}
+
+/* --- ESTILOS PARA ALIMENT CATALOG SELECTOR --- */
+.selector-wrapper {
+  margin-bottom: 1rem;
+}
+
+.selector-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.select-full {
+  width: 100%;
+}
+
+.btn-submit-block {
+  margin-top: 1rem;
+  width: 100%;
 }
 
 /* =========================================
@@ -1929,5 +2017,314 @@ nav[aria-label="breadcrumb"] {
     bottom: -20px;
     width: max-content;
     animation: none; /* Desactivar flotación compleja en móvil */
+  }
+}
+
+/* =========================================
+   20. FOOTER (CORREGIDO)
+   ========================================= */
+.footer-container {
+  background-color: var(--bg-main);
+  border-top: 1px solid var(--ui-border);
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  /* El padding ahora va aquí dentro, para contener el texto */
+  padding: var(--space-lg) var(--space-md);
+
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+/* --- Estilos de Columnas (Igual que antes) --- */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-xs);
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.footer-tagline {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 350px; /* Un poco más ancho */
+  margin: 0;
+}
+
+/* Selector específico para el link dentro del texto */
+.footer-tagline a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.footer-links,
+.footer-socials {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-links h4,
+.footer-socials h4 {
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: var(--space-md);
+}
+
+.footer-links ul,
+.footer-socials ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a,
+.footer-socials a {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.footer-links a:hover,
+.footer-socials a:hover {
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+/* --- Footer Bottom (CAMBIOS CLAVE) --- */
+.footer-bottom {
+  /* CAMBIO 3: Ancho 100% real para que el borde toque los extremos */
+  width: 100%;
+  border-top: 1px solid rgba(190, 168, 167, 0.3);
+  background-color: rgba(
+    119,
+    81,
+    68,
+    0.03
+  ); /* Un fondo sutil para diferenciarlo */
+}
+
+/* Nuevo contenedor interno para centrar el texto dentro de la franja full-width */
+.footer-bottom-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-md); /* Padding vertical y horizontal */
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.tech-stack-badge {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--ui-border);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-xl);
+  }
+
+  .footer-brand,
+  .footer-links,
+  .footer-socials {
+    align-items: center;
+  }
+
+  .footer-tagline {
+    max-width: 100%;
+  }
+
+  .footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* =========================================
+   21. NOT FOUND PAGE (Refactorizado)
+   ========================================= */
+
+/* Contenedor específico que extiende .page-container */
+.not-found-page {
+  /* Asegura que ocupe el alto disponible menos header/footer */
+  min-height: 80vh;
+  justify-content: center; /* Centrado vertical gracias a flex column de page-container */
+  position: relative;
+  overflow: hidden; /* Importante para cortar los blobs */
+}
+
+/* --- BLOBS DECORATIVOS (Modificadores) --- */
+/* Reutilizamos la animación .decorative-blob existente, solo cambiamos posición/tamaño */
+.blob-corner-top {
+  top: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  background-color: var(--bg-highlight);
+  animation-delay: 0s;
+}
+
+.blob-corner-bottom {
+  bottom: -50px;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  background-color: #eaddcf; /* Mismo color tierra suave usado en Home */
+  animation-delay: -2s;
+}
+
+/* --- CONTENIDO CENTRAL --- */
+.not-found-content {
+  position: relative;
+  z-index: 2; /* Por encima de los blobs */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.error-code-wrapper {
+  position: relative;
+  margin-bottom: -40px; /* Superposición intencional con la tarjeta */
+  z-index: 0;
+}
+
+.error-code {
+  font-size: clamp(6rem, 15vw, 10rem);
+  font-weight: 900;
+  color: var(--bg-highlight); /* Color sutil para no agredir */
+  opacity: 0.8;
+  line-height: 0.8;
+  margin: 0;
+  user-select: none;
+}
+
+/* --- TARJETA PRINCIPAL --- */
+.error-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px); /* Efecto moderno "glassmorphism" */
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-md);
+  box-shadow: var(--shadow-soft);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  z-index: 1;
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+.error-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Imagen con estilo Polaroid */
+.error-image-frame {
+  background-color: var(--bg-surface);
+  padding: var(--space-xs);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.error-card:hover .error-image-frame {
+  transform: rotate(0deg) scale(1.02);
+}
+
+.error-image {
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius-md) - 4px);
+  display: block;
+}
+
+/* --- TEXTOS --- */
+.error-title {
+  color: var(--accent);
+  margin-bottom: var(--space-xs);
+  font-size: 1.8rem;
+}
+
+.error-message {
+  color: var(--text-muted);
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  max-width: 40ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- ACCIONES --- */
+.error-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Ajuste móvil */
+@media (max-width: 480px) {
+  .error-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .error-actions .btn {
+    width: 100%;
+  }
+
+  .error-code {
+    font-size: 5rem;
   }
 }

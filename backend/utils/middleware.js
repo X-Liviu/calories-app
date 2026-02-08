@@ -1,6 +1,73 @@
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../utils/config");
+const rateLimit = require("express-rate-limit");
+const { RateLimiterMongo } = require("rate-limiter-flexible");
+
+const mongoose = require("mongoose");
 const User = require("../models/User");
+
+// --- RATE LIMITERS ---
+
+// 1. IP Limiter (Memory) - Capa 1: Infraestructura
+const ipLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per `window`
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res, next) => {
+    // En lugar de responder directamente, pasamos el error al manejador central
+    const error = new Error(
+      "Too many requests from this IP, please try again later",
+    );
+    error.name = "RateLimitError";
+    next(error);
+  },
+});
+
+// 2. Email Limiter (MongoDB) - Capa 2: Lógica de Negocio
+// Singleton para mantener la instancia del limitador
+let mongoLimiter = null;
+
+const getMongoLimiter = () => {
+  // Inicializamos solo si la conexión a Mongo está lista
+  if (!mongoLimiter && mongoose.connection.readyState === 1) {
+    mongoLimiter = new RateLimiterMongo({
+      storeClient: mongoose.connection,
+      points: 5, // 5 attempts
+      duration: 60 * 60, // Per 1 hour
+      blockDuration: 60 * 15, // Block for 15 minutes if consumed
+      keyPrefix: "login_fail_email", // Collection name prefix in MongoDB
+    });
+  }
+  return mongoLimiter;
+};
+
+const emailLimiter = async (req, res, next) => {
+  const { email } = req.body;
+
+  // Si no hay email, pasamos (la validación posterior de Joi se encargará)
+  if (!email) return next();
+
+  const limiter = getMongoLimiter();
+
+  // Si la BD no está lista, fallamos en modo abierto (permitir tráfico)
+  if (!limiter) {
+    console.warn("RateLimiterMongo not initialized yet");
+    return next();
+  }
+
+  try {
+    // Consumimos 1 punto por intento
+    await limiter.consume(email);
+    next();
+  } catch {
+    const error = new Error(
+      "Too many failed attempts for this email. Please try again later.",
+    );
+    error.name = "RateLimitError";
+    next(error);
+  }
+};
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
@@ -41,13 +108,12 @@ const tokenExtractor = async (req, res, next) => {
 
     next();
   } catch (err) {
-    next(err); //o return next(err) ¿?¿?
+    next(err);
   }
 };
 
 const ERROR_HANDLERS = {
   CastError: (res, error) => {
-    // Mongoose nos dice qué campo falló en error.path
     return res
       .status(400)
       .json({ error: `Malformatted ID in field: ${error.path}` });
@@ -82,6 +148,9 @@ const ERROR_HANDLERS = {
 
   NotFoundError: (res, error) => {
     return res.status(404).json({ error: error.message });
+  },
+  RateLimitError: (res, error) => {
+    return res.status(429).json({ error: error.message });
   },
 
   MongoServerError: (res, error) => {
@@ -132,4 +201,6 @@ module.exports = {
   tokenExtractor,
   errorHandler,
   unknownEndpoint,
+  ipLimiter,
+  emailLimiter,
 };

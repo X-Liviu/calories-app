@@ -1,16 +1,13 @@
-// scripts/seed.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { MONGODB_URI } = require("../utils/config");
 
-// Importar modelos
 const User = require("../models/User");
 const Week = require("../models/Week");
 const Day = require("../models/Day");
 const Meal = require("../models/Meal");
 const MealAliment = require("../models/MealAliment");
 const UserAliment = require("../models/UserAliment");
-const LoginAttempt = require("../models/LoginAttempt");
 
 mongoose.set("strictQuery", false);
 
@@ -23,7 +20,6 @@ const cleanData = async () => {
     Meal.deleteMany({}),
     MealAliment.deleteMany({}),
     UserAliment.deleteMany({}),
-    LoginAttempt.deleteMany({}),
   ]);
   console.log("✨ Base de datos limpia.");
 };
@@ -92,7 +88,6 @@ const seedDatabase = async () => {
       Meal.deleteMany({}),
       MealAliment.deleteMany({}),
       UserAliment.deleteMany({}),
-      LoginAttempt.deleteMany({}),
     ]);
 
     // 3. Crear Usuario
@@ -440,7 +435,6 @@ const seedDatabase = async () => {
           name: dayData.name,
         });
 
-        // ERROR CORREGIDO AQUI:
         for (const mealData of dayData.meals) {
           const meal = await Meal.create({
             user: user._id,
@@ -451,7 +445,6 @@ const seedDatabase = async () => {
 
           const foodsToInsert = mealData.foods || [];
           if (foodsToInsert.length > 0) {
-            // Insertamos alimentos en paralelo para este plato
             const mealAlimentPromises = foodsToInsert.map((foodInfo) => {
               if (!foodInfo.item) return null;
               const alimentDoc = pantryMap.get(foodInfo.item);

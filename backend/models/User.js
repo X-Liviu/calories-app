@@ -25,13 +25,6 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  loginAttempts: {
-    type: Number,
-    default: 0,
-  },
-  lockUntil: {
-    type: Date,
-  },
 });
 
 //Esto no lo uso ya (08-11-2025)

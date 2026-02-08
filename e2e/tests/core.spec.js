@@ -21,20 +21,27 @@ test.describe("Core Loop Completo", () => {
 
     // Registro rápido
     await page.getByRole("link", { name: "Sign Up" }).click();
+
+    // Abrir Toggable
     await page.getByRole("button", { name: "Sign Up" }).click();
 
+    // Rellenar formulario
     await page.getByPlaceholder("Name", { exact: true }).fill(user.name);
     await page.getByPlaceholder("Username").fill(user.username);
     await page.getByPlaceholder("E-Mail").fill(user.email);
+
+    // Contraseñas
     await page
       .getByPlaceholder("Password", { exact: true })
       .fill(user.password);
     await page.getByPlaceholder("Repeat Password").fill(user.password);
 
+    // Confirmar
     await page.getByRole("button", { name: "Confirm" }).click();
-    await expect(
-      page.getByText("Search your number of the week"),
-    ).toBeVisible();
+
+    // VERIFICACIÓN DEL SETUP CORREGIDA:
+    // Esperamos a ver el input de búsqueda del Dashboard para confirmar login exitoso.
+    await expect(page.getByPlaceholder("Search week number...")).toBeVisible();
   });
 
   test("Flujo: Catálogo -> Semana -> Comida -> Añadir Alimentos -> Verificar Calorías", async ({
@@ -43,107 +50,143 @@ test.describe("Core Loop Completo", () => {
     // ---------------------------------------------------------
     // PASO 1: CREAR ALIMENTO EN EL CATÁLOGO
     // ---------------------------------------------------------
+    // Navegación corregida (Link en Menu.jsx es "Catalog")
     await page.getByRole("link", { name: "Catalog" }).click();
 
     // Rellenamos el form de MyAlimentForm.jsx
-    // Usamos los placeholders definidos en tu objeto 'labels'
-    await page.getByPlaceholder("Name").fill("Arroz Blanco");
-    await page.getByPlaceholder("Kcal / 100g").fill("130"); // 130 kcal por 100g
+    // CORRECCIÓN: Usamos getByLabel porque los placeholders numéricos son todos "0" (ambiguos).
+    // Las labels están definidas en el objeto 'labels' de tu componente.
+    await page.getByLabel("Product Name").fill("Arroz Blanco");
+    await page.getByLabel("Kcal / 100g").fill("130"); // 130 kcal por 100g
 
-    // Creamos
-    await page.getByRole("button", { name: "Create" }).click();
+    await page.getByRole("button", { name: "Add to Catalog" }).click();
 
-    // Verificamos que aparece en la tabla
-    await expect(page.getByText("Arroz Blanco")).toBeVisible();
+    // Verificamos que aparece en la tabla (MyAlimentList -> MyAlimentItemList)
+    // Usamos una celda específica para asegurar que se renderizó en la tabla.
+    await expect(
+      page.getByRole("cell", { name: "Arroz Blanco" }),
+    ).toBeVisible();
 
     // ---------------------------------------------------------
     // PASO 2: CREAR ESTRUCTURA (SEMANA -> DÍA -> COMIDA)
     // ---------------------------------------------------------
     await page.getByRole("link", { name: "Search" }).click();
 
-    // Crear Semana 21
+    // 1. Crear Semana 21
     const weekNumber = "21";
-    await page.getByPlaceholder("Week (1 - 53)").fill(weekNumber);
-    await page.getByRole("button", { name: "Create" }).click();
-    await page.getByRole("button", { name: `Week ${weekNumber}` }).click();
+    // Nuevo Placeholder exacto según WeekForm.jsx
+    await page.getByPlaceholder("New Week (1 - 53)").fill(weekNumber);
+    // Nuevo texto del botón: "Add"
+    await page.getByRole("button", { name: "Add", exact: true }).click();
 
-    // Crear Día "Martes"
-    await page.getByPlaceholder("Name of the day").fill("Martes");
-    await page.getByRole("button", { name: "Create Day" }).click();
-    await page.getByRole("button", { name: "Martes" }).click(); // Entrar al día (navegación implícita en DayItemList)
+    // ¡NUEVO! Confirmar en el Modal (WeekForm usa AddConfirmationModal)
+    await page.getByRole("button", { name: "Yes, Create" }).click();
 
-    // Crear Comida "Cena"
-    // MealForm.jsx placeholder: "Name of the meal"
-    await page.getByPlaceholder("Name of the meal").fill("Cena");
-    await page.getByRole("button", { name: "Create Meal" }).click();
+    // Navegar entrando en la semana (Click en la tarjeta creada)
+    await page.getByText(`Week ${weekNumber}`).click();
 
-    // Verificamos que aparece la comida (0 kcal)
-    await expect(page.getByRole("heading", { name: "Cena" })).toBeVisible();
+    // 2. Crear Día "Martes"
+    // Nuevo Placeholder exacto según DayForm.jsx
+    await page.getByPlaceholder("Name of the day (e.g. Monday)").fill("Martes");
+    await page.getByRole("button", { name: "Add Day" }).click();
 
-    // Entrar en la comida (click en el nombre/link)
-    // En MealList.jsx el botón envuelve al componente MealItemList
-    await page.getByRole("button", { name: "Cena" }).click();
+    // ¡NUEVO! Confirmar en el Modal (DayForm usa AddConfirmationModal)
+    await page.getByRole("button", { name: "Yes, Create" }).click();
+
+    // Navegar entrando en el día
+    await page.getByText("Martes").click();
+
+    // 3. Crear Comida "Cena"
+    // Nuevo Placeholder exacto según MealForm.jsx
+    await page
+      .getByPlaceholder("Name of the meal (e.g. Breakfast)")
+      .fill("Cena");
+
+    // Nuevo texto del botón: "Add Meal"
+    // Nota: MealForm NO tiene modal, así que no esperamos confirmación extra.
+    await page.getByRole("button", { name: "Add Meal" }).click();
+
+    // Verificamos que aparece la comida (0 kcal al inicio)
+    // MealItemList.jsx muestra: "Cena" y debajo "0 kcal"
+    await expect(page.getByText("Cena")).toBeVisible();
+
+    // Entrar en la comida (Navegación para el siguiente paso)
+    await page.getByText("Cena").click();
 
     // ---------------------------------------------------------
     // PASO 3: AÑADIR ALIMENTOS
     // ---------------------------------------------------------
 
     // A) Añadir desde Catálogo (AlimentCatalogSelectorForm.jsx)
-    // Seleccionamos "Arroz Blanco" del <select>
-    // Nota: Playwright busca labels en las opciones
-    await page.locator("select").selectOption({ label: "Arroz Blanco" });
-
-    // Ponemos 200 gramos (Placeholder: "Grams of the aliment eaten")
-    // Cálculo esperado: (130 kcal / 100) * 200 = 260 kcal
-    await page.getByPlaceholder("Grams of the aliment eaten").fill("200");
+    // Seleccionamos "Arroz Blanco" del <select> usando su label asociada "Select Item:"
     await page
-      .getByRole("button", { name: "Add Aliment From Catalog" })
-      .click();
+      .getByLabel("Select Item:")
+      .selectOption({ label: "Arroz Blanco" });
+
+    // Ponemos 200 gramos (Placeholder exacto: "Grams eaten (e.g. 100)")
+    // Cálculo esperado: (130 kcal / 100) * 200 = 260 kcal
+    await page.getByPlaceholder("Grams eaten (e.g. 100)").fill("200");
+
+    // Botón exacto: "Add from Catalog"
+    await page.getByRole("button", { name: "Add from Catalog" }).click();
+
+    // Verificación rápida opcional: Que el alimento aparezca en la lista
+    // AlimentItemList.jsx muestra el nombre en div.aliment-name
+    await expect(
+      page.locator(".aliment-name").filter({ hasText: "Arroz Blanco" }),
+    ).toBeVisible();
 
     // B) Añadir Custom (AlimentForm.jsx)
-    // Placeholders: "name", "total kcal" (minúsculas según tu código)
-    await page.getByPlaceholder("name").fill("Coca Cola");
-    await page.getByPlaceholder("total kcal").fill("140"); // Lata
+    // Placeholders exactos según el código de AlimentForm.jsx
+    await page.getByPlaceholder("Aliment Name").fill("Coca Cola");
+    await page.getByPlaceholder("Grams (Optional)").fill("330"); // Lata estándar
+    await page.getByPlaceholder("Total Kcal").fill("140"); // 140 kcal totales
+
+    // Botón exacto: "Add Custom Aliment"
     await page.getByRole("button", { name: "Add Custom Aliment" }).click();
+
+    // Verificación rápida opcional
+    await expect(
+      page.locator(".aliment-name").filter({ hasText: "Coca Cola" }),
+    ).toBeVisible();
 
     // ---------------------------------------------------------
     // PASO 4: VERIFICACIÓN FINAL (MATEMÁTICAS)
     // ---------------------------------------------------------
     // Total esperado: 260 (Arroz) + 140 (Coca Cola) = 400 kcal
 
-    // 1. Verificar en la cabecera de la comida actual
-    // MealItem.jsx pinta: <h1>Cena ...</h1> pero MealItemList pinta <h2>Cena (400 kcal)</h2>
-    // Vamos a buscar el texto exacto de las calorías o un patrón.
-    // Como estamos DENTRO de la comida, MealItem.jsx NO usa MealItemList, sino que pinta los hijos.
-    // Pero espera, MealItem.jsx NO muestra el total de calorías en su cabecera H1,
-    // ¡LO MUESTRA MealItemList cuando estás en la lista anterior!
+    // 1. Verificar Meal (Cena) en la lista del Día
+    // Navegamos atrás usando el Breadcrumb
+    await page.getByRole("link", { name: "Martes" }).click();
 
-    // Así que volvemos atrás usando el Breadcrumb o el botón de atrás del navegador.
-    // Usaremos el Breadcrumb que probamos antes: "Week 21" > "Martes"
-    await page.getByText("Martes").click(); // Click en el breadcrumb (o link si existe)
+    // Buscacamos la tarjeta (article) que contiene "Cena"
+    const mealCard = page.locator("article").filter({ hasText: "Cena" });
 
-    // Ahora estamos en la vista del DÍA.
-    // Aquí sí se usa MealItemList.jsx que pinta: <h2>Cena (400 kcal)</h2>
-    await expect(
-      page.getByRole("heading", { name: "Cena (400 kcal)" }),
-    ).toBeVisible();
+    // Verificamos que DENTRO de esa tarjeta, el contador de calorías marque 400
+    await expect(mealCard.locator(".meal-card-calories")).toHaveText(
+      "400 kcal",
+    );
 
-    // Y también DayItemList.jsx pinta el total del día: <h3>Martes (400 kcal)</h3>
-    // Como estamos DENTRO del día, el título es <h1>Martes</h1> (DayItem.jsx),
-    // PERO DayItem.jsx no calcula el total en su cabecera (solo pinta el nombre).
+    // 2. Verificar Day (Martes) en la lista de la Semana
+    // Navegamos atrás al nivel de Semana
+    await page.getByRole("link", { name: `Week ${weekNumber}` }).click();
 
-    // Volvamos a la semana para ver el resumen del día en la lista
-    await page.getByText(`Week ${weekNumber}`).click(); // Breadcrumb atrás
+    // Buscamos la tarjeta del día "Martes"
+    const dayCard = page.locator("article").filter({ hasText: "Martes" });
 
-    // Ahora estamos en WeekItem.jsx, que usa DayList -> DayItemList
-    // Aquí sí: <h3>Martes (400 kcal)</h3>
-    await expect(page.getByText("Martes (400 kcal)")).toBeVisible();
+    // Verificamos el total del día
+    await expect(dayCard.locator(".day-card-calories")).toHaveText("400 kcal");
 
-    // Volvamos al dashboard para ver el resumen de la semana
+    // 3. Verificar Week (21) en el Dashboard principal
+    // Navegamos al inicio (Search)
     await page.getByRole("link", { name: "Search" }).click();
 
-    // WeekList -> WeekItemList
-    // <h2>Week 21 (400 kcal)</h2>
-    await expect(page.getByText(`Week ${weekNumber} (400 kcal)`)).toBeVisible();
+    // Buscamos la tarjeta de la semana 21
+    const weekCard = page
+      .locator("article")
+      .filter({ hasText: `Week ${weekNumber}` });
+
+    // Verificamos el total de la semana (clase específica .week-calories)
+    await expect(weekCard.locator(".week-calories")).toHaveText("400 kcal");
   });
 });

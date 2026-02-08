@@ -92,7 +92,7 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
           )}
 
           <button
-            className="btn-icon-action btn-icon-danger"
+            className="btn-delete-icon btn-delete-pos"
             onClick={() =>
               del({ weekId, dayId, mealId, mealAlimentId: aliment.id })
             }
@@ -118,12 +118,7 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
                 placeholder="New grams"
                 type="number"
               />
-              <button
-                className="btn btn-primary"
-                style={{ padding: "6px 10px" }}
-              >
-                ✅
-              </button>
+              <button className="btn btn-primary btn-compact">✅</button>
             </form>
           </Toggable>
         </div>

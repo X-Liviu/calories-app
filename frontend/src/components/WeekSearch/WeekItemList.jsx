@@ -15,7 +15,6 @@ const WeekItemList = ({ week }) => {
         <h3>Week {week.numberWeek}</h3>
       </div>
 
-      {/* CLASE CSS en lugar de style inline */}
       <div className="week-calories-wrapper">
         <span className="week-calories">{totalCalories} kcal</span>
       </div>

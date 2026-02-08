@@ -11,12 +11,15 @@ const randomUser = () => {
 };
 
 test.describe("Gestión: Catálogo y Persistencia", () => {
+  // --- SETUP: REGISTRO NUEVO (Igual que en core.spec.js) ---
   test.beforeEach(async ({ page }) => {
-    // Setup rápido: Crear usuario
     const user = randomUser();
     await page.goto("/");
+
+    // Abrir modal y registrarse
     await page.getByRole("link", { name: "Sign Up" }).click();
     await page.getByRole("button", { name: "Sign Up" }).click();
+
     await page.getByPlaceholder("Name", { exact: true }).fill(user.name);
     await page.getByPlaceholder("Username").fill(user.username);
     await page.getByPlaceholder("E-Mail").fill(user.email);
@@ -24,58 +27,71 @@ test.describe("Gestión: Catálogo y Persistencia", () => {
       .getByPlaceholder("Password", { exact: true })
       .fill(user.password);
     await page.getByPlaceholder("Repeat Password").fill(user.password);
+
     await page.getByRole("button", { name: "Confirm" }).click();
-    await expect(
-      page.getByText("Search your number of the week"),
-    ).toBeVisible();
+
+    // Verificación de login exitoso (Input de búsqueda)
+    await expect(page.getByPlaceholder("Search week number...")).toBeVisible();
   });
 
   test("Catálogo: Debe permitir editar celdas (Inline Edit) y borrar alimentos", async ({
     page,
   }) => {
-    // 1. Ir al Catálogo y crear un alimento
+    // 1. Ir al Catálogo
+    // Corrección: nav.navbar en lugar de nav.menu
     await page
-      .locator("nav.menu")
+      .locator("nav.navbar")
       .getByRole("link", { name: "Catalog" })
       .click();
 
+    // 2. Crear un alimento
     const foodName = "Avena";
-    await page.getByPlaceholder("Name").fill(foodName);
-    await page.getByPlaceholder("Kcal / 100g").fill("350");
-    await page.getByRole("button", { name: "Create" }).click();
+    // Corrección: Usamos getByLabel (best practice) o los nuevos placeholders si no hubiera label
+    await page.getByLabel("Product Name").fill(foodName);
+    await page.getByLabel("Kcal / 100g").fill("350");
 
-    // Verificamos que existe en la tabla
+    // Corrección: Botón actualizado "Add to Catalog"
+    await page.getByRole("button", { name: "Add to Catalog" }).click();
+
+    // Verificamos que existe en la tabla (buscando la celda con el nombre)
     await expect(page.getByRole("cell", { name: foodName })).toBeVisible();
 
-    // 2. PRUEBA DE EDICIÓN EN LÍNEA
-    // CORRECCIÓN 1: Usamos locator en lugar de getByDisplayValue
-    const kcalInput = page.locator('input[value="350"]');
-    await expect(kcalInput).toBeVisible();
+    // 3. PRUEBA DE EDICIÓN EN LÍNEA
+    // ESTRATEGIA ROBUSTA:
+    // 1. Buscamos la fila por el nombre del alimento (estable)
+    const row = page.getByRole("row").filter({ hasText: foodName });
 
-    // Click para enfocar (activa la edición)
+    // 2. Buscamos el primer input dentro de esa fila (que corresponde a Kcal)
+    // Esto asegura que el selector siga funcionando aunque cambie el valor numérico.
+    const kcalInput = row.locator("input").first();
+
+    // Verificamos estado inicial
+    await expect(kcalInput).toHaveValue("350");
+
+    // Click para enfocar (importante para tu lógica de readOnly/onFocus en React)
     await kcalInput.click();
 
-    // Escribimos el nuevo valor
+    // Editamos
     await kcalInput.fill("400");
 
-    // Disparamos el guardado pulsando ENTER
+    // Ahora .press funciona porque 'kcalInput' sigue apuntando al mismo elemento DOM
     await kcalInput.press("Enter");
 
-    // 3. VERIFICAR PERSISTENCIA (Reload)
+    // 4. VERIFICAR PERSISTENCIA (Reload)
     await page.reload();
 
-    // CORRECCIÓN 2: Aquí también cambiamos los expect que fallaban
-    // Antes: await expect(page.getByDisplayValue("400")).toBeVisible();
-    await expect(page.locator('input[value="400"]')).toBeVisible();
+    // Verificamos persistencia buscando de nuevo la fila y el valor esperado
+    const rowAfterReload = page.getByRole("row").filter({ hasText: foodName });
+    await expect(rowAfterReload.locator("input").first()).toHaveValue("400");
 
-    // Antes: await expect(page.getByDisplayValue("350")).not.toBeVisible();
-    await expect(page.locator('input[value="350"]')).not.toBeVisible();
+    // 5. BORRADO DE ALIMENTO
+    // Estrategia: Buscar la fila que contiene el nombre del alimento
+    const row2 = page.getByRole("row").filter({ hasText: foodName });
 
-    // 4. BORRADO DE ALIMENTO
-    const row = page.getByRole("row").filter({ hasText: foodName });
-    await row.getByRole("button", { name: "❌" }).click();
+    // Dentro de esa fila, buscamos el botón de borrar por su 'title' (accesibilidad)
+    // En MyAlimentItemList.jsx: title="Delete Item"
+    await row2.getByTitle("Delete Item").click();
 
-    // Verificamos que desaparece
     await expect(page.getByText(foodName)).not.toBeVisible();
   });
 
@@ -83,26 +99,33 @@ test.describe("Gestión: Catálogo y Persistencia", () => {
     page,
   }) => {
     // 1. Crear semana 50
-    await page.getByPlaceholder("Week (1 - 53)").fill("50");
-    await page.getByRole("button", { name: "Create" }).click();
+    // Corrección: Placeholder actualizado
+    await page.getByPlaceholder("New Week (1 - 53)").fill("50");
+    // Corrección: Botón "Add"
+    await page.getByRole("button", { name: "Add", exact: true }).click();
 
-    const weekBtn = page.getByRole("button", { name: "Week 50" });
-    await expect(weekBtn).toBeVisible();
+    // Corrección: CONFIRMAR MODAL DE CREACIÓN
+    await page.getByRole("button", { name: "Yes, Create" }).click();
+
+    // Verificamos visualmente (WeekList usa cards con h3)
+    const weekCard = page.locator("article").filter({ hasText: "Week 50" });
+    await expect(weekCard).toBeVisible();
 
     // 2. Borrar semana
-    const row = page.getByRole("row").filter({ hasText: "Week 50" });
-    await row.getByRole("button", { name: "❌" }).click();
+    // Buscamos el botón "Delete week" (title) DENTRO de la tarjeta de la semana 50
+    await weekCard.getByTitle("Delete week").click();
 
-    // Confirmar en modal
-    await page.getByRole("button", { name: "Yes, I confirm." }).click();
+    // 3. Confirmar en MODAL DE BORRADO
+    // El texto del botón en DeleteConfirmationModal es "Yes, Delete"
+    await page.getByRole("button", { name: "Yes, Delete" }).click();
 
-    // 3. Verificar desaparición visual
-    await expect(weekBtn).not.toBeVisible();
+    // 4. Verificar desaparición visual
+    await expect(weekCard).not.toBeVisible();
 
-    // 4. Verificar persistencia (que no vuelva al recargar)
+    // 5. Verificar persistencia (que no vuelva al recargar)
     await page.reload();
     await expect(
-      page.getByRole("button", { name: "Week 50" }),
+      page.locator("article").filter({ hasText: "Week 50" }),
     ).not.toBeVisible();
   });
 });
