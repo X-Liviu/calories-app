@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-
 import { validateSignUpForm } from "../utils/validations";
-
 import Toggable from "./Toggable";
 import ErrorMessage from "./ErrorMessage";
 
@@ -12,29 +10,23 @@ const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeated, setPasswordRepeated] = useState("");
-  const [errors, setErrors] = useState({});
-  const [passwordRules, setPasswordRules] = useState([]);
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const { signup } = useAuth();
 
-  useEffect(() => {
-    const { isValid, errors, passwordRules } = validateSignUpForm({
-      name,
-      username,
-      email,
-      password,
-      passwordRepeated,
-    });
-
-    setErrors(errors);
-    setPasswordRules(passwordRules);
-    setIsFormValid(isValid);
-  }, [name, username, email, password, passwordRepeated]);
+  const { isValid, errors, passwordRules } = validateSignUpForm({
+    name,
+    username,
+    email,
+    password,
+    passwordRepeated,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    setSubmitted(true);
+
+    if (!isValid) return;
 
     await signup({ name, username, email, password });
 
@@ -43,8 +35,7 @@ const SignUpForm = () => {
     setEmail("");
     setPassword("");
     setPasswordRepeated("");
-    setErrors({});
-    setPasswordRules([]);
+    setSubmitted(false);
   };
 
   return (
@@ -58,7 +49,7 @@ const SignUpForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <ErrorMessage message={errors.name} />
+          <ErrorMessage message={submitted || name ? errors.name : null} />
         </div>
 
         <div>
@@ -69,7 +60,9 @@ const SignUpForm = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <ErrorMessage message={errors.username} />
+          <ErrorMessage
+            message={submitted || username ? errors.username : null}
+          />
         </div>
 
         <div>
@@ -80,7 +73,7 @@ const SignUpForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <ErrorMessage message={errors.email} />
+          <ErrorMessage message={submitted || email ? errors.email : null} />
         </div>
 
         <div>
@@ -101,10 +94,13 @@ const SignUpForm = () => {
             value={passwordRepeated}
             onChange={(e) => setPasswordRepeated(e.target.value)}
           />
-          <ErrorMessage message={errors.passwordRepeated} />
+          <ErrorMessage
+            message={
+              submitted || passwordRepeated ? errors.passwordRepeated : null
+            }
+          />
         </div>
 
-        {/* CLASE CSS gestiona la visibilidad y el estilo de lista */}
         <ul className={`password-requirements ${password ? "show" : ""}`}>
           {passwordRules.map((rule) => (
             <li
@@ -116,11 +112,9 @@ const SignUpForm = () => {
           ))}
         </ul>
 
-        {/* SIN STYLE INLINE: El gap del form-container gestiona el espacio */}
         <button
           type="submit"
-          disabled={!isFormValid}
-          className={`btn btn-primary ${!isFormValid ? "btn-disabled" : ""}`}
+          className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
         >
           Confirm
         </button>

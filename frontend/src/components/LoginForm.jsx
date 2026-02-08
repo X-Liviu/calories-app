@@ -1,31 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-
 import { validateLoginForm } from "../utils/validations";
-
 import Toggable from "./Toggable";
 import ErrorMessage from "./ErrorMessage";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
   const { login } = useAuth();
 
-  useEffect(() => {
-    if (email || password) {
-      const { errors: validationErrors } = validateLoginForm({
-        email,
-        password,
-      });
-      setErrors(validationErrors);
-    }
-  }, [email, password]);
+  // --- ESTADO DERIVADO ---
+  // Se recalcula automáticamente cada vez que escribes una letra.
+  // No hace falta useEffect ni useState para 'errors'.
+  const { errors, isValid } = validateLoginForm({ email, password });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { isValid, errors } = validateLoginForm({ email, password });
-    setErrors(errors);
+    setSubmitted(true);
 
     if (!isValid) return;
 
@@ -33,10 +26,8 @@ const LoginForm = () => {
 
     setEmail("");
     setPassword("");
-    setErrors({});
+    setSubmitted(false);
   };
-
-  const { isValid } = validateLoginForm({ email, password });
 
   return (
     <Toggable buttonLabel="Log In">
@@ -49,7 +40,7 @@ const LoginForm = () => {
             value={email}
             onChange={({ target }) => setEmail(target.value)}
           />
-          <ErrorMessage message={errors.email} />
+          <ErrorMessage message={submitted || email ? errors.email : null} />
         </div>
 
         <div className="form-group">
@@ -64,7 +55,6 @@ const LoginForm = () => {
 
         <button
           type="submit"
-          disabled={!isValid}
           className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
         >
           Confirm

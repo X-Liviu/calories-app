@@ -5,10 +5,8 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import SignUpForm from "../../src/components/SignUpForm";
 import useAuth from "../../src/hooks/useAuth";
 
-// Importamos el fixture
 import { mockUser } from "../textFixtures";
 
-// 1. Mock del hook
 vi.mock("../../src/hooks/useAuth", () => ({
   default: vi.fn(),
 }));
@@ -23,7 +21,6 @@ describe("<SignUpForm /> Integration", () => {
     });
   });
 
-  // Helper para abrir el formulario
   const openForm = async (user) => {
     const showButton = screen.getByRole("button", { name: /Sign Up/i });
     await user.click(showButton);
@@ -42,7 +39,7 @@ describe("<SignUpForm /> Integration", () => {
 
     const submitButton = screen.getByRole("button", { name: /confirm/i });
     expect(submitButton).toBeInTheDocument();
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveClass("btn-disabled");
   });
 
   it("permite rellenar el formulario y llamar a signup con datos válidos (Happy Path)", async () => {
@@ -57,26 +54,20 @@ describe("<SignUpForm /> Integration", () => {
     const repeatInput = screen.getByPlaceholderText("Repeat Password");
     const submitButton = screen.getByRole("button", { name: /confirm/i });
 
-    // Contraseña válida para pasar las reglas del validador (Upper, Lower, Number, Symbol, min 8)
     const validPassword = "Password123!";
 
-    // Llenamos el formulario usando los datos del MOCK
     await user.type(nameInput, mockUser.name);
     await user.type(usernameInput, mockUser.username);
     await user.type(emailInput, mockUser.email);
-
-    // Escribimos la contraseña
     await user.type(passwordInput, validPassword);
-    await user.type(repeatInput, validPassword); // Coinciden
+    await user.type(repeatInput, validPassword);
 
-    // Esperamos que el botón se habilite tras la validación
     await waitFor(() => {
-      expect(submitButton).toBeEnabled();
+      expect(submitButton).not.toHaveClass("btn-disabled");
     });
 
     await user.click(submitButton);
 
-    // Verificamos que se llame con los datos correctos
     expect(mockSignup).toHaveBeenCalledTimes(1);
     expect(mockSignup).toHaveBeenCalledWith({
       name: mockUser.name,
@@ -93,34 +84,31 @@ describe("<SignUpForm /> Integration", () => {
 
     const passwordInput = screen.getByPlaceholderText("Password");
 
-    // Escribimos algo incompleto
     await user.type(passwordInput, "test");
 
-    // "At least 8 characters" debería estar visible (la lista se muestra al escribir)
     const lengthRule = screen.getByText(/At least 8 characters/i);
     expect(lengthRule).toBeVisible();
-    // Al ser inválido, debería tener clase de error (aunque en test unitario es difícil ver el color,
-    // podemos confiar en que el texto está ahí)
   });
 
-  it("muestra error si las contraseñas no coinciden", async () => {
+  it("muestra error y NO envía si las contraseñas no coinciden", async () => {
     const user = userEvent.setup();
     render(<SignUpForm />);
     await openForm(user);
 
     const passwordInput = screen.getByPlaceholderText("Password");
     const repeatInput = screen.getByPlaceholderText("Repeat Password");
+    const submitButton = screen.getByRole("button", { name: /confirm/i });
 
     await user.type(passwordInput, "Password123!");
-    await user.type(repeatInput, "Password1234!"); // Diferente
+    await user.type(repeatInput, "Password1234!");
 
-    // Debe aparecer el mensaje de error
     await waitFor(() => {
       expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
     });
 
-    // El botón debe seguir deshabilitado
-    const submitButton = screen.getByRole("button", { name: /confirm/i });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveClass("btn-disabled");
+
+    await user.click(submitButton);
+    expect(mockSignup).not.toHaveBeenCalled();
   });
 });
