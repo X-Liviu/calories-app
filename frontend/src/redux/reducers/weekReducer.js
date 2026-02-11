@@ -4,7 +4,7 @@ import dayService from "../../services/days";
 import mealService from "../../services/meals";
 import alimentService from "../../services/aliments";
 
-import { setError } from "./globalErrorReducer";
+import { displayNotification } from "./uiReducer";
 
 const weekSlice = createSlice({
   name: "weeks",
@@ -36,10 +36,6 @@ const weekSlice = createSlice({
     setLoading(state, action) {
       state.loading = action.payload;
     },
-    setErrorWeeks(state, action) {
-      state.error = action.payload;
-      state.loading = false;
-    },
   },
 });
 
@@ -60,9 +56,8 @@ export const saveGlobalWeeks = (year) => {
       const weeks = await weekService.getAll(year);
       dispatch(setWeeks(weeks));
     } catch (error) {
-      console.error(error);
-      dispatch(setErrorWeeks(error.message || "Error al obtener semanas"));
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
+      dispatch(setLoading(false));
     }
   };
 };
@@ -73,8 +68,7 @@ export const addWeek = (week) => {
       const newWeek = await weekService.create(week);
       dispatch(appendWeek(newWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -85,8 +79,7 @@ export const removeWeek = (week) => {
       await weekService.del(week);
       dispatch(popWeek(week));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -97,8 +90,7 @@ export const addDayInWeek = (day) => {
       const updatedWeek = await dayService.create(day);
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -120,8 +112,7 @@ export const removeDayInWeek = (day) => {
 
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -132,8 +123,7 @@ export const addMealInDay = (meal) => {
       const updatedWeek = await mealService.create(meal);
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -144,8 +134,7 @@ export const changeMealInDay = (meal) => {
       const updatedWeek = await mealService.update(meal);
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -175,8 +164,7 @@ export const removeMealInDay = (meal) => {
 
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -187,8 +175,7 @@ export const addAlimentInMeal = (aliment) => {
       const updatedWeek = await alimentService.create(aliment);
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -199,8 +186,7 @@ export const changeAlimentInMeal = (aliment) => {
       const updatedWeek = await alimentService.update(aliment);
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -239,8 +225,7 @@ export const removeAlimentInMeal = (aliment) => {
 
       dispatch(updateWeek(updatedWeek));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };

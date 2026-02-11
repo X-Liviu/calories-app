@@ -1,4 +1,4 @@
-import "./AppNuevo.css";
+import "./App.css";
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import useMyAliments from "./hooks/useMyAliments";
 
 import BreadcrumbListener from "./components/BreadcrumbListener";
 import Breadcrumb from "./components/Breadcrumb";
+import GlobalNotificationList from "./components/GlobalNotificationList/GlobalNotificationList";
 import Menu from "./components/Menu";
 import Home from "./components/Home";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
@@ -45,6 +46,7 @@ const App = () => {
       <div className="main-content">
         <Breadcrumb />
         <Menu />
+        <GlobalNotificationList />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route element={<RedirectIfAuthenticated />}>

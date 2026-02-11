@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import myAlimentService from "../../services/myAliments";
-import { setError } from "./globalErrorReducer";
+
+import { displayNotification } from "./uiReducer";
 
 const myAlimentSlice = createSlice({
   name: "myAliments",
@@ -41,8 +42,7 @@ export const saveMyAliments = () => {
       const userAliments = await myAlimentService.getAll();
       dispatch(setMyAliments(userAliments));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -53,8 +53,7 @@ export const addMyAliment = (myAliment) => {
       const newMyAliment = await myAlimentService.create(myAliment);
       dispatch(appendMyAliment(newMyAliment));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -67,8 +66,7 @@ export const changeMyAliment = (myAliment) => {
       console.log(updatedAliment);
       dispatch(updateMyAliment(updatedAliment));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };
@@ -79,8 +77,7 @@ export const removeMyAliment = (myAliment) => {
       await myAlimentService.del(myAliment);
       dispatch(popMyAliment(myAliment));
     } catch (error) {
-      console.error(error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
     }
   };
 };

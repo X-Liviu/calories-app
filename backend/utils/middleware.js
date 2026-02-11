@@ -119,23 +119,26 @@ const ERROR_HANDLERS = {
       .json({ error: `Malformatted ID in field: ${error.path}` });
   },
 
+  BusinessValidationError: (res, error) => {
+    return res.status(400).json({ error: error.messages });
+  },
+
+  // 2. MODIFICADO: Errores de Joi y Mongoose
   ValidationError: (res, error) => {
-    // 1. Errores de Joi (Tu validación de entrada)
+    // Caso Joi: Cuando usamos abortEarly: false, 'error.details' es un array
     if (error.isJoi) {
-      return res.status(400).json({ error: error.details[0].message });
+      const messages = error.details.map((detail) => detail.message);
+      // Devolvemos SIEMPRE un array en 'error' para consistencia con el frontend
+      return res.status(400).json({ error: messages });
     }
 
-    // 2. Errores de Mongoose (Validación del Schema)
-    // Mongoose agrupa los errores en un objeto 'errors'
+    // Caso Mongoose Standard
     if (error.errors) {
-      // Extraemos todos los mensajes de error de los sub-campos
       const messages = Object.values(error.errors).map((e) => e.message);
-      // Los unimos en un solo string o devolvemos el array
-      return res.status(400).json({ error: messages.join(", ") });
+      return res.status(400).json({ error: messages });
     }
 
-    // 3. Errores manuales lanzados con name: "ValidationError"
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: [error.message] });
   },
 
   AuthenticationError: (res, error) => {
@@ -174,7 +177,6 @@ const ERROR_HANDLERS = {
   },
 
   defaultError: (res, error) => {
-    // Es útil devolver el mensaje en desarrollo, pero genérico en producción
     console.error("Unknown Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   },

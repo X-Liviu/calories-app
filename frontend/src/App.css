@@ -2328,3 +2328,117 @@ nav[aria-label="breadcrumb"] {
     font-size: 5rem;
   }
 }
+
+/* =========================================
+   22. GLOBAL NOTIFICATIONS / TOASTS (STACK)
+   ========================================= */
+
+/* Contenedor invisible que apila las notificaciones */
+.toast-stack-wrapper {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Un poco más de aire entre tarjetas */
+  pointer-events: none;
+  max-width: 450px;
+  width: 100%;
+}
+
+/* La tarjeta base */
+.toast-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  pointer-events: auto; /* Reactivamos clics */
+  width: 100%;
+  min-width: 300px;
+  /* La animación se define en las clases modificadoras abajo */
+}
+
+/* --- ESTADOS DE ANIMACIÓN --- */
+
+/* Clase para cuando el toast nace */
+.toast-enter {
+  animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Clase para cuando el toast muere */
+.toast-exit {
+  animation: toastSlideOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Importante: para que no ocupe espacio al irse, podemos jugar con max-height si quisiéramos un colapso vertical, pero el slideOut es más limpio */
+}
+
+/* --- KEYFRAMES --- */
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9); /* Entra desde la derecha */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9); /* Se va hacia la derecha */
+  }
+}
+
+/* --- VARIANTES DE COLOR (Igual que antes) --- */
+.toast-card.toast-error {
+  background-color: #bc4749;
+  border-left: 6px solid #8a2c2e;
+}
+
+.toast-card.toast-success {
+  background-color: #606c38;
+  border-left: 6px solid #3d451b;
+}
+
+/* --- ELEMENTOS INTERNOS (Igual que antes) --- */
+.toast-message {
+  flex-grow: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-right: 12px;
+  padding-top: 2px;
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0.5;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.toast-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}

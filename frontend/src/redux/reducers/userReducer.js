@@ -10,7 +10,7 @@ import alimentService from "../../services/aliments";
 
 import { clearWeeks } from "./weekReducer";
 import { clearMyAliments } from "./myAlimentReducer";
-import { setError } from "./globalErrorReducer";
+import { displayNotification } from "./uiReducer";
 
 const userSlice = createSlice({
   name: "user",
@@ -57,9 +57,11 @@ export const saveGlobalUser = (credentials) => {
       dayService.setToken(user.token);
       mealService.setToken(user.token);
       alimentService.setToken(user.token);
+
+      return { success: true };
     } catch (error) {
-      console.error("Error during login:", error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
+      return { success: false };
     }
   };
 };
@@ -70,10 +72,12 @@ export const signupUser = (userInfo) => {
       await signupService.signup(userInfo);
 
       const { email, password } = userInfo;
-      await dispatch(saveGlobalUser({ email, password }));
+      const loginResult = await dispatch(saveGlobalUser({ email, password }));
+
+      return loginResult;
     } catch (error) {
-      console.error("Error during signup:", error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
+      return { success: false };
     }
   };
 };
@@ -108,9 +112,11 @@ export const updateUser = (newUserData) => {
 
       window.localStorage.setItem("token", JSON.stringify(userToSave));
       dispatch(setUser(userToSave));
+
+      return { success: true };
     } catch (error) {
-      console.error("Error updating user:", error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
+      return { success: false };
     }
   };
 };
@@ -120,9 +126,11 @@ export const deleteUser = () => {
     try {
       await signupService.del();
       dispatch(eraseGlobalUser());
+
+      return { success: true };
     } catch (error) {
-      console.error("Error during the deletion of the account:", error);
-      dispatch(setError(error));
+      dispatch(displayNotification(error));
+      return { success: false };
     }
   };
 };

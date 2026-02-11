@@ -1,28 +1,32 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
-const { tokenExtractor } = require("../utils/middleware");
-
 const User = require("../models/User");
+const { tokenExtractor } = require("../utils/middleware");
 const { createUserSchema, updateUserSchema } = require("../utils/validations");
-
-//De momento no se me ocurre por qué necesitaría obtener todos los usuarios pero lo voy a dejar de momento.
-
-/*
-router.get("/", async (req, res, next) => {
-  try {
-    const users = await User.find({});
-    res.json(users);
-  } catch (err) {
-    next(err);
-  }
-}); */
+const { BusinessValidationError } = require("../utils/appErrors");
 
 router.post("/", async (req, res, next) => {
   try {
     const { name, username, email, password } = req.body;
 
-    await createUserSchema.validateAsync(req.body);
+    await createUserSchema.validateAsync(req.body, { abortEarly: false });
+
+    const existingUsers = await User.find({
+      $or: [{ username }, { email }],
+    });
+
+    if (existingUsers.length > 0) {
+      const errorMessages = [];
+
+      const usernameExists = existingUsers.some((u) => u.username === username);
+      const emailExists = existingUsers.some((u) => u.email === email);
+
+      if (usernameExists) errorMessages.push("The username is already taken.");
+      if (emailExists) errorMessages.push("The e-mail is being used.");
+
+      throw new BusinessValidationError(errorMessages);
+    }
 
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
@@ -36,7 +40,7 @@ router.post("/", async (req, res, next) => {
     });
 
     await user.save();
-    res.status(201).json({ message: "Registration done correctly" }); //De momento lo dejo así. Igual en un futuro lo cambio. (08-11-25)
+    res.status(201).json({ message: "Register done correctly." });
   } catch (err) {
     next(err);
   }

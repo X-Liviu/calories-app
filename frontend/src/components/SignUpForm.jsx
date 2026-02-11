@@ -28,14 +28,16 @@ const SignUpForm = () => {
 
     if (!isValid) return;
 
-    await signup({ name, username, email, password });
+    const result = await signup({ name, username, email, password });
 
-    setName("");
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setPasswordRepeated("");
-    setSubmitted(false);
+    if (result && result.success) {
+      setName("");
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setPasswordRepeated("");
+      setSubmitted(false);
+    }
   };
 
   return (

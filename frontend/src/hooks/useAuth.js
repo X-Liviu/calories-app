@@ -11,11 +11,11 @@ const useAuth = () => {
   const dispatch = useDispatch();
 
   const signup = async (userInfo) => {
-    await dispatch(signupUser(userInfo)); //Pone vscode que no es necesario el await¿?¿?
+    return await dispatch(signupUser(userInfo)); //Pone vscode que no es necesario el await¿?¿?
   };
 
   const login = async (credentials) => {
-    await dispatch(saveGlobalUser(credentials)); //Pone vscode que no es necesario el await¿?¿?
+    return await dispatch(saveGlobalUser(credentials)); //Pone vscode que no es necesario el await¿?¿?
   };
 
   const logout = () => {
@@ -23,11 +23,11 @@ const useAuth = () => {
   };
 
   const editUser = async (newUserData) => {
-    await dispatch(updateUser(newUserData));
+    return await dispatch(updateUser(newUserData));
   };
 
   const deleteAcc = async () => {
-    await dispatch(deleteUser()); //Pone vscode que no es necesario el await¿?¿?
+    return await dispatch(deleteUser()); //Pone vscode que no es necesario el await¿?¿?
   };
 
   return { signup, login, logout, editUser, deleteAcc };

@@ -19,9 +19,9 @@ The business logic is built upon four fundamental pillars:
 ### 🔐 1. Authentication & User Management
 
 - **Secure Access:** Registration and Login system using JWT and Bcrypt.
+- **Security:** Protected routes that require an active session.
 - **Profile Management:** Users can modify personal data.
 - **Full Control:** Option for complete account deletion (data wipe).
-- **Security:** Protected routes that require an active session.
 
 ### 🍎 2. Personal Catalog (Food Bank)
 
@@ -39,6 +39,11 @@ The core of the application follows a strict hierarchy to organize data:
 - **Meals:** "Meal Moments" (e.g., Breakfast, Lunch) added within each day.
 - **Items:** Specific foods recorded within a meal.
 
+## 💡 Additional Functionality
+
+- Yearly Filtering: Visualize weeks organized by year.
+- Search: Quickly filter and find specific weeks.
+
 ### ⚡ 4. Flexible Logging
 
 When adding food to a meal, the system offers two distinct methods:
@@ -55,8 +60,8 @@ The project is structured as a Monorepo with a strong emphasis on testing covera
 | Scope        | Directory   | Core Stack                                      | Testing Tools                                               |
 | :----------- | :---------- | :---------------------------------------------- | :---------------------------------------------------------- |
 | **Frontend** | `/frontend` | React, Redux & Thunk, React Router, Vite, Axios | Vitest (runner), JSDOM (environment), React Testing Library |
-| **Backend**  | `/backend`  | Node.js, Express, JWT, Bcrypt                   | Jest, Supertest                                             |
-| **Database** | -           | MongoDB Atlas + Mongoose                        | -                                                           |
+| **Backend**  | `/backend`  | Node.js, Express, JWT, Bcrypt, Mongoose         | Jest, Supertest                                             |
+| **Database** | -           | MongoDB Atlas                                   | -                                                           |
 | **E2E**      | `/e2e`      | -                                               | Playwright                                                  |
 
 ---
@@ -73,7 +78,7 @@ The project utilizes a **Continuous Integration (CI)** pipeline configured via G
 
 ---
 
-## 🚀 Installation and Usage
+## 🚀 Installation and Usage (for developers)
 
 **Requirements:** Node.js v20.19.4
 
@@ -118,23 +123,18 @@ Open your browser at http://localhost:5173 (default for Vite).
 
 ```bash
 calories-app/
-├─ .github/ #GitHub Actions Workflows
+├─ .github/        #GitHub Actions Workflows
 ├─ frontend/       # React frontend code
 ├─ backend/        # Node + Express API
-├─ backend/        # Node + Express API
-├─ backend/        # End-to-End Tests (Playwright)
+├─ e2e/            # End-to-End Tests (Playwright)
 ├─ dev-journal/    # Development log and learning notes (in Spanish)
 ├─ README.md       # This file
 ```
 
 ---
 
-## 💡 Additional Functionality
-
-Yearly Filtering: Visualize weeks organized by year.
-
-Search: Quickly filter and find specific weeks.
-
 ## 💡 Additional Notes
+
+To see more useful commands, whether on the root, backend, frontend or e2e directories, use: **npm run** to see all possible commands.
 
 This project was built based on knowledge acquired from [fullstackopen.com](https://fullstackopen.com).
