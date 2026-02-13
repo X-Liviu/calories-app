@@ -1,9 +1,11 @@
 const router = require("express").Router();
-
 const UserAliment = require("../models/UserAliment");
-
 const { throwNotFound } = require("../utils/helpers");
-const { userAlimentSchema } = require("../utils/validations");
+const {
+  userAlimentSchema,
+  updateUserAlimentSchema,
+  catalogNameSchema,
+} = require("../utils/validations");
 
 const camelToSnake = {
   kcal100G: "kcal_100g",
@@ -29,6 +31,8 @@ router.post("/", async (req, res, next) => {
   try {
     const { name, nutritionFacts } = req.body;
 
+    await catalogNameSchema.validateAsync(name, { abortEarly: false });
+
     if (!nutritionFacts || typeof nutritionFacts !== "object") {
       const error = new Error(
         "nutritionFacts is required and must be an object",
@@ -37,21 +41,27 @@ router.post("/", async (req, res, next) => {
       throw error;
     }
 
-    await userAlimentSchema.validateAsync(nutritionFacts);
+    await userAlimentSchema.validateAsync(nutritionFacts, {
+      abortEarly: false,
+    });
+
     const nutrition_facts = {};
 
     Object.keys(camelToSnake).forEach((key) => {
       const value = nutritionFacts[key];
       if (value !== undefined && Number.isFinite(Number(value))) {
         nutrition_facts[camelToSnake[key]] = Number(value);
-      } else nutrition_facts[camelToSnake[key]] = 0;
+      } else {
+        nutrition_facts[camelToSnake[key]] = 0;
+      }
     });
 
     const aliment = new UserAliment({
-      user: req.userId, //Viene del tokenExtractor
+      user: req.userId, // Viene del tokenExtractor
       name,
       nutrition_facts,
     });
+
     await aliment.save();
     res.status(201).json(aliment);
   } catch (err) {
@@ -59,10 +69,15 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-//PUT UserAliment. Change a specific nutrition_fact
 router.put("/:userAlimentId", async (req, res, next) => {
   try {
     const { userAlimentId } = req.params;
+
+    await updateUserAlimentSchema.validateAsync(req.body, {
+      abortEarly: false,
+      allowUnknown: true,
+    });
+
     const clientKey = Object.keys(req.body).find((k) =>
       Object.keys(camelToSnake).includes(k),
     );
@@ -78,13 +93,18 @@ router.put("/:userAlimentId", async (req, res, next) => {
     const updatedUserAliment = await UserAliment.findOneAndUpdate(
       { _id: userAlimentId, user: req.userId },
       { [`nutrition_facts.${snakeKey}`]: req.body[clientKey] }, //ESTO MUY IMPORTANTE COMO CONOCIMIENTO DE ES6
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+        context: "query",
+      },
     );
 
-    if (!updatedUserAliment) return throwNotFound("Aliment not found");
+    if (!updatedUserAliment) throwNotFound("Aliment");
+
     updatedUserAliment.nutrition_facts = {
       ...updatedUserAliment.nutrition_facts,
-    }; //Actualizamos referencia para que React-Redux funcione correctamente y se actualice directamente. No sé si esto de verdad sirve.
+    };
 
     res.json(updatedUserAliment);
   } catch (err) {
@@ -95,14 +115,15 @@ router.put("/:userAlimentId", async (req, res, next) => {
 router.delete("/:userAlimentId", async (req, res, next) => {
   try {
     const { userAlimentId } = req.params;
-    //const { userId } = req.userId; No sé por qué me dice que es undefined si lo hago de esta manera
+
     const deletedUserAliment = await UserAliment.findOneAndDelete({
       _id: userAlimentId,
       user: req.userId,
     });
-    if (!deletedUserAliment) throwNotFound("Aliment not found");
 
-    return res.status(204).end();
+    if (!deletedUserAliment) throwNotFound("Aliment");
+
+    res.status(204).end();
   } catch (err) {
     next(err);
   }

@@ -5,6 +5,7 @@ const nameMessages = {
     "Name must be 2-50 characters long and contain only letters.",
   "string.empty": "Name is required.",
   "string.base": "Name must be a text string.",
+  "string.max": "Name cannot exceed 30 characters.",
 };
 
 const usernameMessages = {
@@ -123,16 +124,36 @@ const changeMealAlimentSchema = Joi.object({
   grams: Joi.number().required().min(0),
 });
 
+const catalogNameSchema = Joi.string()
+  .trim()
+  .min(2)
+  .max(30) // Límite duro
+  .pattern(/^[a-zA-Z0-9\s\-\.\,\(\)\%]+$/) //eslint-disable-line
+  .required()
+  .messages(nameMessages);
+
+const nutritionRules = {
+  kcal100G: Joi.number().min(0).max(10000).messages({
+    "number.max": "Value cannot exceed 10000",
+  }),
+  fatG: Joi.number().min(0).max(10000),
+  saturatedFatG: Joi.number().min(0).max(10000),
+  carbsG: Joi.number().min(0).max(10000),
+  sugarG: Joi.number().min(0).max(10000),
+  fiberG: Joi.number().min(0).max(10000),
+  proteinG: Joi.number().min(0).max(10000),
+  saltG: Joi.number().min(0).max(10000),
+};
+
+// Schema para CREAR (POST): Todo requerido
 const userAlimentSchema = Joi.object({
-  kcal100G: Joi.number().min(0).required(),
-  fatG: Joi.number().min(0),
-  saturatedFatG: Joi.number().min(0),
-  carbsG: Joi.number().min(0),
-  sugarG: Joi.number().min(0),
-  fiberG: Joi.number().min(0),
-  proteinG: Joi.number().min(0),
-  saltG: Joi.number().min(0),
-});
+  ...nutritionRules,
+}).options({ presence: "required" });
+
+// Schema para ACTUALIZAR (PUT): Todo opcional
+const updateUserAlimentSchema = Joi.object({
+  ...nutritionRules,
+}).options({ presence: "optional" });
 
 module.exports = {
   createUserSchema,
@@ -145,4 +166,6 @@ module.exports = {
   changeMealAlimentSchema,
   userAlimentSchema,
   updateUserSchema,
+  updateUserAlimentSchema,
+  catalogNameSchema,
 };

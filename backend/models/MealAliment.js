@@ -9,13 +9,19 @@ const mealAlimentSchema = new mongoose.Schema({
   name_snapshot: {
     type: String,
     required: true,
+    maxlength: 30,
   },
   grams: {
     type: Number,
-    required: true,
+    default: 0,
+    min: 0,
   },
   custom_kcal: {
     type: Number,
+    required: true,
+    default: 0,
+    min: 0,
+    max: 10000,
   },
   meal: {
     type: mongoose.Schema.Types.ObjectId,

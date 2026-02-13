@@ -17,12 +17,15 @@ router.post("/:weekId/:dayId/:mealId", async (req, res, next) => {
     const { weekId, dayId, mealId } = req.params;
     const { name, grams, userAliment, customKcal } = req.body;
 
-    await createMealAlimentSchema.validateAsync({
-      name,
-      grams,
-      userAliment,
-      customKcal,
-    });
+    await createMealAlimentSchema.validateAsync(
+      {
+        name,
+        grams,
+        userAliment,
+        customKcal,
+      },
+      { abortEarly: false },
+    );
 
     const week = await Week.findOne({
       _id: weekId,
@@ -76,7 +79,10 @@ router.put("/:weekId/:dayId/:mealId/:mealAlimentId", async (req, res, next) => {
     const { weekId, dayId, mealId, mealAlimentId } = req.params;
     const { grams } = req.body;
 
-    await changeMealAlimentSchema.validateAsync({ grams });
+    await changeMealAlimentSchema.validateAsync(
+      { grams },
+      { abortEarly: false },
+    );
 
     const week = await Week.findOne({ _id: weekId, user: req.userId }).populate(
       {

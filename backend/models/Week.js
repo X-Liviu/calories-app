@@ -9,6 +9,8 @@ const weekSchema = new mongoose.Schema({
   number_week: {
     type: Number,
     required: true,
+    min: 1,
+    max: 53,
   },
   year: {
     type: Number,

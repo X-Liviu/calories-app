@@ -13,7 +13,7 @@ router.post("/:weekId", async (req, res, next) => {
     let { name } = req.body;
     name = capitalize(name); //normalized
 
-    await daySchema.validateAsync({ name });
+    await daySchema.validateAsync({ name }, { abortEarly: false });
     const week = await Week.findOne({ _id: weekId, user: req.userId });
     if (!week) throwNotFound("Week");
 

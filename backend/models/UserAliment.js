@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const numberRules = {
+  type: Number,
+  required: true,
+  default: 0,
+  min: 0,
+  max: 10000,
+};
+
 const userAlimentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -9,16 +17,18 @@ const userAlimentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
+    maxlength: 30,
   },
   nutrition_facts: {
-    kcal_100g: { type: Number, required: true, default: 0 },
-    fat_g: { type: Number, required: true, default: 0 },
-    saturated_fat_g: { type: Number, required: true, default: 0 },
-    carbs_g: { type: Number, required: true, default: 0 },
-    sugar_g: { type: Number, required: true, default: 0 },
-    fiber_g: { type: Number, required: true, default: 0 },
-    protein_g: { type: Number, required: true, default: 0 },
-    salt_g: { type: Number, required: true, default: 0 },
+    kcal_100g: numberRules,
+    fat_g: numberRules,
+    saturated_fat_g: numberRules,
+    carbs_g: numberRules,
+    sugar_g: numberRules,
+    fiber_g: numberRules,
+    protein_g: numberRules,
+    salt_g: numberRules,
   },
 });
 

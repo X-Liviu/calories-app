@@ -5,6 +5,7 @@ const User = require("../models/User");
 const { tokenExtractor } = require("../utils/middleware");
 const { createUserSchema, updateUserSchema } = require("../utils/validations");
 const { BusinessValidationError } = require("../utils/appErrors");
+const { throwNotFound } = require("../utils/helpers");
 
 router.post("/", async (req, res, next) => {
   try {
@@ -54,14 +55,9 @@ router.put("/", tokenExtractor, async (req, res, next) => {
 
     const { name, username, currentPassword, newPassword } = validatedData;
 
-    if (!req.userId) {
-      return res.status(401).json({ error: "token missing or invalid" });
-    }
-
     const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+
+    if (!user) throwNotFound("User");
 
     const updateData = { name, username };
 
@@ -72,7 +68,9 @@ router.put("/", tokenExtractor, async (req, res, next) => {
       );
 
       if (!passwordCorrect) {
-        return res.status(401).json({ error: "Current password is incorrect" });
+        const error = new Error("Current password is incorrect");
+        error.name = "AuthenticationError";
+        throw error;
       }
 
       const saltRounds = 10;
@@ -93,14 +91,9 @@ router.put("/", tokenExtractor, async (req, res, next) => {
 
 router.delete("/", tokenExtractor, async (req, res, next) => {
   try {
-    if (!req.userId) {
-      return res.status(401).json({ error: "token missing or invalid" });
-    }
     const userDeleted = await User.findOneAndDelete({ _id: req.userId });
 
-    if (!userDeleted) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!userDeleted) throwNotFound("User");
 
     res.status(204).end();
   } catch (err) {

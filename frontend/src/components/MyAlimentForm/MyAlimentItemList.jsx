@@ -11,10 +11,45 @@ const MyAlimentItemList = ({ myAliment }) => {
 
   const [activeInput, setActiveInput] = useState(null);
 
-  const handleSubmit = async (e, key) => {
-    e.preventDefault();
-    await update({ [key]: Number(editableValues[key]), id: myAliment.id });
+  const saveChanges = async (key) => {
+    const rawValue = editableValues[key];
+    const finalValue = isNaN(Number(rawValue)) ? 0 : Number(rawValue);
+
+    // Si el valor no ha cambiado, no hacemos nada (ahorra petición)
+    if (finalValue === myAliment.nutritionFacts[key]) {
+      setActiveInput(null);
+      return;
+    }
+
+    try {
+      await update({ [key]: finalValue, id: myAliment.id });
+      // El setActiveInput(null) ocurrirá naturalmente por el blur
+    } catch (error) {
+      console.error("Error updating aliment:", error);
+      // Revertimos en caso de error
+      setEditableValues({ ...myAliment.nutritionFacts });
+    }
     setActiveInput(null);
+  };
+
+  // --- MANEJADORES DE EVENTOS ---
+
+  // CASO 1: Al pulsar ENTER
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TRUCO: Solo quitamos el foco.
+    // Esto disparará automáticamente el evento onBlur de abajo.
+    // Así evitamos llamar a saveChanges dos veces.
+    document.activeElement.blur();
+  };
+
+  // CASO 2: Al hacer clic fuera (BLUR)
+  // Este es el ÚNICO lugar que llama a guardar
+  const handleBlur = (key) => {
+    // Solo guardamos si estábamos editando este campo
+    if (activeInput === key) {
+      saveChanges(key);
+    }
   };
 
   const handleChange = (key, value) => {
@@ -27,15 +62,6 @@ const MyAlimentItemList = ({ myAliment }) => {
     }
   };
 
-  const handleBlur = (key) => {
-    const val = Number(editableValues[key]);
-    setEditableValues({
-      ...editableValues,
-      [key]: isNaN(val) ? 0 : val,
-    });
-    setActiveInput(null);
-  };
-
   const nutritionKeys = Object.keys(myAliment.nutritionFacts);
 
   return (
@@ -44,7 +70,7 @@ const MyAlimentItemList = ({ myAliment }) => {
 
       {nutritionKeys.map((key) => (
         <td key={key}>
-          <form onSubmit={(e) => handleSubmit(e, key)} className="cell-form">
+          <form onSubmit={handleSubmit} className="cell-form">
             <input
               type="text"
               inputMode="decimal"

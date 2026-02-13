@@ -12,6 +12,16 @@ const { throwNotFound } = require("../../utils/helpers");
 router.get("/", async (req, res, next) => {
   try {
     const { year } = req.query;
+    const queryYear = Number(year);
+
+    if (isNaN(queryYear)) {
+      const error = new Error(
+        "Year query parameter is required and must be a number",
+      );
+      error.name = "ValidationError";
+      throw error;
+    }
+
     const weeks = await Week.find({
       user: req.userId,
       year: Number(year),
@@ -39,8 +49,9 @@ router.get("/", async (req, res, next) => {
 //POST new Week.
 router.post("/", async (req, res, next) => {
   try {
+    await weekSchema.validateAsync(req.body, { abortEarly: false });
+
     const { numberWeek, year } = req.body;
-    await weekSchema.validateAsync(req.body);
 
     const week = new Week({
       user: req.userId, //Viene del tokenExtractor

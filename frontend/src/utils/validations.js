@@ -200,9 +200,13 @@ const validatePassword = (password) => {
 };
 
 export const validateDecimalInput = (value) => {
+  if (value === "") return value;
   const normalizedValue = value.replace(",", ".");
 
   if (/^\d*\.?\d*$/.test(normalizedValue)) {
+    if (Number(normalizedValue) > 10000) {
+      return null;
+    }
     return normalizedValue;
   }
 

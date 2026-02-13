@@ -57,13 +57,21 @@ const MyAlimentForm = () => {
     const value = target.value;
 
     if (key === "name") {
-      setNewAliment({ ...newAliment, [key]: value });
+      if (value.length <= 30) {
+        setNewAliment({ ...newAliment, [key]: value });
+      }
     } else {
       const validatedValue = validateDecimalInput(value);
       if (validatedValue !== null) {
         setNewAliment({ ...newAliment, [key]: validatedValue });
       }
     }
+  };
+
+  const getCounterClass = (length) => {
+    if (length >= 30) return "input-char-count at-limit";
+    if (length >= 25) return "input-char-count near-limit";
+    return "input-char-count";
   };
 
   return (
@@ -85,7 +93,13 @@ const MyAlimentForm = () => {
                   placeholder={key === "name" ? "Ex: Banana" : "0"}
                   value={newAliment[key]}
                   autoComplete="off"
+                  maxLength={key === "name" ? 30 : undefined}
                 />
+                {key === "name" && (
+                  <span className={getCounterClass(newAliment.name.length)}>
+                    {newAliment.name.length}/30
+                  </span>
+                )}
               </div>
             ))}
           </div>

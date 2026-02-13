@@ -9,11 +9,11 @@ const { ipLimiter, emailLimiter } = require("../utils/middleware");
 router.post("/", ipLimiter, emailLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    await loginUserSchema.validateAsync(req.body);
+    await loginUserSchema.validateAsync(req.body, { abortEarly: false });
 
     // Consulta optimizada: lean() devuelve un objeto JS plano, no un documento Mongoose.
     // Es más rápido si solo vas a leer datos.
-    const user = await User.findOne({ email: email }).lean(); //
+    const user = await User.findOne({ email: email }).lean();
 
     // IMPORTANTE: Como user ahora es un objeto plano por .lean(),
     // accedemos directamente a las propiedades.
