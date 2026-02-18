@@ -5,6 +5,19 @@ const api = supertest(app);
 const UserAliment = require("../models/UserAliment");
 const helper = require("./test_helper");
 
+// Helper para crear objeto nutricional completo (requerido por Joi strict mode)
+const fullNutrition = (overrides = {}) => ({
+  kcal100G: 0,
+  fatG: 0,
+  saturatedFatG: 0,
+  carbsG: 0,
+  sugarG: 0,
+  fiberG: 0,
+  proteinG: 0,
+  saltG: 0,
+  ...overrides,
+});
+
 // Limpieza inicial
 beforeEach(async () => {
   await UserAliment.deleteMany({});
@@ -26,7 +39,7 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
   // ======================================================
   describe("GET /api/my-aliments", () => {
     test("falla con 401 si no se provee token", async () => {
-      await api.get("/api/my-aliments").expect(401); // Verificamos protección de ruta
+      await api.get("/api/my-aliments").expect(401);
     });
 
     test("devuelve lista vacía inicialmente", async () => {
@@ -64,13 +77,14 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
   // ======================================================
   describe("POST /api/my-aliments", () => {
     test("crea un alimento válido y transforma camelCase a snake_case en DB", async () => {
+      // CORRECCIÓN: Joi requiere TODOS los campos nutricionales ahora
       const newAliment = {
         name: "Oats",
-        nutritionFacts: {
+        nutritionFacts: fullNutrition({
           kcal100G: 350,
           carbsG: 60,
           fatG: 5,
-        },
+        }),
       };
 
       const response = await api
@@ -84,25 +98,26 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
 
       // Verificación directa en base de datos
       const inDb = await UserAliment.findOne({ user: userId });
-      expect(inDb.nutrition_facts.kcal_100g).toBe(350); // Se guardó snake_case
+      expect(inDb.nutrition_facts.kcal_100g).toBe(350);
       expect(inDb.nutrition_facts.carbs_g).toBe(60);
     });
 
-    test("falla con 400 si falta el nombre (Mongoose Validation)", async () => {
+    test("falla con 400 si falta el nombre", async () => {
       const invalidAliment = {
         // name: missing
-        nutritionFacts: { kcal100G: 100 },
+        nutritionFacts: fullNutrition({ kcal100G: 100 }),
       };
 
       const result = await api
         .post("/api/my-aliments")
         .set("Authorization", token)
         .send(invalidAliment)
-        .expect(400); // Bad Request por ValidationError
+        .expect(400);
 
-      // CAMBIO AQUÍ: Adaptado al mensaje de tu nuevo middleware
-      expect(result.body.error).toContain("name");
-      expect(result.body.error).toContain("required");
+      // CORRECCIÓN: Al validar 'name' directamente con Joi (catalogNameSchema.validateAsync(name)),
+      // si name es undefined, Joi devuelve "value" is required.
+      // O puedes buscar simplemente "required"
+      expect(JSON.stringify(result.body.error)).toContain("required");
     });
 
     test("falla con 400 si falta el objeto nutritionFacts (Controller Check)", async () => {
@@ -112,17 +127,20 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .post("/api/my-aliments")
         .set("Authorization", token)
         .send(invalidAliment)
-        .expect(400); // Tu controlador lanza ValidationError manual aquí
+        .expect(400);
 
-      expect(result.body.error).toContain("nutritionFacts is required");
+      // CORRECCIÓN: El middleware devuelve un array. Buscamos el string exacto.
+      expect(result.body.error).toContain(
+        "nutritionFacts is required and must be an object",
+      );
     });
 
     test("falla con 400 si Joi detecta tipos incorrectos", async () => {
       const invalidData = {
         name: "Bad Input",
-        nutritionFacts: {
+        nutritionFacts: fullNutrition({
           kcal100G: "muchas calorías", // Debe ser número
-        },
+        }),
       };
 
       await api
@@ -133,7 +151,11 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
     });
 
     test("falla con 400 al intentar crear duplicado (Unique Index)", async () => {
-      const aliment = { name: "Milk", nutritionFacts: { kcal100G: 50 } };
+      // CORRECCIÓN: Necesitamos un objeto válido completo para que el primer POST funcione
+      const aliment = {
+        name: "Milk",
+        nutritionFacts: fullNutrition({ kcal100G: 50 }),
+      };
 
       // Primer insert
       await api
@@ -149,9 +171,7 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .send(aliment)
         .expect(400);
 
-      // CAMBIO AQUÍ: Tu middleware devuelve "The user is already taken" o "The name is already taken"
-      // Usamos una comprobación más genérica que sirva para tu middleware actual
-      expect(result.body.error).toContain("already taken");
+      expect(result.body.error).toContain("The name is already taken");
     });
   });
 
@@ -193,17 +213,17 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .put(`/api/my-aliments/${alimentId}`)
         .set("Authorization", token)
         .send({ unknownField: 100 })
-        .expect(400); // Según tu corrección de middleware, ahora devuelve 400
+        .expect(400);
     });
 
     test("falla con 400 si el ID es malformado (CastError)", async () => {
-      const malformedId = "12345"; // No es un ObjectId válido
+      const malformedId = "12345";
 
       await api
         .put(`/api/my-aliments/${malformedId}`)
         .set("Authorization", token)
         .send({ proteinG: 10 })
-        .expect(400); // El middleware captura CastError y devuelve 400
+        .expect(400);
     });
 
     test("falla con 404 si el alimento existe pero es de OTRO usuario", async () => {
@@ -248,7 +268,7 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
       await api
         .delete("/api/my-aliments/id-invalido-texto")
         .set("Authorization", token)
-        .expect(400); // CastError
+        .expect(400);
     });
 
     test("falla con 404 si intenta borrar alimento ajeno", async () => {
@@ -275,10 +295,6 @@ describe("Controlador de UserAliments (Mi Despensa)", () => {
         .expect(404);
     });
   });
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
 });
 
 afterAll(async () => {

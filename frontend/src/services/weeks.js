@@ -1,39 +1,22 @@
-import axios from "axios";
-const baseURL = "/api/weeks";
-let token;
-
-const setToken = (newToken) => {
-  token = `Bearer ${newToken}`;
-};
+import apiClient from "./apiClient";
+const baseURL = "/weeks";
 
 const getAll = async (year) => {
   const config = {
-    headers: { Authorization: token },
     params: year ? { year } : {},
   };
-  const response = await axios.get(baseURL, config);
+  const response = await apiClient.get(baseURL, config);
   return response.data;
 };
 
 const create = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.post(baseURL, object, config);
+  const response = await apiClient.post(baseURL, object);
   return response.data;
 };
 
 const del = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.delete(`${baseURL}/${object.id}`, config);
+  const response = await apiClient.delete(`${baseURL}/${object.id}`);
   return response.data;
 };
 
-export default {
-  setToken,
-  getAll,
-  create,
-  del,
-};
+export default { getAll, create, del };

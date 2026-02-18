@@ -56,6 +56,7 @@ const LoginForm = () => {
         <button
           type="submit"
           className={`btn btn-primary ${!isValid ? "btn-disabled" : ""}`}
+          disabled={!isValid}
         >
           Confirm
         </button>

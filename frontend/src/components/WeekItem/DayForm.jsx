@@ -1,12 +1,19 @@
 import { useState } from "react";
 import useDays from "../../hooks/useDays";
 import { validateOnlyLetters } from "../../utils/validations";
+import { getCounterClass } from "../../utils/helpers";
 import AddConfirmationModal from "../AddConfirmationModal";
 
 const DayForm = ({ weekId, isFull }) => {
   const [nameDay, setNameDay] = useState("");
   const [dayToAdd, setDayToAdd] = useState(null);
   const { create } = useDays();
+
+  const handleNameChange = ({ target }) => {
+    if (target.value.length <= 30) {
+      setNameDay(target.value);
+    }
+  };
 
   const handleSubmit = () => {
     if (!validateOnlyLetters(nameDay)) return;
@@ -30,13 +37,19 @@ const DayForm = ({ weekId, isFull }) => {
         <div className="week-input-wrapper">
           <input
             className="input-field"
-            onChange={({ target }) => setNameDay(target.value)}
+            onChange={handleNameChange}
             placeholder={
               isFull ? "Week is full (7/7)" : "Name of the day (e.g. Monday)"
             }
             value={nameDay}
             disabled={isFull}
+            maxLength={30}
           />
+          {!isFull && (
+            <span className={getCounterClass(nameDay.length)}>
+              {nameDay.length}/30
+            </span>
+          )}
         </div>
 
         <button

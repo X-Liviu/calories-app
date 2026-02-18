@@ -109,7 +109,7 @@ describe("Controlador de Alimentos en Comidas (MealAliments)", () => {
         .send(aliment)
         .expect(400);
 
-      expect(result.body.error).toContain("already taken");
+      expect(result.body.error[0]).toContain("already taken");
     });
 
     // Caso A: ID de Semana malformado -> 400 (Mongoose CastError en Week.findOne)

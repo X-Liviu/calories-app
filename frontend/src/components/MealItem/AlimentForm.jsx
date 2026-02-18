@@ -1,6 +1,10 @@
 import { useState } from "react";
 import useAliments from "../../hooks/useAliments";
-import { validateCustomAliment } from "../../utils/validations";
+import {
+  validateCustomAliment,
+  validateDecimalInput,
+} from "../../utils/validations";
+import { getCounterClass } from "../../utils/helpers";
 
 const AlimentForm = ({ weekId, dayId, mealId }) => {
   const [nameAliment, setNameAliment] = useState("");
@@ -17,7 +21,7 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
     create({
       name: nameAliment,
       grams: Number(gramsAliment),
-      customKcal: totalKcalAliment,
+      customKcal: Number(totalKcalAliment),
       weekId,
       dayId,
       mealId,
@@ -25,6 +29,22 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
     setNameAliment("");
     setGramsAliment("");
     setTotalKcalAliment("");
+  };
+
+  const handleNameChange = ({ target }) => {
+    const value = target.value;
+    if (value.length <= 30) {
+      setNameAliment(value);
+    }
+  };
+
+  const handleNumberChange = (e, setFunction) => {
+    const value = e.target.value;
+    const validatedValue = validateDecimalInput(value);
+
+    if (validatedValue !== null) {
+      setFunction(validatedValue);
+    }
   };
 
   const isValid = validateCustomAliment({
@@ -35,36 +55,37 @@ const AlimentForm = ({ weekId, dayId, mealId }) => {
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
-      <input
-        className="input-field"
-        placeholder="Aliment Name"
-        value={nameAliment}
-        onChange={({ target }) => setNameAliment(target.value)}
-      />
+      <div className="input-group">
+        <input
+          className="input-field"
+          placeholder="Aliment Name"
+          value={nameAliment}
+          type="text"
+          onChange={handleNameChange}
+          maxLength={30}
+        />
+        <span className={getCounterClass(nameAliment.length)}>
+          {nameAliment.length}/30
+        </span>
+      </div>
+
       <input
         className="input-field"
         placeholder="Grams (Optional)"
         value={gramsAliment}
-        onChange={({ target }) => {
-          if (target.value === "") {
-            setGramsAliment("");
-            return;
-          }
-          !isNaN(Number(target.value)) && setGramsAliment(Number(target.value));
-        }}
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        onChange={(e) => handleNumberChange(e, setGramsAliment)}
       />
+
       <input
         className="input-field"
         placeholder="Total Kcal"
         value={totalKcalAliment}
-        onChange={({ target }) => {
-          if (target.value === "") {
-            setTotalKcalAliment("");
-            return;
-          }
-          !isNaN(Number(target.value)) &&
-            setTotalKcalAliment(Number(target.value));
-        }}
+        inputMode="decimal"
+        autoComplete="off"
+        onChange={(e) => handleNumberChange(e, setTotalKcalAliment)}
       />
 
       <button

@@ -149,7 +149,7 @@ describe("POST /api/weeks", () => {
       .send(newWeek)
       .expect(400); // Duplicate key error
 
-    expect(result.body.error).toContain("already taken");
+    expect(result.body.error[0]).toContain("already taken");
   });
 });
 

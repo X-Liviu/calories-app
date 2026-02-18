@@ -96,7 +96,7 @@ describe("Controlador de Comidas (Meals)", () => {
         .send({ name: "Lunch" })
         .expect(400);
 
-      expect(result.body.error).toContain("already taken");
+      expect(result.body.error[0]).toContain("already taken");
     });
 
     // CAMBIO APLICADO: Ahora espera 404 porque tu lógica de array.find() devuelve undefined para IDs raros

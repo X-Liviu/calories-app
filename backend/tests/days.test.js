@@ -89,7 +89,7 @@ describe("Controlador de Días (Days)", () => {
         .send({ name: "Monday" })
         .expect(400);
 
-      expect(result.body.error).toContain("already taken");
+      expect(result.body.error[0]).toContain("already taken");
     });
 
     test("falla con 400 si el nombre contiene caracteres inválidos (números)", async () => {

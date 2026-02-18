@@ -1,34 +1,22 @@
-import axios from "axios";
-const baseURL = "/api/users";
-let token;
-
-const setToken = (newToken) => {
-  token = `Bearer ${newToken}`;
-};
+import apiClient from "./apiClient";
+const baseURL = "/users";
 
 const signup = async (newObject) => {
-  const response = await axios.post(baseURL, newObject);
+  const response = await apiClient.post(baseURL, newObject);
   return response.data;
 };
 
 const update = async (newObject) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.put(baseURL, newObject, config);
+  const response = await apiClient.put(baseURL, newObject);
   return response.data;
 };
 
 const del = async () => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.delete(`${baseURL}/`, config);
+  const response = await apiClient.delete(`${baseURL}/`);
   return response.data;
 };
 
 export default {
-  setToken,
   signup,
   update,
   del,

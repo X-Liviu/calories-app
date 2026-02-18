@@ -1,51 +1,28 @@
-import axios from "axios";
-//No olvidar cambiar la baseURL después
-const baseURL = "http://localhost:7000/api/weeks";
-let token;
-
-const setToken = (newToken) => {
-  token = `Bearer ${newToken}`;
-};
+import apiClient from "./apiClient";
+const baseURL = "/weeks";
 
 const create = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.post(
+  const response = await apiClient.post(
     `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}`,
     object,
-    config,
   );
   return response.data;
 };
 
 const update = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
   console.log(object);
-  const response = await axios.put(
+  const response = await apiClient.put(
     `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.mealAlimentId}`,
     object,
-    config,
   );
   return response.data;
 };
 
 const del = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.delete(
+  const response = await apiClient.delete(
     `${baseURL}/${object.weekId}/${object.dayId}/${object.mealId}/${object.mealAlimentId}`,
-    config,
   );
   return response.data;
 };
 
-export default {
-  setToken,
-  create,
-  update,
-  del,
-};
+export default { create, update, del };

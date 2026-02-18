@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
 import useAliments from "../../hooks/useAliments";
+import { validateDecimalInput } from "../../utils/validations";
+
 import Toggable from "../Toggable";
 
 const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
@@ -113,10 +115,15 @@ const AlimentItemList = ({ aliment, weekId, dayId, mealId }) => {
             <form onSubmit={handleSubmit} className="aliment-edit-form">
               <input
                 className="input-field"
-                onChange={({ target }) => setEditGrams(target.value)}
+                onChange={({ target }) => {
+                  const val = validateDecimalInput(target.value);
+                  if (val !== null) setEditGrams(val);
+                }}
                 value={editGrams}
                 placeholder="New grams"
-                type="number"
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
               />
               <button className="btn btn-primary btn-compact">✅</button>
             </form>

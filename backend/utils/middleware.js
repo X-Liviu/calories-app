@@ -116,69 +116,83 @@ const ERROR_HANDLERS = {
   CastError: (res, error) => {
     return res
       .status(400)
-      .json({ error: `Malformatted ID in field: ${error.path}` });
+      .json({ error: [`Malformatted ID in field: ${error.path}`] });
   },
 
+  // Validación de negocio (ej: email duplicado detectado manualmente)
   BusinessValidationError: (res, error) => {
+    // Tu código ya pasa un array de mensajes aquí
     return res.status(400).json({ error: error.messages });
   },
 
-  // 2. MODIFICADO: Errores de Joi y Mongoose
   ValidationError: (res, error) => {
-    // Caso Joi: Cuando usamos abortEarly: false, 'error.details' es un array
+    // Caso Joi
     if (error.isJoi) {
       const messages = error.details.map((detail) => detail.message);
-      // Devolvemos SIEMPRE un array en 'error' para consistencia con el frontend
       return res.status(400).json({ error: messages });
     }
-
-    // Caso Mongoose Standard
+    // Caso Mongoose
     if (error.errors) {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ error: messages });
     }
-
+    // Caso Genérico
     return res.status(400).json({ error: [error.message] });
   },
 
+  // ¡IMPORTANTE! Aquí estaba el fallo del "C" y "i". Ahora devuelve array.
   AuthenticationError: (res, error) => {
-    return res.status(401).json({ error: error.message });
+    return res.status(401).json({ error: [error.message] });
   },
 
   AuthorizationError: (res, error) => {
-    return res.status(403).json({ error: error.message });
+    return res.status(403).json({ error: [error.message] });
   },
 
   NotFoundError: (res, error) => {
-    return res.status(404).json({ error: error.message });
+    return res.status(404).json({ error: [error.message] });
   },
+
   RateLimitError: (res, error) => {
-    return res.status(429).json({ error: error.message });
+    return res.status(429).json({ error: [error.message] });
   },
 
   MongoServerError: (res, error) => {
-    // Código 11000 es Duplicate Key
     if (error.code === 11000) {
-      // error.keyValue nos dice qué campo y valor duplicaron { username: "test" }
-      const field = Object.keys(error.keyValue)[0];
-      return res.status(400).json({ error: `The ${field} is already taken` });
+      const keys = Object.keys(error.keyValue);
+      // Ignorar claves técnicas
+      const ignoredFields = ["user", "week", "day", "meal", "_id", "__v"];
+      let field = keys.find((key) => !ignoredFields.includes(key));
+      if (!field) field = keys[0];
+
+      // Mapeo de nombres bonitos
+      const fieldMapping = {
+        name_snapshot: "name",
+        number_week: "week number",
+        kcal_100g: "calories",
+        username: "username",
+        email: "email",
+      };
+
+      const finalFieldName = fieldMapping[field] || field;
+      return res
+        .status(400)
+        .json({ error: [`The ${finalFieldName} is already taken`] });
     }
-    return res.status(500).json({ error: "database error" });
+    return res.status(500).json({ error: ["database error"] });
   },
 
   JsonWebTokenError: (res) => {
-    return res.status(401).json({ error: "token invalid" });
+    return res.status(401).json({ error: ["token invalid"] });
   },
 
   TokenExpiredError: (res) => {
-    return res.status(401).json({
-      error: "token expired",
-    });
+    return res.status(401).json({ error: ["token expired"] });
   },
 
   defaultError: (res, error) => {
     console.error("Unknown Error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: ["Internal Server Error"] });
   },
 };
 

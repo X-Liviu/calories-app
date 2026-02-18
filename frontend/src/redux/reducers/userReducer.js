@@ -2,11 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import loginService from "../../services/login";
 import signupService from "../../services/signup";
-import weekService from "../../services/weeks";
-import myAlimentService from "../../services/myAliments";
-import dayService from "../../services/days";
-import mealService from "../../services/meals";
-import alimentService from "../../services/aliments";
 
 import { clearWeeks } from "./weekReducer";
 import { clearMyAliments } from "./myAlimentReducer";
@@ -33,13 +28,6 @@ export const initializeUser = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       dispatch(setUser(user));
-      //De momento lo dejo así, luego voy a usar un API Client o algo parecido
-      signupService.setToken(user.token);
-      weekService.setToken(user.token);
-      myAlimentService.setToken(user.token);
-      dayService.setToken(user.token);
-      mealService.setToken(user.token);
-      alimentService.setToken(user.token);
     }
   };
 };
@@ -50,15 +38,6 @@ export const saveGlobalUser = (credentials) => {
       const user = await loginService.login(credentials);
       window.localStorage.setItem("token", JSON.stringify(user));
       dispatch(setUser(user));
-      //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
-      signupService.setToken(user.token);
-      weekService.setToken(user.token);
-      myAlimentService.setToken(user.token);
-      dayService.setToken(user.token);
-      mealService.setToken(user.token);
-      alimentService.setToken(user.token);
-
-      return { success: true };
     } catch (error) {
       dispatch(displayNotification(error));
       return { success: false };
@@ -88,13 +67,6 @@ export const eraseGlobalUser = () => {
     dispatch(clearUser());
     dispatch(clearWeeks());
     dispatch(clearMyAliments());
-    //De momento lo dejo así, luego voy a usar un API Client o algo parecido,
-    signupService.setToken(null);
-    weekService.setToken(null);
-    myAlimentService.setToken(null);
-    dayService.setToken(null);
-    mealService.setToken(null);
-    alimentService.setToken(null);
   };
 };
 

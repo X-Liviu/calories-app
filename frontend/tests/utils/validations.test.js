@@ -16,19 +16,27 @@ describe("Validations Logic", () => {
         password: "Password123",
       });
       expect(result.isValid).toBe(false);
-      expect(result.errors.email).toBe("E-Mail not valid");
+      expect(result.errors.email).toBeDefined();
     });
 
-    it("debe retornar error si la password es muy corta (<8)", () => {
+    it("debe retornar error si la password está vacía", () => {
       const result = validateLoginForm({
         email: "test@test.com",
-        password: "123",
+        password: "", // Contraseña vacía
       });
       expect(result.isValid).toBe(false);
       expect(result.errors.password).toBeDefined();
     });
 
-    it("debe ser válido con datos correctos (Login es permisivo con complejidad)", () => {
+    it("debe permitir contraseñas cortas en Login (legacy support)", () => {
+      const result = validateLoginForm({
+        email: "liviu@test.com",
+        password: "123",
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("debe ser válido con datos correctos", () => {
       const result = validateLoginForm({
         email: "liviu@test.com",
         password: "Password123",

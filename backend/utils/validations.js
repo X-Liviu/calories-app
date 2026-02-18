@@ -1,76 +1,86 @@
 const Joi = require("joi");
 
-const nameMessages = {
-  "string.pattern.base":
-    "Name must be 2-50 characters long and contain only letters.",
-  "string.empty": "Name is required.",
-  "string.base": "Name must be a text string.",
-  "string.max": "Name cannot exceed 30 characters.",
+// --- CONSTANTS & REGEX ---
+const LIMITS = {
+  MAX_NUTRITION: 9999.99,
 };
 
-const usernameMessages = {
-  "string.pattern.base":
-    "Username must be 3-20 characters long (letters, numbers, . _ -).",
-  "string.empty": "Username is required.",
+const PATTERNS = {
+  NAME: /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
+  USERNAME: /^[a-zA-Z0-9._-]{3,20}$/,
+  PASSWORD_COMPLEXITY:
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  CATALOG_NAME: /^[a-zA-Z0-9\s\-\.\,\(\)\%]+$/, //eslint-disable-line
+  SIMPLE_TEXT: /^[^\s\d]+( [^\s\d]+)*$/,
+  MEAL_ALIMENT: /^[^\s]+( [^\s]+)*$/,
 };
 
-const passwordMessages = {
-  "string.pattern.base":
-    "Password must be at least 8 characters, with uppercase, lowercase, number, and symbol.",
-  "string.empty": "Password is required.",
+// --- REUSABLE MESSAGES ---
+const MESSAGES = {
+  general: {
+    maxNutrition: `Value cannot exceed ${LIMITS.MAX_NUTRITION}`,
+  },
+  name: {
+    "string.pattern.base":
+      "Name must be 2-50 characters long and contain only letters.",
+    "string.empty": "Name is required.",
+    "string.base": "Name must be a text string.",
+    "string.max": "Name cannot exceed 30 characters.",
+  },
+  username: {
+    "string.pattern.base":
+      "Username must be 3-20 characters long (letters, numbers, . _ -).",
+    "string.empty": "Username is required.",
+  },
+  email: {
+    "string.email": "Invalid email format.",
+    "string.empty": "Email is required.",
+  },
+  passwordStrong: {
+    "string.pattern.base":
+      "Password must be at least 8 characters, with uppercase, lowercase, number, and symbol.",
+    "string.empty": "Password is required.",
+  },
+  passwordSimple: {
+    "string.empty": "Password is required.",
+    "any.required": "Password is required.",
+  },
 };
 
-const emailMessages = {
-  "string.email": "Invalid email format.",
-  "string.empty": "Email is required.",
-};
+// --- COMMON RULES ---
+const limitedNumberRule = Joi.number()
+  .min(0)
+  .max(LIMITS.MAX_NUTRITION)
+  .messages({
+    "number.max": MESSAGES.general.maxNutrition,
+  });
+
+// --- SCHEMAS ---
 
 const createUserSchema = Joi.object({
-  name: Joi.string()
-    .pattern(
-      /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
-    )
-    .required()
-    .messages(nameMessages),
-
+  name: Joi.string().pattern(PATTERNS.NAME).required().messages(MESSAGES.name),
   username: Joi.string()
-    .pattern(/^[a-zA-Z0-9._-]{3,20}$/)
+    .pattern(PATTERNS.USERNAME)
     .required()
-    .messages(usernameMessages),
-
-  email: Joi.string().email().required().messages(emailMessages),
-
+    .messages(MESSAGES.username),
+  email: Joi.string().email().required().messages(MESSAGES.email),
   password: Joi.string()
-    .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    )
+    .pattern(PATTERNS.PASSWORD_COMPLEXITY)
     .required()
-    .messages(passwordMessages),
+    .messages(MESSAGES.passwordStrong),
 });
 
 const updateUserSchema = Joi.object({
-  name: Joi.string()
-    .pattern(
-      /^(?=.{2,50}$)(?=(?:.*[A-Za-zÀ-ÖØ-öø-ÿ]){2,})[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['\-\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
-    )
-    .messages(nameMessages),
-
-  username: Joi.string()
-    .pattern(/^[a-zA-Z0-9._-]{3,20}$/)
-    .messages(usernameMessages),
-
+  name: Joi.string().pattern(PATTERNS.NAME).messages(MESSAGES.name),
+  username: Joi.string().pattern(PATTERNS.USERNAME).messages(MESSAGES.username),
   newPassword: Joi.string()
-    .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    )
+    .pattern(PATTERNS.PASSWORD_COMPLEXITY)
     .allow("")
     .optional()
-    .messages(passwordMessages),
-
+    .messages(MESSAGES.passwordStrong),
   newPasswordRepeated: Joi.any()
     .valid(Joi.ref("newPassword"))
     .messages({ "any.only": "New passwords do not match" }),
-
   currentPassword: Joi.string().when("newPassword", {
     is: Joi.string().min(1).required(),
     then: Joi.required().messages({
@@ -81,13 +91,8 @@ const updateUserSchema = Joi.object({
 });
 
 const loginUserSchema = Joi.object({
-  email: Joi.string().email().required().messages(emailMessages),
-  password: Joi.string()
-    .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    )
-    .required()
-    .messages(passwordMessages),
+  email: Joi.string().email().required().messages(MESSAGES.email),
+  password: Joi.string().required().messages(MESSAGES.passwordSimple),
 });
 
 const weekSchema = Joi.object({
@@ -96,10 +101,7 @@ const weekSchema = Joi.object({
 });
 
 const daySchema = Joi.object({
-  name: Joi.string()
-    .pattern(/^[^\s\d]+( [^\s\d]+)*$/)
-    .max(30)
-    .required(),
+  name: Joi.string().pattern(PATTERNS.SIMPLE_TEXT).max(30).required(),
 });
 
 const mealSchema = Joi.object({
@@ -111,46 +113,40 @@ const createMealSchema = Joi.object({
 });
 
 const createMealAlimentSchema = Joi.object({
-  name: Joi.string()
-    .pattern(/^[^\s]+( [^\s]+)*$/)
-    .max(30)
-    .required(),
-  grams: Joi.number().required(),
-  userAliment: Joi.string(),
-  customKcal: Joi.number(),
+  name: Joi.string().pattern(PATTERNS.MEAL_ALIMENT).max(30).required(),
+
+  grams: limitedNumberRule.required(),
+  userAliment: Joi.string().max(30),
+  customKcal: limitedNumberRule,
 });
 
 const changeMealAlimentSchema = Joi.object({
-  grams: Joi.number().required().min(0),
+  grams: limitedNumberRule.required(),
 });
 
 const catalogNameSchema = Joi.string()
   .trim()
   .min(2)
-  .max(30) // Límite duro
-  .pattern(/^[a-zA-Z0-9\s\-\.\,\(\)\%]+$/) //eslint-disable-line
+  .max(30)
+  .pattern(PATTERNS.CATALOG_NAME)
   .required()
-  .messages(nameMessages);
+  .messages(MESSAGES.name);
 
 const nutritionRules = {
-  kcal100G: Joi.number().min(0).max(10000).messages({
-    "number.max": "Value cannot exceed 10000",
-  }),
-  fatG: Joi.number().min(0).max(10000),
-  saturatedFatG: Joi.number().min(0).max(10000),
-  carbsG: Joi.number().min(0).max(10000),
-  sugarG: Joi.number().min(0).max(10000),
-  fiberG: Joi.number().min(0).max(10000),
-  proteinG: Joi.number().min(0).max(10000),
-  saltG: Joi.number().min(0).max(10000),
+  kcal100G: limitedNumberRule,
+  fatG: limitedNumberRule,
+  saturatedFatG: limitedNumberRule,
+  carbsG: limitedNumberRule,
+  sugarG: limitedNumberRule,
+  fiberG: limitedNumberRule,
+  proteinG: limitedNumberRule,
+  saltG: limitedNumberRule,
 };
 
-// Schema para CREAR (POST): Todo requerido
 const userAlimentSchema = Joi.object({
   ...nutritionRules,
 }).options({ presence: "required" });
 
-// Schema para ACTUALIZAR (PUT): Todo opcional
 const updateUserAlimentSchema = Joi.object({
   ...nutritionRules,
 }).options({ presence: "optional" });

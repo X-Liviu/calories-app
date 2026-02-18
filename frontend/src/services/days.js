@@ -1,37 +1,19 @@
-import axios from "axios";
-//No olvidar cambiar la baseURL después
-const baseURL = "http://localhost:7000/api/weeks";
-let token;
-
-const setToken = (newToken) => {
-  token = `Bearer ${newToken}`;
-};
+import apiClient from "./apiClient";
+const baseURL = "/weeks";
 
 const create = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.post(
-    `${baseURL}/${object.weekId}`,
-    object,
-    config,
-  );
+  const response = await apiClient.post(`${baseURL}/${object.weekId}`, object);
   return response.data;
 };
 
 const del = async (object) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.delete(
+  const response = await apiClient.delete(
     `${baseURL}/${object.weekId}/${object.dayId}`,
-    config,
   );
   return response.data;
 };
 
 export default {
-  setToken,
   create,
   del,
 };

@@ -80,7 +80,7 @@ describe("MyAlimentItemList Component", () => {
     });
   });
 
-  it("mantiene el valor editado al hacer blur pero NO guarda en BD", async () => {
+  it("guarda el valor editado al hacer blur", async () => {
     const user = userEvent.setup();
     renderComponent();
 
@@ -94,10 +94,15 @@ describe("MyAlimentItemList Component", () => {
     // 2. Hacer click fuera (body) para disparar onBlur
     await user.click(document.body);
 
-    // 3. Verificar que NO se llamó a update (solo se llama con Enter)
-    expect(mockUpdate).not.toHaveBeenCalled();
+    // 3. CAMBIO: Ahora esperamos que SÍ se llame a update
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+    expect(mockUpdate).toHaveBeenCalledWith({
+      id: "123",
+      kcal100G: 250, // Esperamos el número convertido
+    });
 
-    // 4. El valor visual se mantiene actualizado en el estado local
+    // 4. El valor visual se mantiene
+    expect(kcalInput).toHaveValue("250");
     expect(kcalInput).toHaveValue("250");
   });
 

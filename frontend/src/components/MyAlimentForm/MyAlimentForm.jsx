@@ -2,6 +2,7 @@ import { useState } from "react";
 import useMyAliments from "../../hooks/useMyAliments";
 import MyAlimentList from "./MyAlimentList";
 import { validateDecimalInput } from "../../utils/validations";
+import { getCounterClass } from "../../utils/helpers";
 
 const INITIAL_STATE = {
   name: "",
@@ -58,6 +59,7 @@ const MyAlimentForm = () => {
 
     if (key === "name") {
       if (value.length <= 30) {
+        // ⬆️ Esto convendría llevarlo a un validate, pero de momento lo dejo así, porque tengo ahora demasiadas funciones de validación. (18/02/2026)
         setNewAliment({ ...newAliment, [key]: value });
       }
     } else {
@@ -66,12 +68,6 @@ const MyAlimentForm = () => {
         setNewAliment({ ...newAliment, [key]: validatedValue });
       }
     }
-  };
-
-  const getCounterClass = (length) => {
-    if (length >= 30) return "input-char-count at-limit";
-    if (length >= 25) return "input-char-count near-limit";
-    return "input-char-count";
   };
 
   return (

@@ -110,8 +110,7 @@ export const validateLoginForm = ({ email, password }) => {
 
   if (!validateEmail(email)) errors.email = "E-Mail not valid";
 
-  if (!password || password.length < 8)
-    errors.password = "Password must be at least 8 characters";
+  if (!password) errors.password = "Password is required"; //El error ahora no se usa
 
   return {
     isValid: Object.keys(errors).length === 0,
@@ -139,9 +138,19 @@ export const validateOnlyNumbers = (n) => {
   return regex.test(n.toString());
 };
 
+export const validateNumberInput = (value) => {
+  if (value === "") return value;
+
+  if (Number(value) >= 10000) {
+    return null;
+  }
+  return value;
+};
+
 export const validateNoEmpty = (text) => {
+  const evaluate = text || "";
   const regex = /^[^\s]+( [^\s]+)*$/;
-  return regex.test(text) && text.length <= 30;
+  return regex.test(evaluate) && text.length <= 30;
 };
 
 export const validateCustomAliment = ({
@@ -156,7 +165,10 @@ export const validateCustomAliment = ({
   )
     return false;
 
-  if (gramsAliment && (isNaN(gramsAliment) || Number(gramsAliment) <= 0))
+  if (
+    gramsAliment <= 10000 &&
+    (isNaN(gramsAliment) || Number(gramsAliment) <= 0)
+  )
     return false;
 
   if (
@@ -204,7 +216,7 @@ export const validateDecimalInput = (value) => {
   const normalizedValue = value.replace(",", ".");
 
   if (/^\d*\.?\d*$/.test(normalizedValue)) {
-    if (Number(normalizedValue) > 10000) {
+    if (Number(normalizedValue) > 9999.99) {
       return null;
     }
     return normalizedValue;

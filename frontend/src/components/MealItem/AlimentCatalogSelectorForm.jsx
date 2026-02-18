@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import useAliments from "../../hooks/useAliments";
 import useMyAliments from "../../hooks/useMyAliments";
-import { validateOnlyNumbers } from "../../utils/validations";
+import {
+  validateOnlyNumbers,
+  validateDecimalInput,
+} from "../../utils/validations";
 
 const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
   let myAliments = useSelector((state) => state.myAliments);
@@ -28,16 +31,26 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
     );
   }
 
+  const handleGramsChange = (e) => {
+    const value = e.target.value;
+    const validatedValue = validateDecimalInput(value);
+
+    if (validatedValue !== null) {
+      setGrams(validatedValue);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const selectElement = document.getElementById("catalog-select");
-    const selectedObject = availableAliments[selectElement.selectedIndex];
 
     if (!validateOnlyNumbers(grams)) return;
 
+    const selectElement = document.getElementById("catalog-select");
+    const selectedObject = availableAliments[selectElement.selectedIndex];
+
     create({
       name: selectedObject.name,
-      grams,
+      grams: Number(grams),
       weekId,
       dayId,
       mealId,
@@ -69,13 +82,10 @@ const AlimentCatalogSelectorForm = ({ aliments, weekId, dayId, mealId }) => {
           className="input-field"
           value={grams}
           placeholder="Grams eaten (e.g. 100)"
-          onChange={({ target }) => {
-            if (target.value === "") {
-              setGrams("");
-              return;
-            }
-            !isNaN(Number(target.value)) && setGrams(Number(target.value));
-          }}
+          type="text"
+          onChange={handleGramsChange}
+          inputMode="decimal"
+          autoComplete="off"
         />
 
         <button

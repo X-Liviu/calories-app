@@ -1,10 +1,17 @@
 import { useState } from "react";
 import useMeals from "../../hooks/useMeals";
 import { validateNoEmpty } from "../../utils/validations";
+import { getCounterClass } from "../../utils/helpers";
 
 const MealForm = ({ weekId, dayId }) => {
   const [nameMeal, setNameMeal] = useState("");
   const { create } = useMeals();
+
+  const handleNameChange = ({ target }) => {
+    if (target.value.length <= 30) {
+      setNameMeal(target.value);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,10 +28,14 @@ const MealForm = ({ weekId, dayId }) => {
       <div className="week-input-wrapper">
         <input
           className="input-field"
-          onChange={({ target }) => setNameMeal(target.value)}
+          onChange={handleNameChange}
           placeholder="Name of the meal (e.g. Breakfast)"
           value={nameMeal}
+          maxLength={30}
         />
+        <span className={getCounterClass(nameMeal.length)}>
+          {nameMeal.length}/30
+        </span>
       </div>
 
       <button
