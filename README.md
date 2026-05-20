@@ -12,6 +12,10 @@
 
 The project follows an **NPM Monorepo** architecture, clearly divided into Client, API, and End-to-End Tests.
 
+> 📄 **[Read the Full System Architecture Document (PDF)](./trackbites_architecture.pdf)**
+>
+> _An in-depth technical analysis of the application architecture, data modeling strategies, and engineering challenges faced during development._
+
 ---
 
 ## ✨ Key Features
@@ -36,15 +40,10 @@ Every user has their own "Food Bank" to streamline logging:
 
 The core of the application follows a strict hierarchy to organize data:
 
-- **Weeks:** Users create/delete weeks to organize their history.
+- **Weeks:** Users create/delete weeks to organize their history. (Includes yearly filtering and quick search).
 - **Days:** Each week contains 7 days with specific visualization logic.
 - **Meals:** "Meal Moments" (e.g., Breakfast, Lunch) added within each day.
 - **Items:** Specific foods recorded within a meal.
-
-## 💡 Additional Functionality
-
-- Yearly Filtering: Visualize weeks organized by year.
-- Search: Quickly filter and find specific weeks.
 
 ### ⚡ 4. Flexible Logging
 
@@ -128,7 +127,7 @@ npm install
 
 Navigate to the `backend` directory and set up your `.env` file as detailed in the Environment Variables section above to connect to your `MongoDB` instance.
 
-### 3. Run in dev mode
+### 4. Run in dev mode
 
 **Terminal 1 (Frontend):**
 
