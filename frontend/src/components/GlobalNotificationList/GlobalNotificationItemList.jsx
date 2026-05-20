@@ -19,7 +19,7 @@ const GlobalNotificationItemList = ({ notification }) => {
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, []); //eslint-disable-line
 
   const variantClass =
     notification.type === "success" ? "toast-success" : "toast-error";

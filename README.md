@@ -1,8 +1,10 @@
-> [!CAUTION]
->
-> # This README **is on development**. All information that appears is used as a template, so DO NOT RELY ON ANY INFORMATION WRITTEN HERE!
-
 # 🍽 TrackBites
+
+![Status: Work in Progress](https://img.shields.io/badge/Status-Work_in_Progress-orange)
+![Node.js](https://img.shields.io/badge/Node.js-v20.19.4-green)
+![React](https://img.shields.io/badge/React-Frontend-blue)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-success)
+![Playwright](https://img.shields.io/badge/Playwright-E2E_Testing-red)
 
 ### Fullstack Calorie Tracking Application
 
@@ -78,6 +80,31 @@ The project utilizes a **Continuous Integration (CI)** pipeline configured via G
 
 ---
 
+## 🧠 Technical Challenges & Lessons Learned
+
+Building TrackBites involved solving several complex architectural challenges:
+
+- **Monorepo Management:** Coordinating a shared codebase required careful configuration of ESLint, Vite, and test runners across the Client, API, and E2E workspaces.
+- **Comprehensive Testing Strategy:** Implementing unit tests (Vitest/Jest) for business logic alongside E2E tests (Playwright) to ensure critical user journeys (like logging complex meals) don't break during refactoring.
+- **Data Hierarchy & State Management:** Managing the strict state hierarchy of _Weeks -> Days -> Meals -> Items_ required designing a robust Redux (Thunk) architecture to avoid redundant API calls while keeping the UI responsive and snappy.
+
+---
+
+## ⚙️ Environment Variables
+
+Before running the application, you need to configure the environment variables.
+Create a `.env` file in the `/backend` directory. Here is a template of the required variables:
+
+```env
+# /backend/.env
+PORT=3001
+MONGODB_URI=your_mongodb_atlas_connection_string
+TEST_MONGODB_URI=your_mongodb_test_connection_string
+SECRET=your_jwt_secret_key
+```
+
+---
+
 ## 🚀 Installation and Usage (for developers)
 
 **Requirements:** Node.js v20.19.4
@@ -97,7 +124,13 @@ Since this is a monorepo, install dependencies for the root and workspaces.
 npm install
 ```
 
-### 3. Run on dev mode
+### 3. Setup Environment Variables
+
+Navigate to the `backend` directory and set up your `.env` file as detailed in the Environment Variables section above to connect to your `MongoDB` instance.
+
+### 3. Run in dev mode
+
+**Terminal 1 (Frontend):**
 
 ```bash
 cd calories-app
@@ -105,7 +138,7 @@ cd frontend
 npm run dev
 ```
 
-- On another terminal, at the same time:
+**Terminal 2 (Backend):**
 
 ```bash
 cd calories-app
@@ -113,7 +146,7 @@ cd backend
 npm run dev
 ```
 
-### 4. Open on browser
+### 5. Open in browser
 
 Open your browser at http://localhost:5173 (default for Vite).
 

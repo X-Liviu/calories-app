@@ -2,7 +2,7 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
 const User = require("../models/User");
-const { tokenExtractor } = require("../utils/middleware");
+const { tokenExtractor } = require("../utils/middleware"); //Se obtiene desde aquí porque en este controller no queremos usar el tokenExtractor en todos los endpoints.
 const { createUserSchema, updateUserSchema } = require("../utils/validations");
 const { BusinessValidationError } = require("../utils/appErrors");
 const { throwNotFound } = require("../utils/helpers");
