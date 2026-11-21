@@ -43,7 +43,7 @@ weekSchema.set("toJSON", {
 
 weekSchema.index({ user: 1, number_week: 1, year: 1 }, { unique: true });
 
-// --- Middleware para borrado en cascada --- por ChatGPT
+// --- Middleware para borrado en cascada --- X
 weekSchema.pre("findOneAndDelete", async function (next) {
   try {
     const weekId = this.getQuery()._id;

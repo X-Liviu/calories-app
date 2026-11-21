@@ -26,7 +26,7 @@ app.use("/api/login", loginRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/weeks", tokenExtractor, weeksRouter);
 app.use("/api/my-aliments", tokenExtractor, userAlimentsRouter);
-app.use(errorHandler);
 app.use(unknownEndpoint);
+app.use(errorHandler);
 
 module.exports = app;

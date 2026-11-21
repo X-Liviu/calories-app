@@ -5,7 +5,6 @@ const itemLinkSlice = createSlice({
   name: "itemLinks",
   initialState: INITIAL_STATE,
   reducers: {
-    //Solución de ChatGPT
     setItem(state, action) {
       const idx = state.findIndex((i) => i.URL === action.payload.URL);
 

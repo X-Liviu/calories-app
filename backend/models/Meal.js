@@ -45,7 +45,7 @@ mealSchema.set("toJSON", {
 
 mealSchema.index({ user: 1, day: 1, name: 1 }, { unique: true });
 
-// --- Middleware para borrado en cascada --- por ChatGPT
+// --- Middleware para borrado en cascada --- X
 mealSchema.pre("findOneAndDelete", async function (next) {
   try {
     const mealId = this.getQuery()._id;

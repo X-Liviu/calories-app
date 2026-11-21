@@ -40,7 +40,7 @@ daySchema.set("toJSON", {
 
 daySchema.index({ user: 1, week: 1, name: 1 }, { unique: true });
 
-// --- Middleware para borrado en cascada --- por ChatGPT
+// --- Middleware para borrado en cascada --- X
 daySchema.pre("findOneAndDelete", async function (next) {
   try {
     const dayId = this.getQuery()._id;

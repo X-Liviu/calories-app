@@ -69,10 +69,21 @@ const emailLimiter = async (req, res, next) => {
   }
 };
 
+const SENSITIVE_FIELDS = ["password", "passwordHash", "token"];
+
 const requestLogger = (request, response, next) => {
+  if (process.env.NODE_ENV === "test") return next();
+
+  const body = request.body ? { ...request.body } : null;
+  if (body) {
+    SENSITIVE_FIELDS.forEach((field) => {
+      if (field in body) body[field] = "***";
+    });
+  }
+
   console.log("Method:", request.method);
   console.log("Path:  ", request.path);
-  console.log("Body:  ", request.body ? request.body : "--");
+  console.log("Body:  ", body ?? "--");
   console.log("---");
   next();
 };

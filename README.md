@@ -1,6 +1,6 @@
 # 🍽 TrackBites
 
-![Status: Work in Progress](https://img.shields.io/badge/Status-Work_in_Progress-orange)
+![Status: Done](https://img.shields.io/badge/Status-Completed-brightgreen)
 ![Node.js](https://img.shields.io/badge/Node.js-v20.19.4-green)
 ![React](https://img.shields.io/badge/React-Frontend-blue)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-success)
@@ -111,7 +111,7 @@ SECRET=your_jwt_secret_key
 ### 1. Clone the repository
 
 ```bash
-git clone <REPO_URL>
+git clone https://github.com/X-Liviu/calories-app.git
 cd calories-app
 ```
 
